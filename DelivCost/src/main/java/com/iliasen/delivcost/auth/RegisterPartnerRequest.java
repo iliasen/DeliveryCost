@@ -13,7 +13,6 @@ public class RegisterPartnerRequest {
     private String companyName;
     private Long inn;
     private String contactNumber;
-    private String companyOfficial;
     private String email;
     private String password;
 }

@@ -36,7 +36,7 @@ public class Partner implements UserDetails{
     @Column(nullable = false)
     private String password;
 
-    @Column(unique = true)
+    @Column(unique = true, nullable = false)
     private String contactNumber;
 
     @Column
@@ -58,6 +58,12 @@ public class Partner implements UserDetails{
     @Column(nullable = false)
     @Enumerated(EnumType.STRING)
     private Role role;
+
+    @OneToMany(mappedBy = "partner",cascade = CascadeType.ALL)
+    private List<Cargo> cargos;
+
+    @OneToMany(mappedBy = "partner",cascade = CascadeType.ALL)
+    private List<Rating> ratings;
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {

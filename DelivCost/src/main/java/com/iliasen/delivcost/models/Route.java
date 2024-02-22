@@ -12,4 +12,5 @@ import lombok.NoArgsConstructor;
 public class Route {
     private String pointOfDeparture;
     private String  deliveryPoint;
+    private float distance;
 }

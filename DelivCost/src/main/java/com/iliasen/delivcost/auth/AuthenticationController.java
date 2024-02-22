@@ -24,11 +24,6 @@ public class AuthenticationController {
         return ResponseEntity.ok(service.registerPartner(registerRequest));
     }
 
-    @PostMapping(path = "/singUp")
-    public ResponseEntity<AuthenticationResponse> register(@RequestBody RegisterRequest registerRequest){
-        return ResponseEntity.ok(service.register(registerRequest));
-    }
-
     @PostMapping(path = "/singIn")
     public ResponseEntity<?> authenticate(@RequestBody AuthenticationRequest authenticationRequest){
         return ResponseEntity.ok(service.authenticate(authenticationRequest));

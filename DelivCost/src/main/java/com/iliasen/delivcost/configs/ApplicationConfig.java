@@ -2,10 +2,8 @@ package com.iliasen.delivcost.configs;
 
 import com.iliasen.delivcost.models.Client;
 import com.iliasen.delivcost.models.Partner;
-import com.iliasen.delivcost.models.User;
 import com.iliasen.delivcost.repositories.ClientRepository;
 import com.iliasen.delivcost.repositories.PartnerRepository;
-import com.iliasen.delivcost.repositories.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -23,18 +21,12 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 @RequiredArgsConstructor
 public class ApplicationConfig {
 
-    private final UserRepository userRepository;
     private final ClientRepository clientRepository;
     private final PartnerRepository partnerRepository;
 
     @Bean
     public UserDetailsService userDetailsService() {
         return username -> {
-            User user = userRepository.findByEmail(username).orElse(null);
-            if (user != null) {
-                return user;
-            }
-
             Client client = clientRepository.findByEmail(username).orElse(null);
             if (client != null) {
                 return client;

@@ -39,10 +39,19 @@ public class Client implements UserDetails {
     @Column(nullable = false)
     private String lastName;
 
-
     @Column(nullable = false)
     @Enumerated(EnumType.STRING)
     private Role role;
+
+//    @ManyToOne
+//    @JoinColumn(name = "partner_id")
+//    private Partner partner;
+
+    @OneToMany(mappedBy = "customer")
+    private List<Cargo> cargos;
+
+    @OneToMany(mappedBy = "client",cascade = CascadeType.ALL)
+    private List<Rating> ratings;
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
