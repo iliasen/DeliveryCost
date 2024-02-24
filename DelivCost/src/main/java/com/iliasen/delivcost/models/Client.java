@@ -43,15 +43,14 @@ public class Client implements UserDetails {
     @Enumerated(EnumType.STRING)
     private Role role;
 
-//    @ManyToOne
-//    @JoinColumn(name = "partner_id")
-//    private Partner partner;
-
-    @OneToMany(mappedBy = "customer")
-    private List<Cargo> cargos;
+    @OneToMany(mappedBy = "client",cascade = CascadeType.ALL)
+    private List<Order> Orders;
 
     @OneToMany(mappedBy = "client",cascade = CascadeType.ALL)
     private List<Rating> ratings;
+
+    @OneToMany(mappedBy = "client",cascade = CascadeType.ALL)
+    private List<Storage> storages;
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {

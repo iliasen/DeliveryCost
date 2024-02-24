@@ -51,16 +51,15 @@ public class Partner implements UserDetails{
     @Column
     private String companyLogo;
 
-    @ElementCollection
-    @Enumerated(EnumType.STRING)
-    private Set<Transport> transportList;
-
     @Column(nullable = false)
     @Enumerated(EnumType.STRING)
     private Role role;
 
     @OneToMany(mappedBy = "partner",cascade = CascadeType.ALL)
-    private List<Cargo> cargos;
+    private Set<Transport> transportList;
+
+    @OneToMany(mappedBy = "partner",cascade = CascadeType.ALL)
+    private List<Order> orders;
 
     @OneToMany(mappedBy = "partner",cascade = CascadeType.ALL)
     private List<Rating> ratings;

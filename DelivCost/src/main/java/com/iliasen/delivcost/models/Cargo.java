@@ -17,9 +17,6 @@ public class Cargo {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
-    @Embedded
-    private Route route;
-
     @Column
     private float weight;
 
@@ -32,11 +29,14 @@ public class Cargo {
     @Column
     private float width;
 
-    @ManyToOne
-    @JoinColumn(name = "partner_id")
-    private Partner partner;
+    @OneToOne(mappedBy = "cargo")
+    private Order order;
 
     @ManyToOne
-    @JoinColumn(name = "client_id")
-    private Client client;
+    @JoinColumn(name = "storage_id")
+    private Storage storage;
+
+    public float getVolume(){
+        return length * height * width;
+    }
 }

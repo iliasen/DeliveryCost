@@ -2,32 +2,31 @@ package com.iliasen.delivcost.models;
 
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
-import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
 @Data
-@AllArgsConstructor
 @NoArgsConstructor
+@AllArgsConstructor
 @Entity
-@Builder
-@Table(name = "tansports")
-public class Transport {
+@Table(name = "orders")
+public class Order {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
-    @Column
-    @Enumerated(EnumType.STRING)
-    private TransportType transportType;
+    @Embedded
+    private Route route;
 
-    @Column
-    private float tonnage;
-
-    @Column
-    private float volume;
+    @OneToOne(cascade = CascadeType.ALL)
+    @JoinColumn(name = "cargo_id", referencedColumnName = "id")
+    private Cargo cargo;
 
     @ManyToOne
     @JoinColumn(name = "partner_id")
     private Partner partner;
+
+    @ManyToOne
+    @JoinColumn(name = "client_id")
+    private Client client;
 }

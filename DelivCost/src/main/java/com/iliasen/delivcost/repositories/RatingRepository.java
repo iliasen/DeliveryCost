@@ -1,10 +1,10 @@
 package com.iliasen.delivcost.repositories;
 
 import com.iliasen.delivcost.models.Rating;
-import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.repository.CrudRepository;
 
 
-public interface RatingRepository extends JpaRepository<Rating, Integer> {
+public interface RatingRepository extends CrudRepository<Rating, Integer> {
 
     Iterable<Rating> findByPartnerId(Integer id);
 
