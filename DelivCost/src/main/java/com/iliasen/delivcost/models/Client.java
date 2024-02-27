@@ -43,14 +43,15 @@ public class Client implements UserDetails {
     @Enumerated(EnumType.STRING)
     private Role role;
 
+    @OneToOne(mappedBy = "client",cascade = CascadeType.ALL)
+    private Warehouse warehouse;
+
     @OneToMany(mappedBy = "client",cascade = CascadeType.ALL)
     private List<Order> Orders;
 
     @OneToMany(mappedBy = "client",cascade = CascadeType.ALL)
     private List<Rating> ratings;
 
-    @OneToMany(mappedBy = "client",cascade = CascadeType.ALL)
-    private List<Storage> storages;
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {

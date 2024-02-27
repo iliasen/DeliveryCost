@@ -1,7 +1,10 @@
 package com.iliasen.delivcost.repositories;
 
 import com.iliasen.delivcost.models.Cargo;
-import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.repository.CrudRepository;
 
-public interface CargoRepository extends JpaRepository<Cargo, Integer> {
+import java.util.Optional;
+
+public interface CargoRepository extends CrudRepository<Cargo, Integer> {
+    Optional<Cargo> findByOrderId(Integer id);
 }

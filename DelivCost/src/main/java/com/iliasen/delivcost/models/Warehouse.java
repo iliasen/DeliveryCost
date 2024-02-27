@@ -11,8 +11,8 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor
 @Entity
-@Table(name = "storages")
-public class Storage {
+@Table(name = "Warehouses")
+public class Warehouse {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
@@ -20,10 +20,11 @@ public class Storage {
     @Column
     private float volume;
 
-    @OneToMany(mappedBy = "storage",cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "warehouse",cascade = CascadeType.ALL)
     private List<Cargo> cargos;
 
-    @ManyToOne
-    @JoinColumn(name = "client_id")
+    @OneToOne(cascade = CascadeType.ALL)
+    @JoinColumn(name = "client_id", referencedColumnName = "id")
     private Client client;
+
 }

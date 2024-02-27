@@ -33,8 +33,8 @@ public class Cargo {
     private Order order;
 
     @ManyToOne
-    @JoinColumn(name = "storage_id")
-    private Storage storage;
+    @JoinColumn(name = "warehouse_id")
+    private Warehouse warehouse;
 
     public float getVolume(){
         return length * height * width;

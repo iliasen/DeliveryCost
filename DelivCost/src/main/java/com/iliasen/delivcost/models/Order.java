@@ -18,6 +18,10 @@ public class Order {
     @Embedded
     private Route route;
 
+    @Column(columnDefinition = "VARCHAR(50) DEFAULT 'WITHOUT'")
+    @Enumerated(EnumType.STRING)
+    private OrderStatus orderStatus;
+
     @OneToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "cargo_id", referencedColumnName = "id")
     private Cargo cargo;

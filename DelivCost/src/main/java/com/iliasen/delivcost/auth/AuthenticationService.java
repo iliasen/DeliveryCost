@@ -5,8 +5,10 @@ import com.iliasen.delivcost.exeptions.UserNotFoundException;
 import com.iliasen.delivcost.models.Client;
 import com.iliasen.delivcost.models.Partner;
 import com.iliasen.delivcost.models.Role;
+import com.iliasen.delivcost.models.Warehouse;
 import com.iliasen.delivcost.repositories.ClientRepository;
 import com.iliasen.delivcost.repositories.PartnerRepository;
+import com.iliasen.delivcost.repositories.WarehouseRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -22,6 +24,7 @@ public class AuthenticationService {
 
     private final ClientRepository clientRepository;
     private final PartnerRepository partnerRepository;
+    private final WarehouseRepository storageRepository;
     private final PasswordEncoder passwordEncoder;
     private final JwtService jwtService;
     private final AuthenticationManager authenticationManager;
@@ -36,7 +39,13 @@ public class AuthenticationService {
                 .role(Role.CLIENT)
                 .build();
 
+        Warehouse warehouse = new Warehouse();
+        client.setWarehouse(warehouse);
+
         clientRepository.save(client);
+        warehouse.setClient(client);
+        storageRepository.save(warehouse);
+
         var jwtToken = jwtService.generateToken(client);
         return AuthenticationResponse.builder()
                 .token(jwtToken)
