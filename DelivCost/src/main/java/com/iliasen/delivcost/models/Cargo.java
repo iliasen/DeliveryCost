@@ -1,5 +1,7 @@
 package com.iliasen.delivcost.models;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -29,14 +31,17 @@ public class Cargo {
     @Column
     private float width;
 
-    @OneToOne(mappedBy = "cargo")
+    @JsonIgnore
+    @OneToOne
+    @JoinColumn(name = "order_id")
     private Order order;
 
+    @JsonIgnore
     @ManyToOne
     @JoinColumn(name = "warehouse_id")
     private Warehouse warehouse;
 
-    public float getVolume(){
-        return length * height * width;
-    }
+//    public float getVolume(){
+//        return length * height * width;
+//    }
 }

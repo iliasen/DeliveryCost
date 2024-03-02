@@ -1,5 +1,6 @@
 package com.iliasen.delivcost.models;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -58,6 +59,7 @@ public class Partner implements UserDetails{
     @OneToMany(mappedBy = "partner",cascade = CascadeType.ALL)
     private Set<Transport> transportList;
 
+    @JsonIgnore
     @OneToMany(mappedBy = "partner",cascade = CascadeType.ALL)
     private List<Order> orders;
 

@@ -5,6 +5,8 @@ import com.iliasen.delivcost.services.PartnerService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -29,29 +31,29 @@ public class PartnerController {
     }
 
     @PatchMapping(value = "/official")
-    public ResponseEntity<String> updateCompanyOfficial(@RequestBody String official){
-        return partnerService.updateField("companyOfficial", official, "Официальный представитель успешно добавлен: " + official);
+    public ResponseEntity<String> updateCompanyOfficial(@RequestBody String official,@AuthenticationPrincipal UserDetails userDetails){
+        return partnerService.updateField("companyOfficial", official, "Официальный представитель успешно добавлен: " + official,userDetails);
     }
 
     @PatchMapping(value = "/description")
-    public ResponseEntity<String> updateDescription(@RequestBody String description) {
-        return partnerService.updateField("description", description, "Описание компании добавлено.");
+    public ResponseEntity<String> updateDescription(@RequestBody String description,@AuthenticationPrincipal UserDetails userDetails) {
+        return partnerService.updateField("description", description, "Описание компании добавлено.", userDetails);
     }
 
     @PatchMapping(value = "/margin")
-    public ResponseEntity<String> updateMargin(@RequestBody float margin) {
-        return partnerService.updateField("margin", margin, "Добавлена маржа компании:" + margin);
+    public ResponseEntity<String> updateMargin(@RequestBody float margin,@AuthenticationPrincipal UserDetails userDetails) {
+        return partnerService.updateField("margin", margin, "Добавлена маржа компании:" + margin, userDetails);
     }
 
     @PatchMapping(value = "/transport")
-    public ResponseEntity<String> updateTransport(@RequestBody float margin) {
-        return partnerService.updateField("transport", margin, "Добавлена транспорт компании");
+    public ResponseEntity<String> updateTransport(@RequestBody float margin,@AuthenticationPrincipal UserDetails userDetails) {
+        return partnerService.updateField("transport", margin, "Добавлена транспорт компании", userDetails);
     }
 
     @PutMapping(value = "/img")
-    public ResponseEntity<String> setLogo(@RequestParam("img") MultipartFile image){
+    public ResponseEntity<String> setLogo(@RequestParam("img") MultipartFile image,@AuthenticationPrincipal UserDetails userDetails){
         try {
-            return partnerService.setCompanyLogo(image);
+            return partnerService.setCompanyLogo(image,userDetails);
         } catch (IOException e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Произошла ошибка при загрузке логотипа компании");
         }

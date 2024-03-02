@@ -1,5 +1,6 @@
 package com.iliasen.delivcost.models;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -22,13 +23,14 @@ public class Order {
     @Enumerated(EnumType.STRING)
     private OrderStatus orderStatus;
 
-    @OneToOne(cascade = CascadeType.ALL)
-    @JoinColumn(name = "cargo_id", referencedColumnName = "id")
+
+    @OneToOne(mappedBy = "order", cascade = CascadeType.ALL)
     private Cargo cargo;
 
     @ManyToOne
     @JoinColumn(name = "partner_id")
     private Partner partner;
+
 
     @ManyToOne
     @JoinColumn(name = "client_id")

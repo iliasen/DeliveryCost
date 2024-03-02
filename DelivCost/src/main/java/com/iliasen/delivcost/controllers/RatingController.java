@@ -4,6 +4,8 @@ import com.iliasen.delivcost.models.Rating;
 import com.iliasen.delivcost.services.RatingService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -13,8 +15,8 @@ public class RatingController {
     private final RatingService ratingService;
 
     @PostMapping(value = "/{id}")
-    public ResponseEntity<?> addRating(@PathVariable Integer id,@RequestBody Rating req){
-        return ratingService.createRating(id, req);
+    public ResponseEntity<?> addRating(@PathVariable Integer id, @RequestBody Rating req, @AuthenticationPrincipal UserDetails userDetails){
+        return ratingService.createRating(id, req, userDetails);
     }
 
     @GetMapping(value = "/{id}")
@@ -28,7 +30,7 @@ public class RatingController {
     }
 
     @DeleteMapping(value = "/{id}")
-    public ResponseEntity<?> deleteRating(@PathVariable Integer id){
-        return ratingService.deleteRatingById(id);
+    public ResponseEntity<?> deleteRating(@PathVariable Integer id, @AuthenticationPrincipal UserDetails userDetails){
+        return ratingService.deleteRatingById(id, userDetails);
     }
 }

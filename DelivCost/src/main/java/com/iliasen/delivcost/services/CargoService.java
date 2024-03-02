@@ -7,6 +7,7 @@ import com.iliasen.delivcost.repositories.CargoRepository;
 import com.iliasen.delivcost.repositories.ClientRepository;
 import com.iliasen.delivcost.repositories.PartnerRepository;
 import com.iliasen.delivcost.repositories.WarehouseRepository;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -21,8 +22,6 @@ public class CargoService {
 
     private final CargoRepository cargoRepository;
     private final WarehouseRepository warehouseRepository;
-    private final ClientRepository clientRepository;
-    private final PartnerRepository partnerRepository;
 
     public void addCargo(Cargo cargo, Order order) {
         cargo.setOrder(order);
@@ -30,11 +29,9 @@ public class CargoService {
     }
 
     public ResponseEntity<?> getCargo(Integer id){
-        Cargo cargo = cargoRepository.findById(id).orElse(null);
-        if (cargo != null){
-            return ResponseEntity.ok(cargo);
-        }
-        return ResponseEntity.badRequest().body("Нет такого товара");
+        Cargo cargo = cargoRepository.findById(id)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Order not found"));
+        return ResponseEntity.ok(cargo);
     }
 
 
