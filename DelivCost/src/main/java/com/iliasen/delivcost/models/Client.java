@@ -56,6 +56,9 @@ public class Client implements UserDetails {
     @OneToMany(mappedBy = "client",cascade = CascadeType.ALL)
     private List<Rating> ratings;
 
+    @JsonIgnore
+    @OneToMany(mappedBy = "client",cascade = CascadeType.ALL)
+    private List<Notification> notifications;
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {

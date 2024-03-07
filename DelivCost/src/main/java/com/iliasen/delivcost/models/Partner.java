@@ -63,8 +63,13 @@ public class Partner implements UserDetails{
     @OneToMany(mappedBy = "partner",cascade = CascadeType.ALL)
     private List<Order> orders;
 
+    @JsonIgnore
     @OneToMany(mappedBy = "partner",cascade = CascadeType.ALL)
     private List<Rating> ratings;
+
+    @JsonIgnore
+    @OneToMany(mappedBy = "partner",cascade = CascadeType.ALL)
+    private List<Notification> notifications;
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {

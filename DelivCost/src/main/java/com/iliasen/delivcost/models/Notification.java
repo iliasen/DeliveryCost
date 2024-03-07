@@ -7,29 +7,40 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.time.LocalDateTime;
+
 @Data
-@AllArgsConstructor
-@NoArgsConstructor
 @Entity
 @Builder
-@Table(name = "tansports")
-public class Transport {
+@Table(name = "notifications")
+@NoArgsConstructor
+@AllArgsConstructor
+public class Notification {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
     @Column
     @Enumerated(EnumType.STRING)
-    private TransportType transportType;
+    private OrderStatus newStatus;
 
     @Column
-    private float tonnage;
+    private boolean partnerChecked = false;
 
     @Column
-    private float volume;
+    private boolean clientChecked = false;
+
+    @Column
+    private LocalDateTime changeTime;
+
+    @ManyToOne
+    private Order order;
 
     @JsonIgnore
     @ManyToOne
-    @JoinColumn(name = "partner_id")
     private Partner partner;
+
+    @JsonIgnore
+    @ManyToOne
+    private Client client;
 }

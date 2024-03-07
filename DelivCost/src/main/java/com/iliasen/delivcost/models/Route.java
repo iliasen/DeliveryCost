@@ -16,4 +16,5 @@ public class Route {
     private String  deliveryPoint;
     private float distance;
     private LocalDateTime deliveryTime;
+    private TransportType transportType;
 }

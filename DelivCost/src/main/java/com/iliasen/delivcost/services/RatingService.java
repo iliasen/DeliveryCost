@@ -93,7 +93,7 @@ public class RatingService {
             return ResponseEntity.notFound().build();
         }
         ratingRepository.deleteById(rating.getId());
-        return ResponseEntity.ok("Рейтинг удалён");
+        return ResponseEntity.ok("Rating wad delete");
     }
 
 }

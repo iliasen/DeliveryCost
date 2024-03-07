@@ -6,6 +6,8 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.util.List;
+
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
@@ -19,18 +21,26 @@ public class Order {
     @Embedded
     private Route route;
 
-    @Column(columnDefinition = "VARCHAR(50) DEFAULT 'WITHOUT'")
-    @Enumerated(EnumType.STRING)
-    private OrderStatus orderStatus;
+    @Column
+    private boolean partnerChecked = false;
 
+    @Column
+    private boolean clientSubscribe = true;
+
+    @Column
+    @Enumerated(EnumType.STRING)
+    private OrderStatus orderStatus = OrderStatus.WITHOUT;
 
     @OneToOne(mappedBy = "order", cascade = CascadeType.ALL)
     private Cargo cargo;
 
+    @JsonIgnore
+    @OneToMany(mappedBy = "order", cascade = CascadeType.ALL)
+    private List<Notification> notification;
+
     @ManyToOne
     @JoinColumn(name = "partner_id")
     private Partner partner;
-
 
     @ManyToOne
     @JoinColumn(name = "client_id")

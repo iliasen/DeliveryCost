@@ -18,6 +18,7 @@ import org.springframework.web.bind.annotation.*;
 public class OrderController {
     private final OrderService orderService;
 
+    @PreAuthorize("isAuthenticated()")
     @PostMapping(value = "/{id}")
     public ResponseEntity<?> createOrder(@RequestBody OrderAndCargoRequest request, @PathVariable Integer id, @AuthenticationPrincipal UserDetails userDetails){
         Order orderRequest = request.getOrder();
@@ -30,11 +31,21 @@ public class OrderController {
         return orderService.getOrders(status,userDetails);
     }
 
-    @PreAuthorize("isAuthenticated()")
+    @PreAuthorize("hasAuthority('PARTNER')")
+    @GetMapping(value = "/new")
+    public ResponseEntity<?> getNewOrders(@AuthenticationPrincipal UserDetails userDetails){
+        return orderService.getNewOrders(userDetails);
+    }
+    
     @GetMapping(value = "/{id}")
     public ResponseEntity<?> getOrder(@PathVariable Integer id){return orderService.getOrder(id);}
 
     @PreAuthorize("hasAuthority('PARTNER')")
     @PutMapping(value = "/status/{id}")
-    public ResponseEntity<?> updateOrderStatus(@PathVariable Integer id, @RequestBody OrderStatus newStatus){return orderService.updateStatus(id, newStatus);}
+    public ResponseEntity<?> updateOrderStatus(@PathVariable Integer id, @RequestParam OrderStatus status){return orderService.updateStatus(id, status);}
+
+    @PreAuthorize("hasAuthority('PARTNER')")
+    @PutMapping(value = "/review/{id}")
+    public ResponseEntity<?> reviewedOrder(@PathVariable Integer id){return orderService.setPartnerView(id);}
+
 }
