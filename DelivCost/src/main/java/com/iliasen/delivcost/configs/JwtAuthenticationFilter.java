@@ -20,7 +20,7 @@ import java.io.IOException;
 @RequiredArgsConstructor
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
-    private final JwtService jwtServise;
+    private final JwtService jwtService;
     private final UserDetailsService userDetailsService;
 
     @Override
@@ -37,13 +37,17 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             return;
         }
         jwt = authHeader.substring(7);
-        userEmail = jwtServise.extractUsername(jwt);
+        userEmail = jwtService.extractUsername(jwt);
         if(userEmail != null && SecurityContextHolder.getContext().getAuthentication() == null){
             UserDetails userDetails = this.userDetailsService.loadUserByUsername(userEmail);
-            if(jwtServise.isTokenValid(jwt, userDetails)){
+            if(jwtService.isTokenValid(jwt, userDetails)){
                 UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(userDetails,null, userDetails.getAuthorities());
                 authToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
                 SecurityContextHolder.getContext().setAuthentication(authToken);
+
+                // Генерируем новый токен
+//                String newJwtToken = jwtService.generateToken(userDetails);
+//                response.setHeader("Authorization", "Bearer " + newJwtToken);
             }
         }
         filterChain.doFilter(request, response);
