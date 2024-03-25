@@ -3,7 +3,7 @@ import {Image} from 'react-bootstrap'
 import '../styles/Main.css'
 import { observer } from 'mobx-react-lite'
 import {NavLink} from "react-router-dom";
-import {LOGIN_ROUTE, REGISTRATION_ROUTE} from "../utils/consts";
+import { LOGIN_ROUTE, REGISTRATION_CLIENT_ROUTE, REGISTRATION_PARTNER_ROUTE } from '../utils/consts'
 import box from "../res/Main/box.svg"
 import truck from "../res/Main/car.svg"
 import human from "../res/Main/human.svg"

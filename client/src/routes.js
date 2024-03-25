@@ -7,7 +7,7 @@ import {
   GUARANTEES_ROUTE,
   MAIN_ROUTE,
   ACCOUNT_ROUTE,
-  ORDER_ROUTE,
+  ORDER_ROUTE, REGISTRATION_CLIENT_ROUTE, REGISTRATION_PARTNER_ROUTE,
 } from './utils/consts'
 
 import Basket from './pages/Basket'
@@ -18,6 +18,9 @@ import Payment from './pages/Payment'
 import Guarantees from './pages/Guarantees'
 import Account from './pages/AccountPage'
 import Order from "./pages/Order";
+import RegisClient from './pages/RegisClient'
+import RegisPartner from './pages/RegisPartner'
+import Regis from './pages/Regis'
 
 export const authRoutes = [
   {
@@ -45,7 +48,15 @@ export const publicRoutes = [
   },
   {
     path: REGISTRATION_ROUTE,
-    Component: Auth,
+    Component: Regis,
+  },
+  {
+    path: REGISTRATION_CLIENT_ROUTE,
+    Component: RegisClient,
+  },
+  {
+    path: REGISTRATION_PARTNER_ROUTE,
+    Component: RegisPartner,
   },
   {
     path: ABOUT_ROUTE,
@@ -58,5 +69,5 @@ export const publicRoutes = [
   {
     path: GUARANTEES_ROUTE,
     Component: Guarantees,
-  },
+  }
 ]

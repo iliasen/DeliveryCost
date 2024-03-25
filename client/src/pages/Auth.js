@@ -20,14 +20,9 @@ const Auth = observer(() => {
   const click = async (event) => {   event.preventDefault()
     try {
       let data
-      if (isLogin) {
         data = await login(email, password)
-      } else {
-        data = await registration(email, password)
-      }
         user.setUser(data)
         user.setAuth(true)
-        console.log('Registration')
         nav(MAIN_ROUTE)
         //window.location.reload()
     } catch (e) {
@@ -38,7 +33,7 @@ const Auth = observer(() => {
   const back = async (event) => {
       event.preventDefault()
       nav(-1)
-    }
+  }
 
 
 

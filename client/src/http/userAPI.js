@@ -2,11 +2,18 @@ import { $authHost, $host } from './index'
 import jwt_decode from 'jwt-decode'
 
 
-export const registration = async (email, password) => {
+export const registrationClient = async (firstName, lastName, email, phone, password) => {
   const { data } = await $host.post('api/auth/singUp/client', {
-    email,
-    password,
-    role: "USER"
+    firstName, lastName, email, phone, password
+  })
+  console.log("Push to server")
+  localStorage.setItem('token', data.token)
+  return jwt_decode(data.token)
+}
+
+export const registrationPartner = async (companyName, inn, contactNumber,email, password) => {
+  const { data } = await $host.post('api/auth/singUp/partner', {
+    companyName, inn, contactNumber,email, password
   })
   console.log("Push to server")
   localStorage.setItem('token', data.token)

@@ -10,6 +10,30 @@
   font-family: sans-serif;
 }
 
+.auth-сlient-container{
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: calc(100vh - 54px);
+  background: linear-gradient(rgba(0, 0, 0, 0.3), rgba(0, 0, 0, 0.3)), url('../res/Auth/clientReg.jpg');
+  -webkit-background-size: cover;
+  background-size: 100vw 100vh;
+  background-attachment: fixed;
+  font-family: sans-serif;
+}
+
+.auth-partner-container{
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: calc(100vh - 54px);
+  background: linear-gradient(rgba(0, 0, 0, 0.3), rgba(0, 0, 0, 0.3)), url('../res/Auth/partnerReg.jpg');
+  -webkit-background-size: cover;
+  background-size: 100vw 100vh;
+  background-attachment: fixed;
+  font-family: sans-serif;
+}
+
 a {
   padding-bottom: 16px;
 }
@@ -43,7 +67,7 @@ a {
 .auth-form input {
   padding: 1px 5px;
   font-size: 18px;
-  margin-top: 5px;
+  margin-bottom: 10px;
   height: 44px;
   border-radius: 10px;
 }
