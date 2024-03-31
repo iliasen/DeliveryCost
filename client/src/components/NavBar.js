@@ -17,7 +17,6 @@ import '../styles/NavBar.css'
 import { observer } from 'mobx-react-lite'
 import { Image } from 'react-bootstrap'
 import logo from '../res/лого_тем.png'
-import {getItems} from "../http/basketAPI";
 import SearchForm from "./SearchForm";
 
 const NavBar = observer(() => {
@@ -52,7 +51,11 @@ const NavBar = observer(() => {
           О нас
         </NavLink>
         <SearchForm/>
-        <Navbar.Toggle aria-controls="responsive-navbar-nav" />
+
+        {user.Auth && (
+            <Navbar.Toggle aria-controls="responsive-navbar-nav" />
+        )}
+
         <Navbar.Collapse id="responsive-navbar-nav">
           {user.Auth ? (
             <Nav className="href-container">
