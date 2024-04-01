@@ -28,6 +28,7 @@ public class SecurityConfig {
                 .authorizeHttpRequests(registry -> registry
                         .requestMatchers("/auth/**").permitAll()
                         .requestMatchers("/auth/singUp/**").permitAll()
+                        .requestMatchers("/partner/all").permitAll()
                         .requestMatchers("/**").permitAll()
                         .requestMatchers("/**").hasAnyAuthority("PARTNER", "CLIENT")
                         .anyRequest().authenticated()

@@ -21,7 +21,6 @@ public class PartnerController {
 
     private final PartnerService partnerService;
 
-//    @PreAuthorize("hasAuthority(true)")
     @GetMapping(value = "/all")
     public ResponseEntity<List<Partner>> getPartners(){
         return partnerService.getAll();

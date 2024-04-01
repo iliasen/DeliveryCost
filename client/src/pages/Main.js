@@ -1,62 +1,91 @@
 import React, {useContext, useEffect} from 'react'
 import {Context} from "../index";
-import {Image} from 'react-bootstrap'
-import '../styles/Main.css'
-import { observer } from 'mobx-react-lite'
 import {NavLink} from "react-router-dom";
 import { LOGIN_ROUTE, REGISTRATION_CLIENT_ROUTE, REGISTRATION_PARTNER_ROUTE } from '../utils/consts'
+import {Image} from 'react-bootstrap'
+import {getPartners} from "../http/partnerAPI";
+import { observer } from 'mobx-react-lite'
+
 import box from "../res/Main/box.svg"
 import truck from "../res/Main/car.svg"
 import human from "../res/Main/human.svg"
 import safe from "../res/Main/safe1.png"
 import free from "../res/Main/free1.png"
-import {getPartners} from "../http/partnerAPI";
+
+
+import '../styles/MainWithoutAuth.css'
+import '../styles/MainWithAuth.css'
+import Rating from "../components/modals/Rating";
+import {getAverageRating} from "../http/itemAPI";
 
 
 const Main = observer(() => {
-    const { user, partner } = useContext(Context);
+    const { user, partners } = useContext(Context);
 
     useEffect(() => {
-        getPartners().then((partnersData) => {
-            partner.setPartners(partnersData);
-            console.log(partnersData)
-        });
-
+        if(user.Auth){
+            getPartners().then((partnersData) => {
+                partners.setPartners(partnersData);
+                console.log(partnersData)
+            });
+        }
     }, []);
+
+
 
   return (
       <>
           {user.Auth ?
               <div className="main-page-container">
-                  <div>
-                      {partner.partners && partner.partners.map(({id, inn, companyName, email, contactNumber, companyOfficial}) => (
-                          <div key={id}>
-                              id-{id}<br/>
-                              inn-{inn}<br/>
-                              companyName-{companyName}
-                              email-{email}
-                          </div>
-                      ))}
+                  <div className="d-flex p-1">
+                      <div className="partner-list">
+                          <h4>Наши партнёны</h4>
+                          {partners.partners && partners.partners.map((partner) => (
+                              <div key={partner.id} className="partner-item"
+                                   autoFocus={partner.id === partners.selectedPartner?.id}
+                                   onClick={() => partners.setPartner(partner)}>
+                                  <p>companyName-{partner.companyName}</p>
+                                  <p>email-{partner.email}</p>
+                                  <p>Tel--{partner.contactNumber}</p>
+                              </div>
+                          ))}
+                      </div>
+                      <div className="partner-info">
+                          {partners.selectedPartner !== null ?
+                              <div>
+                                  <p>ID: {partners.selectedPartner.id}</p>
+                                  <p>INN: {partners.selectedPartner.inn}</p>
+                                  <p>Company Name: {partners.selectedPartner.companyName}</p>
+                                  <p>Email: {partners.selectedPartner.email}</p>
+                                  <p>Contact Number: {partners.selectedPartner.contactNumber}</p>
+                                  <p>Company Official: {partners.selectedPartner.companyOfficial}</p>
+
+                                  <Rating rating={}/>
+                              </div>
+                              :
+                              <div>No partner is Selected</div>
+                          }
+                      </div>
                   </div>
               </div>
 
-          :
+              :
               <div className="main-page-container">
-                    <div id="preview">
-                        <div className="register-wrapper">
-                            Крупнейшая международная<br/>
-                            Биржа грузоперевозок Контакт Логистик
-                            <div>
-                                Помогает перевозчикам и грузоотправителям из Беларуси, России<br/>и ещё 60 стран найти
-                                друг друга
-                                и
-                                договориться о перевозке
-                            </div>
-                        </div>
-                        <button>
-                            <NavLink to={LOGIN_ROUTE}>Авторизироваться</NavLink>
-                        </button>
-                    </div>
+                  <div id="preview">
+                      <div className="register-wrapper">
+                          Крупнейшая международная<br/>
+                          Биржа грузоперевозок Контакт Логистик
+                          <div>
+                              Помогает перевозчикам и грузоотправителям из Беларуси, России<br/>и ещё 60 стран найти
+                              друг друга
+                              и
+                              договориться о перевозке
+                          </div>
+                      </div>
+                      <button>
+                          <NavLink to={LOGIN_ROUTE}>Авторизироваться</NavLink>
+                      </button>
+                  </div>
 
                     <div id="our-stats">
                         <div className='boxes'>
