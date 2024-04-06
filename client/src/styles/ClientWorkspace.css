@@ -1,0 +1,145 @@
+.partner-list{
+    padding: 20px;
+    background-color: #FFF;
+    width: max-content;
+    height: 100vh;
+}
+.partner-list:last-child{
+    border-bottom: none;
+}
+
+.partner-item{
+    padding-top: 16px;
+    padding-bottom: 7px;
+    border-bottom: 1px solid #f7765c;
+
+}
+.partner-item:hover{
+    background-color: #bbbbbb;
+    cursor: pointer;
+}
+
+.partner-item:focus{
+    background-color: #bbbbbb;
+}
+.partner-item:last-child{
+    border-bottom: none;
+}
+
+
+
+
+
+
+
+.button_container {
+    display: flex;
+    margin-top: 10px;
+}
+.button_container input {
+    margin-right: 16px;
+    border-radius: 10px;
+    background-color: #acada8;
+    text-align: center;
+    padding: 4px 12px;
+    border: none;
+}
+.button_container input[type='button'] {
+    background-color: #f66d52;
+}
+
+.button_container input:hover{
+    scale: 1.1;
+}
+
+#feedback-button {
+    margin-left: 10px;
+    text-decoration: underline dashed #373435;
+    cursor: pointer;
+    font-size: 16px;
+}
+#feedback-button:hover {
+    color: dimgrey;
+    text-decoration: underline dashed #eae3dd;
+}
+
+#after_feedback {
+    margin-left: 8px;
+    margin-top: -2px;
+    font-size: 18px;
+}
+
+#feedback-container {
+    margin-top: 10px;
+    display: none;
+}
+#feedback-container textarea {
+    padding: 10px;
+    border-radius: 10px;
+    background-color: #f5f5f5;
+}
+
+.mark_rate {
+    margin-top: -8px;
+    margin-right: 5px;
+    font-size: 24px;
+}
+.rate {
+    background-image: url('../res/ItemPage/star.png');
+    width: 20px;
+    height: 20px;
+    background-size: contain;
+}
+.rating_block {
+    width: 125px;
+    height: 25px;
+    flex-shrink: 0;
+    margin-left: 5px;
+}
+.rating_block input[type='radio'] {
+    display: none;
+}
+.label_rating {
+    float: right;
+    display: block;
+    width: 25px;
+    height: 25px;
+    background: url('../res/ItemPage/star.png') no-repeat;
+    background-size: contain;
+    cursor: pointer;
+}
+.rating_block .label_rating:hover, /*Правило для ховера на текущий лейбл*/
+.rating_block .label_rating:hover ~ .label_rating, /*Правило для всех следующих лейблов по DOM дереву*/
+.rating_block input[type="radio"]:checked ~ .label_rating /*Правило для всех следующих лейблов после выбранного инпута, чтобы звездочки как бы зафиксировались*/ {
+    background-position: 50%-2px;
+    background: url('../res/ItemPage/black_star.png') no-repeat;
+    background-size: contain;
+}
+
+.deleteRate{
+    cursor: pointer;
+    color: red;
+}
+
+.deleteRate:hover{
+    color: brown;
+    text-underline:brown;
+    text-decoration: underline;
+}
+
+
+
+
+
+
+
+
+#feedback .feedback_about_item {
+
+    padding: 5px;
+    border-bottom: 1px solid brown;
+    margin: 10px;
+}
+#feedback .feedback_about_item:last-child {
+    border-bottom: 0;
+}

@@ -28,6 +28,9 @@ public class Order {
     private boolean clientSubscribe = true;
 
     @Column
+    private String comment;
+
+    @Column
     @Enumerated(EnumType.STRING)
     private OrderStatus orderStatus = OrderStatus.WITHOUT;
 

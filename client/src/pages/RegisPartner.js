@@ -11,7 +11,7 @@ const RegisPartner = () => {
   const [inn, setInn] = useState('')
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
-  const [phone, setPhone] = useState("");
+  const [contactNumber, setContactNumber] = useState("");
   let nav = useNavigate()
 
   const handleChange = (e) => {
@@ -43,15 +43,15 @@ const RegisPartner = () => {
       formatted += input[i];
     }
 
-    setPhone(formatted);
+    setContactNumber(formatted);
   };
 
   const click = async (event) => {   event.preventDefault()
     try {
       let data
-      data = await registrationPartner(name, inn, email, phone, password)
-      user.setUser(data)
-      user.setAuth(true)
+      data = await registrationPartner(name, inn, email, contactNumber, password)
+       user.setUser(data)
+       user.setAuth(true)
       nav(MAIN_ROUTE)
     } catch (e) {
       alert(e.response.data.message)
@@ -86,6 +86,7 @@ const RegisPartner = () => {
             placeholder="Введите email"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
+            required
           />
           <Form.Label>Пароль</Form.Label>
           <Form.Control
@@ -93,12 +94,13 @@ const RegisPartner = () => {
             placeholder="Введите пароль"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
+            required
           />
           <Form.Label>Контактынй телефон</Form.Label>
           <Form.Control
             type="tel"
             name="phone"
-            value={phone}
+            value={contactNumber}
             onChange={handleChange}
             placeholder="+375 (xx) xxx-xx-xx"
             required

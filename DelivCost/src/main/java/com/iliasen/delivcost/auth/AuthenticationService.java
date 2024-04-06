@@ -9,6 +9,7 @@ import com.iliasen.delivcost.models.Warehouse;
 import com.iliasen.delivcost.repositories.ClientRepository;
 import com.iliasen.delivcost.repositories.PartnerRepository;
 import com.iliasen.delivcost.repositories.WarehouseRepository;
+import org.springframework.security.core.GrantedAuthority;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -54,7 +55,7 @@ public class AuthenticationService {
         warehouse.setClient(client);
         storageRepository.save(warehouse);
 
-        var jwtToken = jwtService.generateToken(client);
+        var jwtToken = jwtService.generateToken(client, client.getRole());
         return AuthenticationResponse.builder()
                 .token(jwtToken)
                 .build();
@@ -71,7 +72,7 @@ public class AuthenticationService {
                 .build();
 
         partnerRepository.save(partner);
-        var jwtToken = jwtService.generateToken(partner);
+        var jwtToken = jwtService.generateToken(partner, partner.getRole());
         return AuthenticationResponse.builder()
                 .token(jwtToken)
                 .build();
@@ -89,7 +90,22 @@ public class AuthenticationService {
         Object principal = authentication.getPrincipal();
         if (principal instanceof UserDetails) {
             UserDetails userDetails = (UserDetails) principal;
-            String jwtToken = jwtService.generateToken(userDetails);
+
+            // Получение роли пользователя
+            String role = userDetails.getAuthorities().stream()
+                    .findFirst()
+                    .map(GrantedAuthority::getAuthority)
+                    .orElseThrow(() -> new IllegalStateException("У пользователя нет ролей"));
+
+            String jwtToken;
+            if (role.equals("CLIENT")) {
+                jwtToken = jwtService.generateToken(userDetails, Role.CLIENT);
+            } else if (role.equals("PARTNER")) {
+                jwtToken = jwtService.generateToken(userDetails, Role.PARTNER);
+            } else {
+                throw new IllegalStateException("Недопустимая роль пользователя: " + role);
+            }
+
             return AuthenticationResponse.builder()
                     .token(jwtToken)
                     .build();

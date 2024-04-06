@@ -1,3 +1,8 @@
+.container-shop {
+    height: 100vh;
+    margin-bottom: 72px;
+}
+
 .orderContainer{
     margin-top: 32px;
     width: 100%;
@@ -47,7 +52,7 @@
 
 .House, .Flat , .Address{
     width: 50px;
-    border-radius: 5px;
+    border-radius: 7px;
     border: 0.1em solid #e2e2e2;
     padding: 4px 10px;
     margin-top: 5px;
@@ -60,9 +65,38 @@
     width: 100px;
 }
 
+
+.searchResultsContainer {
+    margin-top: 12px;
+    border: 1px solid #e2e2e2;
+    border-radius: 10px;
+    padding: 12px;
+    height: 200px;
+    width: 400px;
+    overflow: auto;
+}
+
+.searchResults {
+
+    padding: 4px;
+    border-radius: 10px;
+    border: none;
+    margin-bottom: 8px;
+    border-bottom: 1px solid #39444f;
+
+}
+
+.searchResults:hover{
+    background-color: #e2e2e2;
+}
+
+.searchResults:last-child {
+    border-bottom: none;
+}
+
 .orderComment{
     margin-top: 5px;
-    border-radius: 5px;
+    border-radius: 7px;
     border: 2px solid #e2e2e2;
     padding: 4px 10px;
 }
@@ -71,7 +105,7 @@
     margin-top: 32px;
     width: 500px;
     background-color: #e2e2e2;
-    border-radius: 5px;
+    border-radius: 7px;
     padding: 16px;
 }
 #phone{

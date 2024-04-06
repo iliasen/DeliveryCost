@@ -1,5 +1,7 @@
 package com.iliasen.delivcost.configs;
 
+import com.iliasen.delivcost.models.Role;
+
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
@@ -29,14 +31,15 @@ public class JwtService {
         return claimsResolve.apply(claims);
     }
 
-    public String generateToken(UserDetails userDetails){
-        return generateToken(new HashMap<>(), userDetails);
+    public String generateToken(UserDetails userDetails, Role role){
+        return generateToken(new HashMap<>(), userDetails, role);
     }
 
-    public String generateToken(Map<String, Objects> extractClaims, UserDetails userDetails){
+    public String generateToken(Map<String, Objects> extractClaims, UserDetails userDetails, Role role){
         return Jwts
                 .builder()
                 .setClaims(extractClaims)
+                .claim("role", role.name())
                 .setSubject(userDetails.getUsername())
                 .setIssuedAt(new Date(System.currentTimeMillis()))
                 .setExpiration(new Date(System.currentTimeMillis() + 1000 * 60 * 24))
