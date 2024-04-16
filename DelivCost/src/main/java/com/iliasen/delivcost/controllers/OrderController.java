@@ -21,9 +21,11 @@ public class OrderController {
     @PreAuthorize("isAuthenticated()")
     @PostMapping(value = "/{id}")
     public ResponseEntity<?> createOrder(@RequestBody OrderAndCargoRequest request, @PathVariable Integer id, @AuthenticationPrincipal UserDetails userDetails){
+        System.out.println(request);
+        String comment = request.getComment();
         Order orderRequest = request.getOrder();
         Cargo cargoRequest = request.getCargo();
-        return orderService.addOrder(orderRequest, cargoRequest, id, userDetails);
+        return orderService.addOrder(orderRequest, cargoRequest,comment, id, userDetails);
     }
 
     @GetMapping

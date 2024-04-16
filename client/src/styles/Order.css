@@ -50,8 +50,8 @@
     font-weight: 525;
 }
 
-.House, .Flat , .Address{
-    width: 50px;
+.weight, .Address{
+    width: 100px;
     border-radius: 7px;
     border: 0.1em solid #e2e2e2;
     padding: 4px 10px;
@@ -61,10 +61,27 @@
     width: 350px;
     padding: 4px 16px;
 }
-.Flat{
-    width: 100px;
+
+
+.deliveryType{
+    cursor: pointer;
+    margin-top: 6px;
+    padding: 4px;
+    display: flex;
+    flex-direction: column;
+    text-align: center;
+    background-color: #e2e2e2;
+    border-radius: 10px;
 }
 
+.deliveryType:hover{
+    background-color: #acada8;
+}
+
+.selected {
+    background-color: #acada8;
+    font-weight: bold;
+}
 
 .searchResultsContainer {
     margin-top: 12px;

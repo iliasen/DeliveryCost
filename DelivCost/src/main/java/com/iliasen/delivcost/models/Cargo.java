@@ -19,16 +19,7 @@ public class Cargo {
     private Integer id;
 
     @Column
-    private float weight;
-
-    @Column
-    private float length;
-
-    @Column
-    private float height;
-
-    @Column
-    private float width;
+    private int weight;
 
     @JsonIgnore
     @OneToOne
@@ -40,7 +31,4 @@ public class Cargo {
     @JoinColumn(name = "warehouse_id")
     private Warehouse warehouse;
 
-    public float getVolume(){
-        return length * height * width;
-    }
 }

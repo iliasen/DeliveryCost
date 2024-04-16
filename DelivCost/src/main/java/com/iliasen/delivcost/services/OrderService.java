@@ -27,18 +27,20 @@ public class OrderService {
     private final ClientRepository clientRepository;
 
 
-    public ResponseEntity<?> addOrder(Order order,Cargo cargo, Integer partnerId, UserDetails userDetails) {
+    public ResponseEntity<?> addOrder(Order order,Cargo cargo,String comment, Integer partnerId, UserDetails userDetails) {
 
         Client client = clientRepository.findByEmail(userDetails.getUsername())
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Client not found"));
         Partner partner = partnerRepository.findById(partnerId)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Partner not found"));
 
-
         order.setClient(client);
         order.setPartner(partner);
         order.setCargo(cargo);
+        order.setComment(comment);
         orderRepository.save(order);
+        System.out.println(cargo);
+        System.out.println(order);
         cargoService.addCargo(cargo, order);
 
         return ResponseEntity.ok("order added");

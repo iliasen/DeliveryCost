@@ -12,4 +12,5 @@ import lombok.NoArgsConstructor;
 public class OrderAndCargoRequest {
     private Order order;
     private Cargo cargo;
+    private String comment = null;
 }

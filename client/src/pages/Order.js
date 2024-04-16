@@ -1,22 +1,20 @@
 import React, { useContext, useEffect, useRef, useState } from 'react'
-import { Container, Spinner } from 'react-bootstrap'
+import { Container, Image, Spinner } from 'react-bootstrap'
 import {Context} from "../index";
 import {NavLink} from "react-router-dom";
 import {BASKET_ROUTE} from "../utils/consts";
 import {observer} from "mobx-react-lite";
 
 import ConfirmTel from "../components/modals/ConfirmTel";
-import { addOrder, getAddress } from '../http/orderAPI'
+import { addOrder, getAddress, getDistance } from '../http/orderAPI'
 import OrderCheck from "../components/modals/OrderCheck";
 
 import '../styles/Order.css'
-import axios from 'axios'
-
-
 
 
 const Order = observer( () => {
     const {user} = useContext(Context)
+    const {partners} = useContext(Context)
     const {number} = useContext(Context)
     const [visible, setVisible] = useState(false)
     const [confirmVisible, setConfirmVisible] = useState(false)
@@ -31,57 +29,115 @@ const Order = observer( () => {
     const [value, setValue] = useState(null)
     const [departureSearchResults, setDepartureSearchResults] = useState([]);
     const [deliverySearchResults, setDeliverySearchResults] = useState([]);
-
+    const [isDepartureSearching, setIsDepartureSearching] = useState(false);
+    const [isDeliverySearching, setIsDeliverySearching] = useState(false);
+    const transportTypes = ['CAR', 'TRUCK', 'TRAIN', 'SHIP', 'AIRPLANE'];
+    const [selectedType, setSelectedType] = useState(null);
     const innerFormRef = useRef(null)
 
-
-
+    console.log(selectedType)
 
     useEffect(() => {
+        let isMounted = true;
         let timeoutId;
 
         const handleDepartureSearch = () => {
             if (pointOfDeparture) {
-                getAddress(pointOfDeparture).then((data) => {
-                    const items = data.result ? data.result.items : [];
-                    setDepartureSearchResults(items);
-                });
+                setIsDepartureSearching(true); // Устанавливаем флаг поиска отправления
+
+                clearTimeout(timeoutId); // Отменяем предыдущий запрос, если есть
+
+                timeoutId = setTimeout(() => {
+                    getAddress(pointOfDeparture)
+                      .then((data) => {
+                          if (isMounted) {
+                              const items = data.result ? data.result.items : [];
+                              setDepartureSearchResults(items);
+                          }
+                      })
+                      .finally(() => {
+                          if (isMounted) {
+                              setIsDepartureSearching(false); // Сбрасываем флаг поиска отправления
+                          }
+                      });
+                }, 3000); // Задержка в 3 секунду перед выполнением запроса
             } else {
                 setDepartureSearchResults([]);
             }
         };
 
-        clearTimeout(timeoutId);
-        timeoutId = setTimeout(handleDepartureSearch, 5000);
+        handleDepartureSearch();
 
         return () => {
-            clearTimeout(timeoutId);
+            isMounted = false;
+            clearTimeout(timeoutId); // Очищаем таймер при размонтировании компонента
         };
     }, [pointOfDeparture]);
 
     useEffect(() => {
+        let isMounted = true;
         let timeoutId;
 
         const handleDeliverySearch = () => {
             if (deliveryPoint) {
-                getAddress(deliveryPoint).then((data) => {
-                    const items = data.result ? data.result.items : [];
-                    setDeliverySearchResults(items);
-                });
+                setIsDeliverySearching(true);
+
+                clearTimeout(timeoutId);
+
+                timeoutId = setTimeout(() => {
+                    getAddress(deliveryPoint)
+                      .then((data) => {
+                          if (isMounted) {
+                              const items = data.result ? data.result.items : [];
+                              setDeliverySearchResults(items);
+                          }
+                      })
+                      .finally(() => {
+                          if (isMounted) {
+                              setIsDeliverySearching(false);
+                          }
+                      });
+                }, 3000);
             } else {
                 setDeliverySearchResults([]);
             }
         };
 
-        clearTimeout(timeoutId);
-        timeoutId = setTimeout(handleDeliverySearch, 5000);
+        handleDeliverySearch();
 
         return () => {
-            clearTimeout(timeoutId);
+            isMounted = false;
+            clearTimeout(timeoutId); // Очищаем таймер при размонтировании компонента
         };
     }, [deliveryPoint]);
 
+    console.log(departureSearchResults[0], deliverySearchResults[0])
 
+    useEffect(() => {
+        if (departureSearchResults.length > 0 && deliverySearchResults.length > 0) {
+            const departurePoint = departureSearchResults[0].point;
+            const deliveryPoint = deliverySearchResults[0].point;
+            const points = [
+                {
+                    lat: departurePoint.lat,
+                    lon: departurePoint.lon
+                },
+                {
+                    lat: deliveryPoint.lat,
+                    lon: deliveryPoint.lon
+                }
+            ];
+
+            getDistance(points)
+              .then((distanceData) => {
+                  console.log('Результаты расчета расстояния:', distanceData);
+                  setDistance(distanceData);
+              })
+              .catch((error) => {
+                  console.error('Ошибка:', error);
+              });
+        }
+    }, [departureSearchResults, deliverySearchResults]);
 
     const handleChange = (e) => {
         let input = e.target.value;
@@ -115,8 +171,27 @@ const Order = observer( () => {
         setValue(formatted);
     };
 
+    const getIconForTransportType = (type) => {
+        switch (type) {
+            case 'CAR':
+                return <img width="100" height="100" src="https://img.icons8.com/papercut/120/car.png" alt="car" />
+            case 'TRUCK':
+                return <img width="100" height="100" src="https://img.icons8.com/papercut/120/truck.png" alt="truck" />
+            case 'TRAIN':
+                return <img width="100" height="100" src="https://img.icons8.com/papercut/120/train.png" alt="train" />
+            case 'SHIP':
+                return <img width="100" height="100" src="https://img.icons8.com/color/96/cruise-ship.png"
+                            alt="cruise-ship" />
+            case 'AIRPLANE':
+                return <img width="100" height="100" src="https://img.icons8.com/arcade/128/airplane-front-view.png"
+                            alt="airplane-front-view" />
+            default:
+                return null
+        }
+    }
+
     const handleDepartureResultClick = (result) => {
-        setPointOfDeparture(result.full_name);
+        setPointOfDeparture(result.full_name)
         setDepartureSearchResults([]);
     };
 
@@ -132,78 +207,113 @@ const Order = observer( () => {
 
     const submitOrder = (event) => {
         event.preventDefault();
-        addOrder(user.user, comment).then(()=>setVisible(true))
+        addOrder(partners.selectedPartner.id, pointOfDeparture, deliveryPoint, distance.distance, selectedType, comment, weight).then(()=>setVisible(true))
     }
 
 
     return (
         <Container className='container-shop'>
-            <h2 className='mt-5'>Оформление заказа</h2>
-            <div className='orderContainer'>
-                <form id='OrderForm' onSubmit={submitOrder}>
-                    <div className='d-flex gap-5'>
+            <h2 className="mt-5">Оформление заказа</h2>
+            <div className="orderContainer">
+                <form id="OrderForm" onSubmit={submitOrder}>
+                    <div className="d-flex gap-5">
                         <div>
-                            <div>
-                                Откуда забрать товар
-                                <div className='d-flex align-items-center'>
-                                    <input className='Location' type="text" placeholder='Введите ваш пункт забора'
-                                           required
-                                           value={pointOfDeparture}
-                                           onChange={(e) => setPointOfDeparture(e.target.value)} />
-                                    <input type='reset' className='resetLocationButton' value='x'
-                                           onClick={() => setPointOfDeparture(null)}></input>
+                            <div className='d-flex justify-content-between'>
+                                <div>
+                                    Откуда забрать товар
+                                    <div className="d-flex align-items-center">
+                                        <input className="Location" type="text" placeholder="Введите ваш пункт забора"
+                                               required
+                                               value={pointOfDeparture}
+                                               onChange={(e) => setPointOfDeparture(e.target.value)} />
+                                        <input type="reset" className="resetLocationButton" value="x"
+                                               onClick={() => {
+                                                   setPointOfDeparture(null);
+                                                   setDistance(null);
+                                               }}/>
+                                    </div>
+
+                                    {isDepartureSearching ? (
+                                      <Spinner style={{ margin: '16px 17%', display: 'block' }} />
+                                    ) : (
+                                      <>
+                                          {/* Отображение результатов поиска */}
+                                          {departureSearchResults.length > 0 && (
+                                            <div className="searchResultsContainer">
+                                                <h4>Результаты поиска:</h4>
+                                                {departureSearchResults.map((item) => (
+                                                  <div key={item.id} className="searchResults"
+                                                       onMouseDown={() => handleDepartureResultClick(item)}>
+                                                      <p>Адрес: {item.full_name}</p>
+                                                      <p>Координаты: {item.point.lat}, {item.point.lon}</p>
+                                                      <p>Тип: {item.type}</p>
+                                                      <p>Назначение: {item.purpose_name}</p>
+                                                  </div>
+                                                ))}
+                                            </div>
+                                          )}
+                                      </>
+                                    )}
                                 </div>
 
-                                {pointOfDeparture && departureSearchResults.length === 0 ? (
-                                  <Spinner style={{ margin: "16px 32%", display: "block" }}/>
-                                ) : (
-                                  <>
-                                      {/* Отображение результатов поиска */}
-                                      {departureSearchResults.length > 0 && (
-                                        <div className="searchResultsContainer">
-                                            <h4>Результаты поиска:</h4>
-                                            {departureSearchResults.map((item) => (
-                                              <div key={item.id} className="searchResults" onMouseDown={() => handleDepartureResultClick(item)}>
-                                                  <p>Адрес: {item.full_name}</p>
-                                                  <p>Координаты: {item.point.lat}, {item.point.lon}</p>
-                                                  <p>Тип: {item.type}</p>
-                                                  <p>Назначение: {item.purpose_name}</p>
-                                              </div>
-                                            ))}
+                                {distance &&
+                                  <div className='m-5'>
+                                      <h4>Дистанция</h4>
+                                      {distance.routes.map((route, index) => (
+                                        <div key={index} style={{textAlign: 'center'}}>
+                                            {route.distance} м.
+                                            {/*<p>Duration: {route.duration}</p>*/}
+                                            {/*<p>Source ID: {route.source_id}</p>*/}
+                                            {/*<p>Status: {route.status}</p>*/}
+                                            {/*<p>Target ID: {route.target_id}</p>*/}
                                         </div>
-                                      )}
-                                  </>
-                                )}
+                                      ))}
+                                  </div>
+                                }
                             </div>
 
-                            <div className='deliveryAddress'>
+
+                            <div className="deliveryAddress">
                                 <span style={{
                                     color: '#999',
-                                    fontSize: 13
+                                    fontSize: 13,
                                 }}>Укажите как можно подробнее адрес забора товара</span>
 
-                                <div className='d-flex'>
-                                    <div className='addressInputs'>
+                                <div className="d-flex">
+                                    <div className="addressInputs">
                                         <label>Вес груза(кг.)</label>
-                                        <input className="Flat" name="weidth" type="number" required value={weight} onChange={(e)=> setWeight(e.target.value)}/>
+                                        <input className="weight" name="weidth" type="number" required value={weight}
+                                               onChange={(e) => setWeight(e.target.value)} />
                                     </div>
                                 </div>
                             </div>
-                            <div className='d-flex flex-column mt-4'>
+                            <div className="d-flex flex-column mt-4">
                                 <label>Коментарий к заказу <span
                                   style={{ color: '#999' }}>(необязательно)</span></label>
-                                <textarea className='orderComment' rows='3' placeholder='Укажите дополнительные детали'
-                                          name='orderDetails' value={comment}
+                                <textarea className="orderComment" rows="3" placeholder="Укажите дополнительные детали"
+                                          name="orderDetails" value={comment}
                                           onChange={(e) => setComment(e.target.value)} />
-                                <span className='mt-2' style={{ maxWidth: 480, fontSize: 14, color: '#999' }}>Расскажите информацию о заказе, подъезд, укажите код домофона или другую информацию, которая может пригодиться курьеру.</span>
+                                <span className="mt-2" style={{ maxWidth: 480, fontSize: 14, color: '#999' }}>Расскажите информацию о заказе, подъезд, укажите код домофона или другую информацию, которая может пригодиться курьеру.</span>
                             </div>
 
-                            {number.number === '' && <div className='telNumber'>
+
+                            <label className="mt-4 f">Тип доставки</label>
+                            <div className="d-flex gap-5">
+                                {transportTypes.map((type) => (
+                                  <div key={type} className={`deliveryType ${selectedType === type && 'selected'}`}
+                                       onClick={() => setSelectedType(type)}>
+                                      {getIconForTransportType(type)}
+                                      {type}
+                                  </div>
+                                ))}
+                            </div>
+
+                            {number.number === '' && <div className="telNumber">
                                 <strong>Телефон</strong>
                                 <div style={{ fontSize: 14 }}>Подтвердите ваш номер телефона, на него будет отправлено
                                     SMS с кодом !
                                 </div>
-                                <div className='d-flex mt-2'>
+                                <div className="d-flex mt-2">
                                     <form ref={innerFormRef}>
                                         <input
                                           type="tel"
@@ -215,8 +325,8 @@ const Order = observer( () => {
                                           required
                                         />
                                         <button
-                                          type='button'
-                                          className='confirmTel'
+                                          type="button"
+                                          className="confirmTel"
                                           disabled={!value}
                                           onClick={submitInnerForm}
                                         >
@@ -224,25 +334,28 @@ const Order = observer( () => {
                                         </button>
                                     </form>
                                 </div>
-                                <div style={{ color: '#999', fontSize: 14 }} className='mt-1'>Например +375 (29)
+                                <div style={{ color: '#999', fontSize: 14 }} className="mt-1">Например +375 (29)
                                     842-05-07
                                 </div>
                             </div>}
 
-                            <button className='orderSentButton' type='submit'>Заказать</button>
+                            <button className="orderSentButton" type="submit">Заказать</button>
                         </div>
 
                         <div>
                             <div>
                                 Куда доставить товар
-                                <div className='d-flex align-items-center'>
-                                    <input className='Location' type="text" placeholder='Введите пункт доставки'
+                                <div className="d-flex align-items-center">
+                                <input className='Location' type="text" placeholder='Введите пункт доставки'
                                            defaultValue={deliveryPoint} required
                                            onChange={(e) => setDeliveryPoint(e.target.value)} />
                                     <input type='reset' className='resetLocationButton' value='x'
-                                           onClick={() => setDeliveryPoint(null)}></input>
+                                           onClick={() => {
+                                               setDeliveryPoint(null);
+                                               setDistance(null);
+                                           }}/>
                                 </div>
-                                {deliveryPoint && deliverySearchResults.length === 0 ? (
+                                {isDeliverySearching ? (
                                   <Spinner style={{ margin: "16px auto", display: "block" }} />
                                 ) : (
                                   <>
@@ -268,82 +381,12 @@ const Order = observer( () => {
                                     color: '#999',
                                     fontSize: 13
                                 }}>Укажите как можно подробнее адрес доставки</span>
-                                {/*<div className='d-flex'>*/}
-                                {/*    <div className='addressInputs'>*/}
-                                {/*        <label>Улица</label>*/}
-                                {/*        <input className='Address' name='street' type='text' placeholder='Введите улицу'*/}
-                                {/*               value={street} onChange={(e) => setStreet(e.target.value)} required />*/}
-                                {/*    </div>*/}
-                                {/*    <div className='addressInputs'>*/}
-                                {/*        <label>Дом</label>*/}
-                                {/*        <input className='House' name='house' value={house}*/}
-                                {/*               onChange={(e) => setHouse(e.target.value)} required />*/}
-                                {/*    </div>*/}
-                                {/*    <div className='addressInputs'>*/}
-                                {/*        <div className='d-flex'><label>Корп.</label> <span*/}
-                                {/*          style={{ color: '#999', fontSize: 12 }}>(необязательно)</span></div>*/}
-                                {/*        <input className='House' name='Corpus' value={corpus}*/}
-                                {/*               onChange={(e) => setCorpus(e.target.value)} />*/}
-                                {/*    </div>*/}
-                                {/*</div>*/}
-
-                                {/*<div className='d-flex'>*/}
-                                {/*    <div className='addressInputs'>*/}
-                                {/*        <label>Под.</label>*/}
-                                {/*        <input className='House' name='entrance' value={entrance}*/}
-                                {/*               onChange={(e) => setEntrance(e.target.value)} required />*/}
-                                {/*    </div>*/}
-                                {/*    <div className='addressInputs'>*/}
-                                {/*        <label>Этаж</label>*/}
-                                {/*        <input className='House' name='floor' value={floor}*/}
-                                {/*               onChange={(e) => setFloor(e.target.value)} required />*/}
-                                {/*    </div>*/}
-                                {/*    <div className='addressInputs'>*/}
-                                {/*        <label>Квартира</label>*/}
-                                {/*        <input className='Flat' name='flat' value={flat}*/}
-                                {/*               onChange={(e) => setFlat(e.target.value)} required />*/}
-                                {/*    </div>*/}
-                                {/*    <div className='addressInputs'>*/}
-                                {/*        <label>Вес груза(кг.)</label>*/}
-                                {/*        <input className="Flat" name="weidth" type="number" required />*/}
-                                {/*    </div>*/}
-                                {/*</div>*/}
                             </div>
 
                         </div>
                     </div>
 
                 </form>
-
-
-                {/*<div className='order'>*/}
-                {/*    <div className='d-flex justify-content-between'>*/}
-                {/*        <h5>Заказ</h5>*/}
-                {/*        <NavLink className='changeOrder' to={BASKET_ROUTE}>Изменить</NavLink>*/}
-                {/*    </div>*/}
-                {/*    <div>*/}
-                {/*        {basket.basket_items.map((item) => (*/}
-                {/*            <div className='itemsContainer'>*/}
-                {/*                <div key={item.id} className='itemsFromBasket'>*/}
-                {/*                    <div className='item-in-order'>*/}
-                {/*                        {item.name}{item.quantity !==1 ? ' ('+item.quantity+' шт.)': null}*/}
-                {/*                    </div>*/}
-
-                {/*                    <div style={{fontSize: 16, lineHeight: 1.4}}>{item.price * item.quantity},00 р.</div>*/}
-
-                {/*                </div>*/}
-                {/*                <div  style={{color: '#999', textAlign: "end", fontSize: 14}}>*/}
-                {/*                    {item.quantity !==1 ? item.price + ' р./шт.': null}*/}
-                {/*                </div>*/}
-                {/*            </div>*/}
-                {/*        ))}*/}
-                {/*    </div>*/}
-
-                {/*    <div className='finalPrice'>*/}
-                {/*        <div className='d-flex justify-content-between mb-2' style={{color: '#999'}}>Доставка <div style={{fontSize: 16, lineHeight: 1.4, color: '#000'}}>{delivery === 0 ? 'бесплатно' : delivery +',00 р.'}</div></div>*/}
-                {/*        <div className='d-flex justify-content-between'><span style={{fontWeight: 500}}>Итого</span><strong>{finalPrice},00 р.</strong></div>*/}
-                {/*    </div>*/}
-                {/*</div>*/}
             </div>
 
             <ConfirmTel show={confirmVisible} onHide={() => setConfirmVisible(false)} />
