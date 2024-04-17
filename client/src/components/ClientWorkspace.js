@@ -18,7 +18,6 @@ const ClientWorkspace = observer(() => {
     if(user.Auth){
       getPartners().then((partnersData) => {
         partners.setPartners(partnersData);
-        console.log(partnersData)
       });
     }
   }, []);

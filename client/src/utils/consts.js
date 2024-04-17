@@ -15,4 +15,6 @@ export const GUARANTEES_ROUTE = '/guarantees'
 
 export const ACCOUNT_ROUTE = '/account'
 
-export const ORDER_ROUTE = '/order'
+export const ORDER_ROUTE = '/do_order'
+
+export const MY_ORDERS_ROUTE = "/orders"

@@ -1,19 +1,16 @@
 import React, { useContext, useEffect, useRef, useState } from 'react'
-import { Container, Image, Spinner } from 'react-bootstrap'
+import { Container, Spinner } from 'react-bootstrap'
 import {Context} from "../index";
-import {NavLink} from "react-router-dom";
-import {BASKET_ROUTE} from "../utils/consts";
 import {observer} from "mobx-react-lite";
 
 import ConfirmTel from "../components/modals/ConfirmTel";
 import { addOrder, getAddress, getDistance } from '../http/orderAPI'
 import OrderCheck from "../components/modals/OrderCheck";
 
-import '../styles/Order.css'
+import '../styles/DoOrder.css'
 
 
-const Order = observer( () => {
-    const {user} = useContext(Context)
+const DoOrder = observer( () => {
     const {partners} = useContext(Context)
     const {number} = useContext(Context)
     const [visible, setVisible] = useState(false)
@@ -23,7 +20,6 @@ const Order = observer( () => {
     const [deliveryPoint, setDeliveryPoint] = useState(null)
     const [distance, setDistance] = useState(null)
     const [deliveryTime,setDeliveryTime] = useState(null)
-    const [transportType, setTransportType] = useState(null)
     const [comment, setComment] = useState(null)
     const [weight, setWeight] = useState(null)
     const [value, setValue] = useState(null)
@@ -262,10 +258,6 @@ const Order = observer( () => {
                                       {distance.routes.map((route, index) => (
                                         <div key={index} style={{textAlign: 'center'}}>
                                             {route.distance} м.
-                                            {/*<p>Duration: {route.duration}</p>*/}
-                                            {/*<p>Source ID: {route.source_id}</p>*/}
-                                            {/*<p>Status: {route.status}</p>*/}
-                                            {/*<p>Target ID: {route.target_id}</p>*/}
                                         </div>
                                       ))}
                                   </div>
@@ -395,5 +387,5 @@ const Order = observer( () => {
     );
 });
 
-export default Order;
+export default DoOrder;
 

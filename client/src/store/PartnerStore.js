@@ -7,8 +7,6 @@ export default class PartnerStore {
         makeAutoObservable(this);
     }
 
-
-
     setPartners(partners){
         this._partners=partners;
     }

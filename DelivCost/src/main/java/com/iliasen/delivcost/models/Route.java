@@ -14,7 +14,7 @@ import java.time.LocalDateTime;
 public class Route {
     private String pointOfDeparture;
     private String  deliveryPoint;
-    private float distance;
+    private int distance;
     private LocalDateTime deliveryTime;
     private TransportType transportType;
 }

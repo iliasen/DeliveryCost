@@ -74,9 +74,9 @@ public class OrderService {
         ));
         if (!orders.isEmpty()) {
             return ResponseEntity.ok(orders);
+        }else {
+            return ResponseEntity.ok(Collections.emptyList());
         }
-
-        return ResponseEntity.notFound().build();
     }
 
     public ResponseEntity<?> getNewOrders(UserDetails userDetails) {

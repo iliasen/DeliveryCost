@@ -1,4 +1,4 @@
-import { makeAutoObservable } from "mobx";
+import { makeAutoObservable, toJS } from 'mobx'
 
 export default class OrderStore {
     constructor() {
@@ -6,8 +6,9 @@ export default class OrderStore {
         makeAutoObservable(this);
     }
 
-    setOrder(order){
-        this._orders=order;
+    setOrder(order) {
+        this._orders = order.map(item => toJS(item));
+        console.log(this._orders)
     }
     get order(){
         return this._orders

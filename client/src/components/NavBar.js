@@ -7,9 +7,8 @@ import { NavLink } from 'react-router-dom'
 import {
   ABOUT_ROUTE,
   ACCOUNT_ROUTE,
-  ORDER_ROUTE,
   LOGIN_ROUTE,
-  MAIN_ROUTE,
+  MAIN_ROUTE, MY_ORDERS_ROUTE,
 } from '../utils/consts'
 
 import '../styles/NavBar.css'
@@ -21,7 +20,6 @@ import SearchForm from "./SearchForm";
 
 const NavBar = observer(() => {
   const { user } = useContext(Context)
-  console.log(user)
   // useEffect(() => {
   //   getItems(user.user.id).then((items) => {
   //     const adaptedItems = items.map((item) => ({
@@ -59,7 +57,7 @@ const NavBar = observer(() => {
         <Navbar.Collapse id="responsive-navbar-nav">
           {user.Auth ? (
             <Nav className="href-container">
-              <NavLink className="href" to={ORDER_ROUTE}>
+              <NavLink className="href" to={MY_ORDERS_ROUTE}>
                 Заказы
               </NavLink>
               <NavLink className="href d-flex" to={ACCOUNT_ROUTE}>

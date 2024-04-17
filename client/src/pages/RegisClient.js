@@ -44,6 +44,7 @@ const RegisClient = () => {
     }
 
     setPhone(formatted);
+    console.log(formatted)
   };
 
   const click = async (event) => {   event.preventDefault()

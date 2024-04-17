@@ -8,6 +8,16 @@
     margin-bottom: 0
 }
 
+.changeOrderStatus{
+    color: #0066aa;
+    cursor: pointer;
+}
+
+.changeOrderStatus:hover{
+    color: #f66d52;
+    text-decoration: underline;
+}
+
 .completeOrder{
     padding: 4px 16px;
     border-radius: 5px;

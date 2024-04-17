@@ -7,7 +7,7 @@ import {
   GUARANTEES_ROUTE,
   MAIN_ROUTE,
   ACCOUNT_ROUTE,
-  ORDER_ROUTE, REGISTRATION_CLIENT_ROUTE, REGISTRATION_PARTNER_ROUTE,
+  ORDER_ROUTE, REGISTRATION_CLIENT_ROUTE, REGISTRATION_PARTNER_ROUTE, MY_ORDERS_ROUTE
 } from './utils/consts'
 
 import Basket from './pages/Basket'
@@ -17,10 +17,11 @@ import AboutUs from './pages/AboutUs'
 import Payment from './pages/Payment'
 import Guarantees from './pages/Guarantees'
 import Account from './pages/AccountPage'
-import Order from "./pages/Order";
+import DoOrder from "./pages/DoOrder";
 import RegisClient from './pages/RegisClient'
 import RegisPartner from './pages/RegisPartner'
 import Regis from './pages/Regis'
+import MyOrders from './pages/MyOrders'
 
 export const authRoutes = [
   {
@@ -33,8 +34,12 @@ export const authRoutes = [
   },
   {
     path: ORDER_ROUTE,
-    Component: Order,
+    Component: DoOrder,
   },
+  {
+    path: MY_ORDERS_ROUTE,
+    Component: MyOrders
+  }
 ]
 
 export const publicRoutes = [

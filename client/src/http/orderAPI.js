@@ -5,23 +5,8 @@ const key = '061ff499-0e05-4984-b5b5-068b1fe35299'
 
 export const getOrder = async () => {
     const { data } = await $authHost.get('api/order');
-
-    const adaptedOrders = data.map((order) => ({
-        id: order.id,
-        username: order.username,
-        address: order.address,
-        comment: order.comment,
-        createdAt: order.createdAt,
-        updatedAt: order.updatedAt,
-        items: order.orderItems.map((orderItem) => ({
-            id: orderItem.item.id,
-            name: orderItem.item.name,
-            price: orderItem.item.price,
-            quantity: orderItem.quantity,
-        })),
-    }));
-
-    return adaptedOrders;
+    console.log(data)
+    return data;
 };
 
 export const completeOrder = async (id)=> {
@@ -93,3 +78,10 @@ export const addOrder= async (id, pointOfDeparture, deliveryPoint, distance, tra
     const {data} = await $authHost.post('/api/order/'+id, order)
     return data
 }
+
+export const changeStatus = async (id, status) => {
+    const { data } = await $authHost.put(`/api/order/status/${id}`, null, {
+        params: { status }
+    });
+    return data;
+};
