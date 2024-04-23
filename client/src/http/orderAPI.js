@@ -1,7 +1,7 @@
 import {$authHost} from './index'
 import axios from 'axios'
 
-const key = '061ff499-0e05-4984-b5b5-068b1fe35299'
+const key = process.env.KEY
 
 export const getOrder = async () => {
     const { data } = await $authHost.get('api/order');
@@ -80,6 +80,7 @@ export const addOrder= async (id, pointOfDeparture, deliveryPoint, distance, tra
 }
 
 export const changeStatus = async (id, status) => {
+    // const { data } = await $authHost.put(`/api/order/status/${id}`, {status:status});
     const { data } = await $authHost.put(`/api/order/status/${id}`, null, {
         params: { status }
     });

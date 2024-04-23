@@ -1,7 +1,7 @@
 import React, { useContext, useEffect } from 'react'
 import { getOrder } from '../http/orderAPI'
 import { Context } from '../index'
-import OrderItem from '../components/modals/OrderItem'
+import OrderItem from '../components/OrderItem'
 import { Container } from 'react-bootstrap'
 import { observer } from 'mobx-react-lite'
 import {Image} from "react-bootstrap";

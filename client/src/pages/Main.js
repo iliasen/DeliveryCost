@@ -7,7 +7,7 @@ import '../styles/MainWithoutAuth.css'
 import '../styles/ClientWorkspace.css'
 import WithoutAuth from '../components/WithoutAuth'
 import ClientWorkspace from '../components/ClientWorkspace'
-import PartnerWorkspace from '../components/modals/PartnerWorkspace'
+import PartnerWorkspace from '../components/PartnerWorkspace'
 
 
 const Main = observer(() => {

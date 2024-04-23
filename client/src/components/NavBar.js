@@ -16,25 +16,11 @@ import '../styles/NavBar.css'
 import { observer } from 'mobx-react-lite'
 import { Image } from 'react-bootstrap'
 import logo from '../res/лого_тем.png'
-import SearchForm from "./SearchForm";
+import Notify from "./Notifications";
 
 const NavBar = observer(() => {
   const { user } = useContext(Context)
-  // useEffect(() => {
-  //   getItems(user.user.id).then((items) => {
-  //     const adaptedItems = items.map((item) => ({
-  //       id: item.id,
-  //       name: item.name,
-  //       price: item.price,
-  //       quantity: item.quantity,
-  //       img: item.img,
-  //       about: item.about,
-  //       typeId: item.type.id,
-  //       brandId: item.brand.id,
-  //     }));
-  //     basket.setBasket_items(adaptedItems);
-  //   });
-  // }, []);
+
 
 
   return (
@@ -48,7 +34,6 @@ const NavBar = observer(() => {
         <NavLink className="href" to={ABOUT_ROUTE}>
           О нас
         </NavLink>
-        <SearchForm/>
 
         {user.Auth && (
             <Navbar.Toggle aria-controls="responsive-navbar-nav" />
@@ -60,6 +45,9 @@ const NavBar = observer(() => {
               <NavLink className="href" to={MY_ORDERS_ROUTE}>
                 Заказы
               </NavLink>
+
+              <Notify/>
+
               <NavLink className="href d-flex" to={ACCOUNT_ROUTE}>
                   <div className='profile_image' />
                   {user.user.sub}

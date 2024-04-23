@@ -11,4 +11,8 @@ public interface NotificationRepository extends CrudRepository<Notification, Int
     List<Notification> findByPartnerId(Integer id);
 
     List<Notification> findByOrderId(Integer orderId);
+
+    void deleteByPartnerId(Integer id);
+
+    void deleteByClientId(Integer id);
 }

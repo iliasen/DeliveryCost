@@ -38,7 +38,7 @@ public class Order {
     private Cargo cargo;
 
     @JsonIgnore
-    @OneToMany(mappedBy = "order", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "order")
     private List<Notification> notification;
 
     @ManyToOne

@@ -18,13 +18,18 @@ public class NotificationController {
         return notificationService.getAllNotifications(userDetails);
     }
 
-    @PutMapping(value = "/{id}")
-    public ResponseEntity<?> setSubscribe(@PathVariable Integer id,@RequestParam boolean status, @AuthenticationPrincipal UserDetails userDetails){
-        return notificationService.changeSubscribe(id, status, userDetails);
+    @PutMapping(value = "/subscribe/{id}")
+    public ResponseEntity<?> setSubscribe(@PathVariable Integer id,@RequestParam boolean subscribe, @AuthenticationPrincipal UserDetails userDetails){
+        return notificationService.changeSubscribe(id, subscribe, userDetails);
     }
 
     @PutMapping(value = "/view/{id}")
     public ResponseEntity<?> viewingTheNotify(@PathVariable Integer id, @AuthenticationPrincipal UserDetails userDetails){
         return notificationService.viewNotify(id, userDetails);
+    }
+
+    @DeleteMapping
+    public ResponseEntity<?> delNotifications(@AuthenticationPrincipal UserDetails userDetails){
+        return notificationService.deleteAllNotifications(userDetails);
     }
 }

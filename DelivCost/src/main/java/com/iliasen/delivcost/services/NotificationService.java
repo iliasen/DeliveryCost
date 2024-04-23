@@ -5,6 +5,7 @@ import com.iliasen.delivcost.repositories.ClientRepository;
 import com.iliasen.delivcost.repositories.NotificationRepository;
 import com.iliasen.delivcost.repositories.OrderRepository;
 import com.iliasen.delivcost.repositories.PartnerRepository;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -29,11 +30,11 @@ public class NotificationService {
         List<Notification> notifications = new ArrayList<>();
 
         List<Notification> existingNotification = notificationRepository.findByOrderId(order.getId());
-
+        System.out.println(existingNotification);
         if (!existingNotification.isEmpty()) {
-            if (order.isClientSubscribe()) {
-
-                System.out.println(order.getOrderStatus());
+            System.out.println(order.isClientSubscribe());
+           if (order.isClientSubscribe()) {
+               
                 // Если подписка клиента активна, создаем новое уведомление
                 Notification newNotification = Notification.builder()
                         .newStatus(order.getOrderStatus())
@@ -112,5 +113,20 @@ public class NotificationService {
         return ResponseEntity.notFound().build();
     }
 
+    @Transactional
+    public ResponseEntity<?> deleteAllNotifications(UserDetails userDetails) {
+        if (userDetails.getAuthorities().contains(new SimpleGrantedAuthority("PARTNER"))) {
+            Partner partner = partnerRepository.findByEmail(userDetails.getUsername())
+                    .orElseThrow(() -> new NoSuchElementException("Partner not found"));
 
+            notificationRepository.deleteByPartnerId(partner.getId());
+        } else if (userDetails.getAuthorities().contains(new SimpleGrantedAuthority("CLIENT"))) {
+            Client client = clientRepository.findByEmail(userDetails.getUsername())
+                    .orElseThrow(() -> new NoSuchElementException("Client not found"));
+
+            notificationRepository.deleteByClientId(client.getId());
+        }
+
+        return ResponseEntity.ok("All notifications have been deleted.");
+    }
 }

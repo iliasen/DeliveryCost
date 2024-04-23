@@ -15,15 +15,13 @@ const ChangeOrderStatus = observer(({ show, onHide, orderId}) => {
     { value: 'COMPLETE', label: 'Завершен' }
   ];
 
-  console.log(orderId)
-
   const handleStatusChange = (status) => {
     setSelectedStatus(status);
   };
 
   const handleSaveStatus = () => {
-    changeStatus(orderId, selectedStatus).then(r => onHide())
-    window.location.reload()
+    changeStatus(orderId, selectedStatus).then((r) => onHide())
+    // window.location.reload()
   };
 
   return (
