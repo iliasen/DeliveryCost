@@ -4,7 +4,9 @@ import { load } from '@2gis/mapgl'
 
 // const key = 'bce1dd40-8c89-4c5d-beea-fce9c1e8071f'
 
-const key = '061ff499-0e05-4984-b5b5-068b1fe35299' //основной
+// const key = '061ff499-0e05-4984-b5b5-068b1fe35299' //основной
+
+const key = 'c104c8d1-9496-401d-9dd8-be12960697e5'
 
 // const key = '1cd344fc-02f9-49ec-8007-56f415a6f886'
 

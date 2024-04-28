@@ -1,0 +1,29 @@
+.warehouse-container {
+    background-color: #f2f2f2;
+    padding: 20px;
+    border-radius: 5px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    width: 100%;
+    height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+}
+
+.warehouse-title {
+    font-size: 36px;
+    margin-bottom: 10px;
+}
+
+.warehouse-info {
+    margin-bottom: 20px;
+}
+
+.progress-bar-container {
+    width: 100%;
+}
+
+.custom-progress-bar {
+    height: 25px;
+}

@@ -1,7 +1,7 @@
 import React, { useContext, useState } from 'react'
 import {observer} from "mobx-react-lite";
 import '../styles/OrderItem.css';
-import {completeOrder} from "../http/orderAPI";
+import { changeStatus, completeOrder } from '../http/orderAPI'
 import { Context } from '../index'
 import ChangeOrderStatus from './modals/ChangeOrderStatus'
 import { changeSubscribe } from '../http/notificationAPI'
@@ -26,8 +26,7 @@ const OrderItem =observer(  ({ order }) => {
       return foundStatus ? foundStatus.label : '';
     };
     const completed = ()=>{
-        completeOrder(order.id).then()
-        window.location.reload()
+      changeStatus(order.id, 'COMPLETE').then()
     }
 
     const handleToggle = () => {

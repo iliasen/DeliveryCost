@@ -8,7 +8,7 @@ import {
   ABOUT_ROUTE,
   ACCOUNT_ROUTE,
   LOGIN_ROUTE,
-  MAIN_ROUTE, MY_ORDERS_ROUTE, RESOLVE_PROBLEM,
+  MAIN_ROUTE, MY_ORDERS_ROUTE, RESOLVE_PROBLEM, WAREHOUSE_ROUTE,
 } from '../utils/consts'
 
 import '../styles/NavBar.css'
@@ -46,6 +46,11 @@ const NavBar = observer(() => {
               <NavLink className="href" to={RESOLVE_PROBLEM}>
                 Оптимизация
               </NavLink>}
+
+              {user.user.role === "CLIENT" &&
+                <NavLink className="href" to={WAREHOUSE_ROUTE}>
+                  Склад
+                </NavLink>}
 
               <NavLink className="href" to={MY_ORDERS_ROUTE}>
                 Заказы

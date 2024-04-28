@@ -98,7 +98,7 @@ public class OrderService {
         Order order = orderRepository.findById(id)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Order not found"));
 
-        if (newStatus == OrderStatus.DELIVERED) {
+        if (newStatus == OrderStatus.DELIVERED || newStatus == OrderStatus.COMPLETE) {
             cargoService.transferCargoToWarehouse(order);
         }
 

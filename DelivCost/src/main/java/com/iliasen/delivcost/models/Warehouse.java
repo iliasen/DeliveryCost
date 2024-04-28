@@ -18,7 +18,7 @@ public class Warehouse {
     private Integer id;
 
     @Column
-    private float volume;
+    private int volume = 50000;
 
     @OneToMany(mappedBy = "warehouse",cascade = CascadeType.ALL)
     private List<Cargo> cargos;

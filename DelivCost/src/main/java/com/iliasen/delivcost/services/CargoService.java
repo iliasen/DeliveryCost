@@ -39,11 +39,21 @@ public class CargoService {
         Cargo cargo = cargoRepository.findByOrderId(order.getId())
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Order not found"));
         Warehouse warehouse = warehouseRepository.findByClientId(order.getClient().getId())
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Order not found"));;
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Warehouse not found"));;
+
         List<Cargo> cargos = warehouse.getCargos();
-        cargos.add(cargo);
-        warehouse.setCargos(cargos);
-        //добавить расчет влизает ли заказ
-        warehouseRepository.save(warehouse);
+
+        // Вычисление суммарного веса грузов на складе
+        int totalWeight = cargos.stream()
+                .mapToInt(Cargo::getWeight)
+                .sum();
+
+        if (totalWeight + cargo.getWeight() > warehouse.getVolume()) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Warehouse weight capacity exceeded");
+        }
+
+        cargo.setWarehouse(warehouse);
+
+        cargoRepository.save(cargo);
     }
 }

@@ -7,4 +7,6 @@ import java.util.Optional;
 
 public interface WarehouseRepository extends CrudRepository<Warehouse, Integer> {
     Optional<Warehouse> findByClientId(Integer id);
+
+    Optional<Warehouse> findByClientEmail(String username);
 }
