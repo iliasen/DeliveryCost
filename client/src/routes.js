@@ -7,7 +7,7 @@ import {
   GUARANTEES_ROUTE,
   MAIN_ROUTE,
   ACCOUNT_ROUTE,
-  ORDER_ROUTE, REGISTRATION_CLIENT_ROUTE, REGISTRATION_PARTNER_ROUTE, MY_ORDERS_ROUTE
+  ORDER_ROUTE, REGISTRATION_CLIENT_ROUTE, REGISTRATION_PARTNER_ROUTE, MY_ORDERS_ROUTE, RESOLVE_PROBLEM,
 } from './utils/consts'
 
 import Basket from './pages/Basket'
@@ -22,6 +22,7 @@ import RegisClient from './pages/RegisClient'
 import RegisPartner from './pages/RegisPartner'
 import Regis from './pages/Regis'
 import MyOrders from './pages/MyOrders'
+import BackProblem from './pages/BackProblem'
 
 export const authRoutes = [
   {
@@ -39,6 +40,10 @@ export const authRoutes = [
   {
     path: MY_ORDERS_ROUTE,
     Component: MyOrders
+  },
+  {
+    path: RESOLVE_PROBLEM,
+    Component: BackProblem
   }
 ]
 

@@ -1,6 +1,8 @@
 .container-shop {
-    height: 100vh;
-    margin-bottom: 72px;
+    min-height: 100vh;
+    max-height: 100%;
+    margin-bottom: 100px;
+
 }
 
 .orderContainer{
@@ -202,6 +204,12 @@
     border-top: 1px solid #e2e2e2;
 }
 
+.overloadMessage{
+    margin: 7px 0;
+    text-align: center;
+    font-size: 25px;
+}
+
 .orderSentButton{
     margin-top: 32px;
     padding: 4px 45px;
@@ -213,4 +221,8 @@
 }
 .orderSentButton:hover{
     background-color: #f66d52;
+}
+
+.orderSentButton.disabled{
+    background-color: darkgray;
 }

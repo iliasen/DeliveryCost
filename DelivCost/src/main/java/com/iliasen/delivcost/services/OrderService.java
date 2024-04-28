@@ -4,6 +4,7 @@ import com.iliasen.delivcost.models.*;
 import com.iliasen.delivcost.repositories.ClientRepository;
 import com.iliasen.delivcost.repositories.OrderRepository;
 import com.iliasen.delivcost.repositories.PartnerRepository;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -27,23 +28,24 @@ public class OrderService {
     private final ClientRepository clientRepository;
 
 
-    public ResponseEntity<?> addOrder(Order order,Cargo cargo,String comment, Integer partnerId, UserDetails userDetails) {
+    public ResponseEntity<?> addOrder(Order order, Cargo cargo, Integer partnerId, UserDetails userDetails) {
+        try {
+            Client client = clientRepository.findByEmail(userDetails.getUsername())
+                    .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Client not found"));
+            Partner partner = partnerRepository.findById(partnerId)
+                    .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Partner not found"));
 
-        Client client = clientRepository.findByEmail(userDetails.getUsername())
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Client not found"));
-        Partner partner = partnerRepository.findById(partnerId)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Partner not found"));
+            order.setClient(client);
+            order.setPartner(partner);
+            order.setCargo(cargo);
+            orderRepository.save(order);
 
-        order.setClient(client);
-        order.setPartner(partner);
-        order.setCargo(cargo);
-        order.setComment(comment);
-        orderRepository.save(order);
-        System.out.println(cargo);
-        System.out.println(order);
-        cargoService.addCargo(cargo, order);
+            cargoService.addCargo(cargo, order);
 
-        return ResponseEntity.ok("order added");
+            return ResponseEntity.ok("Order added");
+        } catch (Exception e) {
+            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Error adding order", e);
+        }
     }
 
     public  ResponseEntity<?> getOrders(String status, UserDetails userDetails) {
@@ -114,5 +116,41 @@ public class OrderService {
         order.setPartnerChecked(true);
         orderRepository.save(order);
         return ResponseEntity.ok("Partner checked order");
+    }
+
+    public ResponseEntity<?> backpackProblemSolver(int maxWeight, UserDetails userDetails) {
+        Partner partner = partnerRepository.findByEmail(userDetails.getUsername())
+                .orElseThrow(() -> new NoSuchElementException("Partner not found"));
+
+        List<Order> orders = orderRepository.findByPartnerId(partner.getId());
+
+        List<Order> selectedOrders = new ArrayList<>();
+
+        int[][] dp = new int[orders.size() + 1][maxWeight + 1];
+
+        for (int i = 1; i <= orders.size(); i++) {
+            Order order = orders.get(i - 1);
+            int weight = order.getCargo().getWeight();
+            int price = order.getPrice();
+
+            for (int j = 1; j <= maxWeight; j++) {
+                if (weight <= j) {
+                    dp[i][j] = Math.max(dp[i - 1][j], dp[i - 1][j - weight] + price);
+                } else {
+                    dp[i][j] = dp[i - 1][j];
+                }
+            }
+        }
+
+        int remainingWeight = maxWeight;
+        for (int i = orders.size(); i > 0; i--) {
+            if (dp[i][remainingWeight] != dp[i - 1][remainingWeight]) {
+                Order selectedOrder = orders.get(i - 1);
+                selectedOrders.add(selectedOrder);
+                remainingWeight -= selectedOrder.getCargo().getWeight();
+            }
+        }
+
+        return new ResponseEntity<>(selectedOrders, HttpStatus.OK);
     }
 }

@@ -28,10 +28,42 @@ const DoOrder = observer( () => {
     const [isDepartureSearching, setIsDepartureSearching] = useState(false);
     const [isDeliverySearching, setIsDeliverySearching] = useState(false);
     const transportTypes = ['CAR', 'TRUCK', 'TRAIN', 'SHIP', 'AIRPLANE'];
+    const transportPrices = {
+        'CAR': 0.5,
+        'TRUCK': 0.8,
+        'TRAIN': 0.3,
+        'SHIP': 1.2,
+        'AIRPLANE': 2.0
+    };
+    const weightLimit = {
+        'CAR': 1000,
+        'TRUCK': 5000,
+        'TRAIN': 100000,
+        'SHIP': 1000000,
+        'AIRPLANE': 1500
+    }
     const [selectedType, setSelectedType] = useState(null);
     const innerFormRef = useRef(null)
 
-    console.log(selectedType)
+    const transportWeight = weightLimit[selectedType];
+
+     const calculateShippingCost = ()=> {
+        if (distance === null || selectedType === null) {
+            return null; // Возвращаем null, если значения distance или selectedType не определены
+        }
+
+        if (!transportPrices.hasOwnProperty(selectedType)) {
+            throw new Error("Invalid transport type");
+        }
+
+        const transportPrice = transportPrices[selectedType];
+        const baseCost = distance.routes[0].distance * transportPrice;
+        const supplierCost = baseCost * (1 + partners.selectedPartner.margin/100);
+
+        return Math.round(supplierCost);
+    }
+
+    console.log(calculateShippingCost())
 
     useEffect(() => {
         let isMounted = true;
@@ -203,9 +235,8 @@ const DoOrder = observer( () => {
 
     const submitOrder = (event) => {
         event.preventDefault();
-        addOrder(partners.selectedPartner.id, pointOfDeparture, deliveryPoint, distance.distance, selectedType, comment, weight).then(()=>setVisible(true))
+        addOrder(partners.selectedPartner.id, pointOfDeparture, deliveryPoint, distance.routes[0].distance, selectedType, comment, weight, calculateShippingCost()).then(()=>setVisible(true))
     }
-
 
     return (
         <Container className='container-shop'>
@@ -290,6 +321,7 @@ const DoOrder = observer( () => {
 
 
                             <label className="mt-4 f">Тип доставки</label>
+                            {weight > transportWeight && <div className="overloadMessage"><strong>Перегруз!</strong></div>}
                             <div className="d-flex gap-5">
                                 {transportTypes.map((type) => (
                                   <div key={type} className={`deliveryType ${selectedType === type && 'selected'}`}
@@ -330,8 +362,13 @@ const DoOrder = observer( () => {
                                     842-05-07
                                 </div>
                             </div>}
-
-                            <button className="orderSentButton" type="submit">Заказать</button>
+                            {calculateShippingCost() && <div className='mt-3'>
+                                <strong>Итого: </strong>{calculateShippingCost()} р.
+                            </div>}
+                            <button className={`orderSentButton ${weight > transportWeight && 'disabled'}`}
+                                    type="submit" disabled={weight > transportWeight}>
+                                Заказать
+                            </button>
                         </div>
 
                         <div>

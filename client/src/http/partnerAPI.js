@@ -36,3 +36,13 @@ export const deleteRating = async(partnerId)=>{
     const {data} = await $authHost.delete('api/rating/' + partnerId)
     return data
 }
+
+export const checkFiends = async ()=>{
+    const {data} = await $authHost.get('api/partner/fields_check');
+    return data
+}
+
+export const updateFields = async(fields)=>{
+    const {data} = await $authHost.put('api/partner/update_fields', fields)
+    return data
+}

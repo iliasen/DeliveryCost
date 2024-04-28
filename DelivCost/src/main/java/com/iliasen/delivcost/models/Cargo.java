@@ -31,4 +31,6 @@ public class Cargo {
     @JoinColumn(name = "warehouse_id")
     private Warehouse warehouse;
 
+
+
 }

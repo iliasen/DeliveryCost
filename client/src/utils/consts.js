@@ -17,4 +17,6 @@ export const ACCOUNT_ROUTE = '/account'
 
 export const ORDER_ROUTE = '/do_order'
 
-export const MY_ORDERS_ROUTE = "/orders"
+export const MY_ORDERS_ROUTE = '/orders'
+
+export const RESOLVE_PROBLEM = '/back_problem'

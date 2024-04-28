@@ -1,47 +1,70 @@
-import React, { useEffect } from 'react';
-import { load } from '@2gis/mapgl';
-import MapWrapper from './MapWrapper'
-
-import '../styles/PartnerWorkspace.css';
+import React, { useContext, useEffect, useState } from 'react'
 import { observer } from 'mobx-react-lite'
+import { getOrder } from '../http/orderAPI'
+import { Context } from '../index'
+
+import MapBox from './MapBox'
+
+import '../styles/PartnerWorkspace.css'
+import Test from './Test'
+
 
 const PartnerWorkspace = observer(() => {
+  const {order} = useContext(Context)
+  const [selectedOrders, setSelectedOrders] = useState([]);
 
-  useEffect(() => {
-    let map;
-    load('https://mapgl.2gis.com/api/js/v1.4.2').then((mapglAPI) => {
-      map = new mapglAPI.Map('map_container', {
-        center: [33.902878, 27.561039],
-        zoom: 8,
-        // key: '061ff499-0e05-4984-b5b5-068b1fe35299',
-      });
+  useEffect(()=> {
+    getOrder().then((orders)=> order.setOrder(orders))
+  },[order])
 
-
-      const marker = new mapglAPI.Marker(map, {
-        coordinates: [53.902878, 27.561039]
-      })
-
-      const marker2 = new mapglAPI.Marker(map, {
-        coordinates: [55.31878, 25.23584],
-      });
-    });
-
-    return () => map && map.destroy();
-  }, []);
+  const handleOrderClick = (order) => {
+    if (selectedOrders.includes(order)) {
+      setSelectedOrders(selectedOrders.filter((selectedOrder) => selectedOrder !== order));
+    } else {
+      setSelectedOrders([...selectedOrders, order]);
+    }
+  };
 
   return (
-    <div style={{ width: '100vw', height: '100vh' }} className='d-flex gap-2'>
-       <div>
+    <div className="partner-workspace">
+      <div className="order-list">
         <h4>Расчет заказов</h4>
-         <div>
-
-         </div>
-       </div>
-      <div style={{ width: '100%', height: '100%' }}>
-        <MapWrapper />
+        <div>
+          {order.order.length !== 0 ? (
+            <div>
+              {order.order.map((order) => (
+                <div
+                  key={order.id}
+                  className={`order-item ${selectedOrders.includes(order) ? 'selected' : ''}`}
+                  onClick={() => handleOrderClick(order)}
+                >
+                  <div className="order-details">
+                    <input
+                      type="checkbox"
+                      checked={selectedOrders.includes(order)}
+                      onChange={() => handleOrderClick(order)}
+                    />
+                    <div className="order-info">
+                      <div>Заказ #{order.id}</div>
+                      <div>Тип трансорта: {order.route.transportType}</div>
+                      <div>Точка отправления: {order.route.pointOfDeparture}</div>
+                      <div>Точка доставки: {order.route.deliveryPoint}</div>
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          ) : (
+            <div>У вас нет заказов</div>
+          )}
+        </div>
+      </div>
+      <div className="map-container">
+        {/*<Test/>*/}
+        <MapBox selectedOrders={selectedOrders} />
       </div>
     </div>
   );
-})
+});
 
 export default PartnerWorkspace;

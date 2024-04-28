@@ -97,7 +97,7 @@ const OrderItem =observer(  ({ order }) => {
               </button>
             </div>
             <div className="d-flex justify-content-end">
-              <strong>Итогоㅤ</strong>00 р.
+              <strong>Итого:</strong> {order.price} р.
             </div>
           </div>
 

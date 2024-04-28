@@ -17,4 +17,6 @@ public class Route {
     private int distance;
     private LocalDateTime deliveryTime;
     private TransportType transportType;
+
+
 }

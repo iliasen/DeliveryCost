@@ -25,9 +25,6 @@ public class Transport {
     @Column
     private float tonnage;
 
-    @Column
-    private float volume;
-
     @JsonIgnore
     @ManyToOne
     @JoinColumn(name = "partner_id")

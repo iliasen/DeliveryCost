@@ -1,5 +1,6 @@
 package com.iliasen.delivcost.controllers;
 
+import com.iliasen.delivcost.dto.MaxWeightDTO;
 import com.iliasen.delivcost.dto.OrderAndCargoRequest;
 import com.iliasen.delivcost.models.Cargo;
 import com.iliasen.delivcost.models.Order;
@@ -21,11 +22,10 @@ public class OrderController {
     @PreAuthorize("isAuthenticated()")
     @PostMapping(value = "/{id}")
     public ResponseEntity<?> createOrder(@RequestBody OrderAndCargoRequest request, @PathVariable Integer id, @AuthenticationPrincipal UserDetails userDetails){
-        System.out.println(request);
-        String comment = request.getComment();
+//        System.out.println(request);
         Order orderRequest = request.getOrder();
         Cargo cargoRequest = request.getCargo();
-        return orderService.addOrder(orderRequest, cargoRequest,comment, id, userDetails);
+        return orderService.addOrder(orderRequest, cargoRequest, id, userDetails);
     }
 
     @GetMapping
@@ -50,4 +50,9 @@ public class OrderController {
     @PutMapping(value = "/review/{id}")
     public ResponseEntity<?> reviewedOrder(@PathVariable Integer id){return orderService.setPartnerView(id);}
 
+    @PreAuthorize("hasAuthority('PARTNER')")
+    @PostMapping(value = "/back_problem")
+    public ResponseEntity<?> BackpackProblem(@RequestBody MaxWeightDTO maxWeightDTO, @AuthenticationPrincipal UserDetails userDetails){
+        return orderService.backpackProblemSolver(maxWeightDTO.getMaxWeight(), userDetails);
+    }
 }

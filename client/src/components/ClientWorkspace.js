@@ -52,31 +52,41 @@ const ClientWorkspace = observer(() => {
     });
   };
 
+  console.log(partners.partners)
   return (
     <div className="main-page-container">
       <div className="d-flex p-1">
         <div className="partner-list">
           <h4>Наши партнёны</h4>
-          {partners.partners && partners.partners.map((partner) => (
-            <div key={partner.id} className="partner-item"
-                 autoFocus={partner.id === partners.selectedPartner?.id}
-                 onClick={() => partners.setPartner(partner)}>
-              <p>companyName-{partner.companyName}</p>
-              <p>email-{partner.email}</p>
-              <p>Tel--{partner.contactNumber}</p>
-            </div>
-          ))}
+          {partners.partners &&
+            partners.partners.map((partner) => {
+              if (!partner.margin || !partner.companyOfficial) {
+                return null;
+              }
+              return (
+                <div
+                  key={partner.id}
+                  className="partner-item"
+                  autoFocus={partner.id === partners.selectedPartner?.id}
+                  onClick={() => partners.setPartner(partner)}
+                >
+                  <p>{partner.companyName}</p>
+                  <p>email: {partner.email}</p>
+                  <p>Телефон: {partner.contactNumber}</p>
+                </div>
+              );
+            })}
         </div>
         <div className="partner-info">
           {partners.selectedPartner.id !== undefined ?
             <div>
-              <p>ID: {partners.selectedPartner.id}</p>
               <p>INN: {partners.selectedPartner.inn}</p>
-              <p>Company Name: {partners.selectedPartner.companyName}</p>
+              <p>Название компании: {partners.selectedPartner.companyName}</p>
               <p>Email: {partners.selectedPartner.email}</p>
-              <p>Contact Number: {partners.selectedPartner.contactNumber}</p>
-              <p>Company Official: {partners.selectedPartner.companyOfficial}</p>
-
+              <p>Контактный телефон: {partners.selectedPartner.contactNumber}</p>
+              <p>Mаржа: {partners.selectedPartner.margin} %</p>
+              <p>Представитель комапнии: {partners.selectedPartner.companyOfficial}</p>
+              <p>Описание компании: {partners.selectedPartner.description}</p>
               <div>
                 <div className="d-flex">
                   <div className="mark_rate">

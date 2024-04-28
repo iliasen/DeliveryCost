@@ -1,0 +1,12 @@
+package com.iliasen.delivcost.dto;
+
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
+public class MaxWeightDTO {
+    private int maxWeight;
+}

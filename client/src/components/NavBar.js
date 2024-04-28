@@ -8,7 +8,7 @@ import {
   ABOUT_ROUTE,
   ACCOUNT_ROUTE,
   LOGIN_ROUTE,
-  MAIN_ROUTE, MY_ORDERS_ROUTE,
+  MAIN_ROUTE, MY_ORDERS_ROUTE, RESOLVE_PROBLEM,
 } from '../utils/consts'
 
 import '../styles/NavBar.css'
@@ -42,6 +42,11 @@ const NavBar = observer(() => {
         <Navbar.Collapse id="responsive-navbar-nav">
           {user.Auth ? (
             <Nav className="href-container">
+              {user.user.role === "PARTNER" &&
+              <NavLink className="href" to={RESOLVE_PROBLEM}>
+                Оптимизация
+              </NavLink>}
+
               <NavLink className="href" to={MY_ORDERS_ROUTE}>
                 Заказы
               </NavLink>

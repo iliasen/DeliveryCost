@@ -31,6 +31,9 @@ public class Order {
     private String comment;
 
     @Column
+    private int price = 400;
+
+    @Column
     @Enumerated(EnumType.STRING)
     private OrderStatus orderStatus = OrderStatus.WITHOUT;
 
@@ -48,4 +51,6 @@ public class Order {
     @ManyToOne
     @JoinColumn(name = "client_id")
     private Client client;
+
+
 }

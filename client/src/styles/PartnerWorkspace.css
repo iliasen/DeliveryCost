@@ -1,6 +1,51 @@
-#map_container{
-    margin: 0;
+.partner-workspace {
+    display: flex;
+    gap: 2rem;
+    width: 100vw;
+    height: 100vh;
+}
+
+.order-list {
+    width: 400px;
+    background-color: #f0f0f0;
+    padding: 1rem;
+    border-radius: 4px;
+    overflow: auto;
+}
+
+.order-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 8px;
+    margin: 4px;
+    background-color: white;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+.order-item.selected {
+    background-color: lightblue;
+}
+
+.order-details {
+    display: flex;
+    align-items: center;
+}
+
+.order-info {
+    margin-left: 8px;
+}
+
+.select-button {
+    background-color: #007bff;
+    color: white;
+    padding: 8px;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+.map-container {
     width: 100%;
     height: 100%;
-    overflow: hidden;
 }

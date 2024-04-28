@@ -47,7 +47,7 @@ public class Partner implements UserDetails{
     private String description;
 
     @Column
-    private float margin;
+    private int margin;
 
     @Column
     private String companyLogo;

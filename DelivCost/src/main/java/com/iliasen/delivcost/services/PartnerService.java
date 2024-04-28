@@ -50,11 +50,7 @@ public class PartnerService {
                 partner.setDescription(value.toString());
                 break;
             case "margin":
-                if (value instanceof Float) {
-                    partner.setMargin((Float) value);
-                } else {
-                    return ResponseEntity.badRequest().body("Invalid value for the margin field.");
-                }
+                    partner.setMargin((int) value);
                 break;
             case "transport":
                 if (value instanceof Set) {
@@ -97,5 +93,17 @@ public class PartnerService {
             partnerRepository.save(partner);
         }
         return ResponseEntity.ok("Company logo successfully update");
+    }
+
+    public boolean check(UserDetails userDetails) {
+        Partner partner = partnerRepository.findByEmail(userDetails.getUsername())
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Partner not found"));
+
+        boolean isLogoMissing = partner.getCompanyLogo() == null;
+        boolean isMarginZero = partner.getMargin() == 0;
+        boolean isOfficialMissing = partner.getCompanyOfficial() == null;
+        boolean isDescriptionMissing = partner.getDescription() == null;
+
+        return !(isLogoMissing || isMarginZero || isOfficialMissing || isDescriptionMissing);
     }
 }

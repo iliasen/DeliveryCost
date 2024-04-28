@@ -1,5 +1,6 @@
 package com.iliasen.delivcost.controllers;
 
+import com.iliasen.delivcost.dto.PartnerFieldDTO;
 import com.iliasen.delivcost.models.Partner;
 import com.iliasen.delivcost.services.PartnerService;
 import lombok.RequiredArgsConstructor;
@@ -29,6 +30,27 @@ public class PartnerController {
     @GetMapping(value = "/{id}")
     public ResponseEntity<Partner> getPartner(@PathVariable Integer id){
         return partnerService.getOne(id);
+    }
+
+    @GetMapping(value = "/fields_check")
+    public boolean checkAllFields(@AuthenticationPrincipal UserDetails userDetails){
+        return partnerService.check(userDetails);
+    }
+
+    @PutMapping(value = "/update_fields")
+    public ResponseEntity<?> updateFields(@RequestParam("companyOfficial") String companyOfficial,
+                                          @RequestParam("description") String description,
+                                          @RequestParam("margin") int margin,
+                                          @RequestParam("img") MultipartFile image, @AuthenticationPrincipal UserDetails userDetails){
+        partnerService.updateField("companyOfficial", companyOfficial, "Официальный представитель успешно добавлен",userDetails);
+        partnerService.updateField("description", description, "Описание компании добавлено.", userDetails);
+        partnerService.updateField("margin", margin, "Добавлена маржа компании", userDetails);
+        try {
+            partnerService.setCompanyLogo(image,userDetails);
+        } catch (IOException e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Произошла ошибка при загрузке логотипа компании");
+        }
+        return ResponseEntity.ok("Все поля успешно обновлены");
     }
 
     @PatchMapping(value = "/official")
