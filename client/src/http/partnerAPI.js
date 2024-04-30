@@ -1,4 +1,4 @@
-import {$authHost} from './index'
+import { $authHost, $host } from './index'
 
 export const getPartners = async () => {
     try {
@@ -44,5 +44,12 @@ export const checkFiends = async ()=>{
 
 export const updateFields = async(fields)=>{
     const {data} = await $authHost.put('api/partner/update_fields', fields)
+    return data
+}
+
+export const fetchLogoImage = async (imageName)=>{
+    const {data} = await $host.get('api/partner/img/'+imageName, {
+        responseType: 'blob',
+    })
     return data
 }

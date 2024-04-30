@@ -4,7 +4,10 @@ import com.iliasen.delivcost.models.Partner;
 import com.iliasen.delivcost.models.Transport;
 import com.iliasen.delivcost.repositories.PartnerRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.core.io.Resource;
+import org.springframework.core.io.UrlResource;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -14,6 +17,7 @@ import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.io.IOException;
+import java.net.MalformedURLException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -105,5 +109,19 @@ public class PartnerService {
         boolean isDescriptionMissing = partner.getDescription() == null;
 
         return !(isLogoMissing || isMarginZero || isOfficialMissing || isDescriptionMissing);
+    }
+
+    public ResponseEntity<Resource> getImg(String imageName) throws MalformedURLException {
+        String uploadDir = "src/main/resources/static/";
+        Path imagePath = Paths.get(uploadDir + imageName);
+        Resource resource = new UrlResource(imagePath.toUri());
+
+        if (resource.exists() && resource.isReadable()) {
+            return ResponseEntity.ok()
+                    .contentType(MediaType.IMAGE_JPEG)
+                    .body(resource);
+        } else {
+            return ResponseEntity.notFound().build();
+        }
     }
 }

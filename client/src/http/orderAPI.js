@@ -4,11 +4,11 @@ import { load } from '@2gis/mapgl'
 
 // const key = 'bce1dd40-8c89-4c5d-beea-fce9c1e8071f'
 
-// const key = '061ff499-0e05-4984-b5b5-068b1fe35299' //основной
+const key = '061ff499-0e05-4984-b5b5-068b1fe35299' //основной
 
-const key = 'c104c8d1-9496-401d-9dd8-be12960697e5'
+// const key = 'c104c8d1-9496-401d-9dd8-be12960697e5'
 
-// const key = '1cd344fc-02f9-49ec-8007-56f415a6f886'
+//const key = '1cd344fc-02f9-49ec-8007-56f415a6f886'
 
 // const key = '0775c594-5d3a-49d2-a4b7-d4b5af596fa1'
 
@@ -119,102 +119,6 @@ export const TSLRequest = async (selectedOrders, coordinates) => {
   }
 }
 
-export const getSolution = async (task_id) => {
-  try {
-    const response = await axios.get(`http://catalog.api.2gis.com/logistics/vrp/1.0/status?key=${key}&task_id=${task_id}`)
-    const parsed = response.data
-
-    if (parsed) {
-      if (parsed.status === 'Run') {
-        setTimeout(getSolution, 5000, task_id)
-      } else if (parsed.status === 'Done' || parsed.status === 'Partial') {
-        let url_solution = parsed.urls.url_vrp_solution
-        console.log(url_solution)
-        await getSequence(url_solution)
-      }
-    }
-  } catch (error) {
-    console.error('Error:', error)
-  }
-}
-
-async function getSequence(url_solution) {
-  try {
-    const response = await axios.get(url_solution)
-    const parsed = response.data
-    console.log(parsed)
-    let sequence = parsed['routes'][0]['points']
-
-    let i = 0
-
-    // Добавление точек на карту
-    load().then((mapglAPI) => {
-      const map = new mapglAPI.Map('map_container', {
-        center: [37.596713, 55.768474],
-        zoom: 13,
-        key: key,
-      })
-
-      const marker = new mapglAPI.Marker(map, {
-        coordinates: [37.596713, 55.768474],
-      });
-      return () => map && map.destroy()
-    //   for (let elem of sequence) {
-    //     i = i + 1
-    //     const marker = new mapglAPI.Marker(map, {
-    //       coordinates: [
-    //         elem['point']['lon'],
-    //         elem['point']['lat'],
-    //       ],
-    //       label: {
-    //         text: 'Точка ' + i,
-    //         offset: [0, -75],
-    //         image: {
-    //           url: 'https://docs.2gis.com/img/mapgl/tooltip.svg',
-    //           size: [100, 40],
-    //           padding: [10, 10, 20, 10],
-    //         },
-    //       },
-    //     })
-    //   }
-    })
-  } catch (error) {
-    // Обработка ошибки
-    console.error(error)
-  }
-}
-
-
-// export const getTaskStatus = async (taskId) => {
-//     const url = `https://routing.api.2gis.com/logistics/vrp/1.1.0/status`;
-//     const params = {
-//         task_id: taskId,
-//         key: key,
-//     };
-//
-//     try {
-//         const response = await axios.get(url, { params });
-//         const status = response.data.status;
-//
-//         if (status === 'Partial' || status === 'Done') {
-//             if (response.data.urls && response.data.urls.url_vrp_solution) {
-//                 const vrpSolutionUrl = response.data.urls.url_vrp_solution;
-//                 const vrpSolutionResponse = await axios.get(vrpSolutionUrl);
-//                 const vrpSolutionData = vrpSolutionResponse.data;
-//                 // Дальнейшая обработка данных из vrpSolutionData
-//                 console.log(vrpSolutionData);
-//                 return vrpSolutionData;
-//             }
-//         }
-//
-//         console.log(status);
-//         return status;
-//     } catch (error) {
-//         // Обработка ошибки
-//         console.error(error);
-//         throw error;
-//     }
-// };
 
 export const addOrder = async (id, pointOfDeparture, deliveryPoint, distance, transportType, comment, weight, price) => {
   console.log(transportType)
@@ -240,7 +144,6 @@ export const addOrder = async (id, pointOfDeparture, deliveryPoint, distance, tr
 }
 
 export const changeStatus = async (id, status) => {
-  // const { data } = await $authHost.put(`/api/order/status/${id}`, {status:status});
   const { data } = await $authHost.put(`/api/order/status/${id}`, null, {
     params: { status },
   })

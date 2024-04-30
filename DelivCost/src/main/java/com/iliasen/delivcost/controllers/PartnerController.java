@@ -4,7 +4,10 @@ import com.iliasen.delivcost.dto.PartnerFieldDTO;
 import com.iliasen.delivcost.models.Partner;
 import com.iliasen.delivcost.services.PartnerService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.core.io.Resource;
+import org.springframework.core.io.UrlResource;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -13,6 +16,8 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.List;
 
 @RestController
@@ -35,6 +40,11 @@ public class PartnerController {
     @GetMapping(value = "/fields_check")
     public boolean checkAllFields(@AuthenticationPrincipal UserDetails userDetails){
         return partnerService.check(userDetails);
+    }
+
+    @GetMapping("/img/{imageName:.+}")
+    public ResponseEntity<Resource> getLogoImage(@PathVariable String imageName) throws IOException {
+        return partnerService.getImg(imageName);
     }
 
     @PutMapping(value = "/update_fields")

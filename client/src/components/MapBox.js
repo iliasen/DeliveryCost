@@ -14,7 +14,7 @@ const MapBox = ({ selectedOrders }) => {
       map = new mapglAPI.Map('map_container', {
         center: [37.596713, 55.768474],
         zoom: 5,
-        key: '848fc5c1-daf3-47c0-a430-2c3da5e9f765',
+        key: 'c104c8d1-9496-401d-9dd8-be12960697e5',
         // key: '0775c594-5d3a-49d2-a4b7-d4b5af596fa1',
       })
 
@@ -26,7 +26,7 @@ const MapBox = ({ selectedOrders }) => {
 
 
   async function getSolution(task_id) {
-    const key='c104c8d1-9496-401d-9dd8-be12960697e5'
+    const key='061ff499-0e05-4984-b5b5-068b1fe35299'
     // await getSequence('https://disk.2gis.com/prod-navi-vrp-bucket/0846b315772bef1f3f496b38c5ba154b-sln.json');
     try {
       const response = await axios.get(`http://catalog.api.2gis.com/logistics/vrp/1.0/status?key=${key}&task_id=${task_id}`);
@@ -48,6 +48,7 @@ const MapBox = ({ selectedOrders }) => {
 
   async function getSequence(url_solution) {
     try {
+
       const response = await axios.get(url_solution);
       const parsed = response.data;
       console.log(parsed);
@@ -74,11 +75,12 @@ const MapBox = ({ selectedOrders }) => {
 
 
       // Добавление точек на карту
-      for (let elem of sequence) {
+      for await (let elem of sequence) {
         const current = resolvedWaypoints[elem];
+        console.log(current);
         const currentIndex = i; // Зафиксировать текущее значение i
 
-        await load().then((mapglAPI) => {
+         load().then((mapglAPI) => {
           const marker = new mapglAPI.Marker(map, {
             coordinates: [
               current.point.lon,

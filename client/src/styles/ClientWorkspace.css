@@ -26,6 +26,86 @@
     border-bottom: none;
 }
 
+.partner-info-container{
+    padding: 20px;
+    width: 100vw;
+    height: 100vh;
+    overflow: auto;
+}
+
+.partner-info-container *{
+    font: 16px/20px Tahoma;
+    font-style: normal;
+}
+
+.Item_img {
+    width: 150px;
+    height: 150px;
+}
+
+.partner-info{
+    display: flex;
+    flex-direction: column;
+}
+
+.companyName{
+    font-family: 'Noto Sans',Arial,sans-serif;
+    font-weight: 600;
+    font-size: 68px;
+}
+
+.regular-site__block-title {
+    font: 22px/18px Tahoma;
+    border-bottom: 1px solid #f48d14;
+    margin-bottom: 20px;
+}
+
+.regular-site__block-title > span {
+    font-size: 26px;
+    padding-right: 10px;
+    background: #f1f1f1;
+}
+
+.regular-tableblock {
+    background: 0 0;
+    border: none;
+    position: relative;
+    z-index: 50;
+}
+table {
+    border-collapse: separate;
+    border-spacing: 0;
+}
+
+.regular-tableblock_left {
+    text-align: right;
+    padding: 5px 30px 5px 0;
+}
+
+.regular-tableblock_right {
+    text-align: left;
+    padding: 5px 0 5px 30px;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -80,6 +160,11 @@
 }
 
 .mark_rate {
+    font-family: var(--bs-body-font-family);
+    font-size: var(--bs-body-font-size);
+    font-weight: var(--bs-body-font-weight);
+    line-height: var(--bs-body-line-height);
+    color: var(--bs-body-color);
     margin-top: -8px;
     margin-right: 5px;
     font-size: 24px;
@@ -137,7 +222,7 @@
 #feedback .feedback_about_item {
 
     padding: 5px;
-    border-bottom: 1px solid brown;
+    border-bottom: 1px solid #f48d14;
     margin: 10px;
 }
 #feedback .feedback_about_item:last-child {
