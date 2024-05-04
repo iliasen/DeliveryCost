@@ -29,11 +29,9 @@ const AccountPage = () => {
         <div className='Logo_account'></div>
         <div className='User_info'>
           <div>
-            <span className='title-characteristics_acc'>email:</span>{user.user.email}
+            <span className='title-characteristics_acc'>email:</span>{user.user.sub}
           </div>
-          <div>
-            <span className='title-characteristics_acc'>id:</span>{user.user.id}
-          </div>
+
           <div>
             <span className='title-characteristics_acc'>role:</span>{user.user.role}
           </div>

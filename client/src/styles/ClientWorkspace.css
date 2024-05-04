@@ -1,8 +1,10 @@
 .partner-list{
+    margin: 7px;
     padding: 20px;
     background-color: #FFF;
     width: max-content;
     height: 100vh;
+    border-radius: 7px;
 }
 .partner-list:last-child{
     border-bottom: none;
@@ -31,11 +33,15 @@
     width: 100vw;
     height: 100vh;
     overflow: auto;
+    background-color: #FFF;
+    margin: 7px;
+    border-radius: 7px;
 }
 
 .partner-info-container *{
     font: 16px/20px Tahoma;
     font-style: normal;
+
 }
 
 .Item_img {
@@ -63,7 +69,7 @@
 .regular-site__block-title > span {
     font-size: 26px;
     padding-right: 10px;
-    background: #f1f1f1;
+    background: #FFF;
 }
 
 .regular-tableblock {

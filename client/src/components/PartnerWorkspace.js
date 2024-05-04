@@ -6,7 +6,6 @@ import { Context } from '../index'
 import MapBox from './MapBox'
 
 import '../styles/PartnerWorkspace.css'
-import Test from './Test'
 
 
 const PartnerWorkspace = observer(() => {
@@ -60,7 +59,6 @@ const PartnerWorkspace = observer(() => {
         </div>
       </div>
       <div className="map-container">
-        {/*<Test/>*/}
         <MapBox selectedOrders={selectedOrders} />
       </div>
     </div>

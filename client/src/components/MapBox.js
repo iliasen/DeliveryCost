@@ -27,7 +27,6 @@ const MapBox = ({ selectedOrders }) => {
 
   async function getSolution(task_id) {
     const key='061ff499-0e05-4984-b5b5-068b1fe35299'
-    // await getSequence('https://disk.2gis.com/prod-navi-vrp-bucket/0846b315772bef1f3f496b38c5ba154b-sln.json');
     try {
       const response = await axios.get(`http://catalog.api.2gis.com/logistics/vrp/1.0/status?key=${key}&task_id=${task_id}`);
       const parsed = response.data;
@@ -48,11 +47,11 @@ const MapBox = ({ selectedOrders }) => {
 
   async function getSequence(url_solution) {
     try {
-
       const response = await axios.get(url_solution);
       const parsed = response.data;
       console.log(parsed);
-      let sequence = parsed['routes'][0]['points'];
+      const sequence = parsed.routes[0].points;
+      // const sequence = parsed['routes'][0]['points'];
 
       let i = 0;
       const waypoints = coordinates.then((resolvedCoordinates) => {
@@ -73,21 +72,20 @@ const MapBox = ({ selectedOrders }) => {
 
       const resolvedWaypoints = await waypoints
 
-
-      // Добавление точек на карту
       for await (let elem of sequence) {
         const current = resolvedWaypoints[elem];
         console.log(current);
-        const currentIndex = i; // Зафиксировать текущее значение i
+        const currentIndex = i;
 
-         load().then((mapglAPI) => {
+         await load().then((mapglAPI) => {
+            console.log(currentIndex)
           const marker = new mapglAPI.Marker(map, {
             coordinates: [
               current.point.lon,
               current.point.lat
             ],
             label: {
-              text: 'Точка ' + (currentIndex + 1), // Использовать currentIndex + 1
+              text: 'Точка ' + (currentIndex + 1),
               offset: [0, -75],
               image: {
                 url: 'https://docs.2gis.com/img/mapgl/tooltip.svg',

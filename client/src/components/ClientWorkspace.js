@@ -16,6 +16,8 @@ import { ORDER_ROUTE } from '../utils/consts'
 import { NavLink } from 'react-router-dom'
 import { Button, Image } from 'react-bootstrap'
 
+import empty from '../res/ClientWorksapce/empty.png'
+
 const ClientWorkspace = observer(() => {
 
   const { user, partners } = useContext(Context)
@@ -178,7 +180,7 @@ const ClientWorkspace = observer(() => {
                     </table>
                   </div>
                   <div className="d-flex justify-content-center">
-                    <Button variant="light"><NavLink to={ORDER_ROUTE}>Cделать заказ</NavLink></Button>
+                    <Button variant="light" style={{border: "1px solid black"}}><NavLink to={ORDER_ROUTE}>Cделать заказ/Предложение</NavLink></Button>
                   </div>
                 </div>
 
@@ -349,7 +351,10 @@ const ClientWorkspace = observer(() => {
               </div>
             </div>
             :
-            <div>No partner is Selected</div>
+            <div className='d-flex align-items-center justify-content-center' style={{height: '96vh'}}>
+
+              <Image src={empty}/>
+             </div>
           }
         </div>
       </div>
