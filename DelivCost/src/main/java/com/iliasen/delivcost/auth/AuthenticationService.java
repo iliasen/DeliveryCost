@@ -2,11 +2,9 @@ package com.iliasen.delivcost.auth;
 
 import com.iliasen.delivcost.configs.JwtService;
 import com.iliasen.delivcost.exeptions.UserNotFoundException;
-import com.iliasen.delivcost.models.Client;
-import com.iliasen.delivcost.models.Partner;
-import com.iliasen.delivcost.models.Role;
-import com.iliasen.delivcost.models.Warehouse;
+import com.iliasen.delivcost.models.*;
 import com.iliasen.delivcost.repositories.ClientRepository;
+import com.iliasen.delivcost.repositories.DriverRepository;
 import com.iliasen.delivcost.repositories.PartnerRepository;
 import com.iliasen.delivcost.repositories.WarehouseRepository;
 import org.springframework.security.core.GrantedAuthority;
@@ -20,6 +18,8 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
+import java.security.Principal;
+
 
 @Service
 @RequiredArgsConstructor
@@ -27,12 +27,13 @@ public class AuthenticationService {
 
     private final ClientRepository clientRepository;
     private final PartnerRepository partnerRepository;
+    private final DriverRepository driverRepository;
     private final WarehouseRepository storageRepository;
     private final PasswordEncoder passwordEncoder;
     private final JwtService jwtService;
     private final AuthenticationManager authenticationManager;
 
-    public AuthenticationResponse registerClient(RegisterClientRequest request) {
+    public AuthenticationResponse registerClient(RegisterRequest request) {
 
         String email = request.getEmail();
         if (clientRepository.existsByEmail(email)) {
@@ -78,6 +79,37 @@ public class AuthenticationService {
                 .build();
     }
 
+    public AuthenticationResponse registerDriver(RegisterRequest registerRequest, UserDetails userDetails) {
+        System.out.println(userDetails.getUsername());
+        Partner partner = partnerRepository.findByEmail(userDetails.getUsername()).orElseThrow(
+                () -> new ResponseStatusException(HttpStatus.BAD_REQUEST, "Partner not found")
+        );
+
+        String email = registerRequest.getEmail();
+        if (driverRepository.existsByEmail(email)) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Email already exists");
+        }
+
+        var driver = Driver.builder()
+                .firstName(registerRequest.getFirstName())
+                .lastName(registerRequest.getLastName())
+                .email(registerRequest.getEmail())
+                .phone(registerRequest.getPhone())
+                .password(passwordEncoder.encode(registerRequest.getPassword()))
+                .role(Role.DRIVER)
+                .build();
+
+        partner.getDriverList().add(driver);
+
+        driverRepository.save(driver);
+
+        partnerRepository.save(partner);
+
+        var jwtToken = jwtService.generateToken(driver, driver.getRole());
+        return AuthenticationResponse.builder().
+                token(jwtToken)
+                .build();
+    }
 
     public AuthenticationResponse authenticate(AuthenticationRequest request) {
         Authentication authentication = authenticationManager.authenticate(
@@ -102,6 +134,8 @@ public class AuthenticationService {
                 jwtToken = jwtService.generateToken(userDetails, Role.CLIENT);
             } else if (role.equals("PARTNER")) {
                 jwtToken = jwtService.generateToken(userDetails, Role.PARTNER);
+            } else if (role.equals("DRIVER")) {
+                jwtToken = jwtService.generateToken(userDetails, Role.DRIVER);
             } else {
                 throw new IllegalStateException("Недопустимая роль пользователя: " + role);
             }

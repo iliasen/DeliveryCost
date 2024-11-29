@@ -44,11 +44,11 @@ public class CargoService {
         List<Cargo> cargos = warehouse.getCargos();
 
         // Вычисление суммарного веса грузов на складе
-        int totalWeight = cargos.stream()
-                .mapToInt(Cargo::getWeight)
+        double totalVolume = cargos.stream()
+                .mapToDouble(Cargo::getVolume)
                 .sum();
 
-        if (totalWeight + cargo.getWeight() > warehouse.getVolume()) {
+        if (totalVolume + cargo.getVolume() > warehouse.getVolume()) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Warehouse weight capacity exceeded");
         }
 

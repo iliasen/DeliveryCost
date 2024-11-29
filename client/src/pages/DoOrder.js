@@ -22,6 +22,10 @@ const DoOrder = observer( () => {
     const [deliveryTime,setDeliveryTime] = useState(null)
     const [comment, setComment] = useState(null)
     const [weight, setWeight] = useState(null)
+    const [length, setLength] = useState(null)
+    const [width, setWidth] = useState(null)
+    const [height, setHeight] = useState(null)
+
     const [value, setValue] = useState(null)
     const [departureSearchResults, setDepartureSearchResults] = useState([]);
     const [deliverySearchResults, setDeliverySearchResults] = useState([]);
@@ -235,7 +239,7 @@ const DoOrder = observer( () => {
 
     const submitOrder = (event) => {
         event.preventDefault();
-        addOrder(partners.selectedPartner.id, pointOfDeparture, deliveryPoint, distance.routes[0].distance, selectedType, comment, weight, calculateShippingCost()).then(()=>setVisible(true))
+        addOrder(partners.selectedPartner.id, pointOfDeparture, deliveryPoint, distance.routes[0].distance, selectedType, comment, weight, length, width, height, calculateShippingCost()).then(()=>setVisible(true))
     }
 
     return (
@@ -301,12 +305,29 @@ const DoOrder = observer( () => {
                                     color: '#999',
                                     fontSize: 13,
                                 }}>Укажите как можно подробнее адрес забора товара</span>
-
+                                
+                                <h4 className='mt-5'>Детали груза</h4>
                                 <div className="d-flex">
+                            
                                     <div className="addressInputs">
                                         <label>Вес груза(кг.)</label>
-                                        <input className="weight" name="weidth" type="number" required value={weight}
+                                        <input className="weight" name="weight" type="number" required value={weight}
                                                onChange={(e) => setWeight(e.target.value)} />
+                                    </div>
+                                    <div className='addressInputs'>
+                                        <label>Длина(см.)</label>
+                                        <input className='weight' name="length" type='number' required value={length} 
+                                            onChange={(e)=> setLength(e.target.value)}/>
+                                    </div>
+                                    <div className='addressInputs'>
+                                        <label>Ширина(см.)</label>
+                                        <input className='weight' name="width" type='number' required value={width} 
+                                            onChange={(e)=> setWidth(e.target.value)}/>
+                                    </div>
+                                    <div className='addressInputs'>
+                                        <label>Высота(см.)</label>
+                                        <input className='weight' name="height" type='number' required value={height}
+                                            onChange={(e)=> setHeight(e.target.value)}/>
                                     </div>
                                 </div>
                             </div>

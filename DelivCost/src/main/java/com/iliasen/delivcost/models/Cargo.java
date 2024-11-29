@@ -2,12 +2,10 @@ package com.iliasen.delivcost.models;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
-@Data
+@Getter
+@Setter
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
@@ -19,7 +17,16 @@ public class Cargo {
     private Integer id;
 
     @Column
-    private int weight;
+    private double weight;
+
+    @Column
+    private double length;
+
+    @Column
+    private double width;
+
+    @Column
+    private double height;
 
     @JsonIgnore
     @OneToOne
@@ -32,5 +39,7 @@ public class Cargo {
     private Warehouse warehouse;
 
 
-
+    public double getVolume() {
+        return weight * length * height;
+    }
 }

@@ -1,9 +1,9 @@
 import React, { useContext, useState } from 'react'
 import { Form } from 'react-bootstrap'
 import { NavLink, useNavigate } from 'react-router-dom'
-import { LOGIN_ROUTE, MAIN_ROUTE, REGISTRATION_ROUTE } from '../utils/consts'
+import { LOGIN_ROUTE, MAIN_ROUTE} from '../utils/consts'
 import { Context } from '../index'
-import {registrationClient } from '../http/userAPI'
+import {registrationClient, registrationDriver} from '../http/userAPI'
 
 const RegisClient = () => {
   const { user } = useContext(Context)
@@ -13,6 +13,10 @@ const RegisClient = () => {
   const [password, setPassword] = useState('')
   const [phone, setPhone] = useState("");
   let nav = useNavigate()
+
+  const queryParams = new URLSearchParams(window.location.search);
+  const role = queryParams.get('role');
+  console.log(role)
 
   const handleChange = (e) => {
     let input = e.target.value;
@@ -50,7 +54,11 @@ const RegisClient = () => {
   const click = async (event) => {   event.preventDefault()
     try {
       let data
-      data = await registrationClient(name, lastName, email, phone, password)
+      if(role === "driver"){
+        data = await registrationDriver(name, lastName, email, phone, password)
+      } else {
+        data = await registrationClient(name, lastName, email, phone, password)
+      }
       user.setUser(data)
       user.setAuth(true)
       nav(MAIN_ROUTE)

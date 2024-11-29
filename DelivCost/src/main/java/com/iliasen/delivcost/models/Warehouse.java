@@ -1,13 +1,12 @@
 package com.iliasen.delivcost.models;
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import java.util.List;
 
-@Data
+@Getter
+@Setter
 @AllArgsConstructor
 @NoArgsConstructor
 @Entity
@@ -18,7 +17,13 @@ public class Warehouse {
     private Integer id;
 
     @Column
-    private int volume = 50000;
+    private int length = 1600;
+
+    @Column
+    private int width = 1500;
+
+    @Column
+    private int height = 450;
 
     @OneToMany(mappedBy = "warehouse",cascade = CascadeType.ALL)
     private List<Cargo> cargos;
@@ -27,4 +32,7 @@ public class Warehouse {
     @JoinColumn(name = "client_id", referencedColumnName = "id")
     private Client client;
 
+    public int getVolume(){
+        return length * width * height;
+    }
 }

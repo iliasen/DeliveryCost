@@ -1,5 +1,7 @@
 package com.iliasen.delivcost.services;
 
+import com.iliasen.delivcost.models.Cargo;
+import com.iliasen.delivcost.models.Order;
 import com.iliasen.delivcost.models.Partner;
 import com.iliasen.delivcost.models.Transport;
 import com.iliasen.delivcost.repositories.PartnerRepository;
@@ -12,6 +14,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -38,5 +41,20 @@ public class TransportService {
         } catch (Exception e) {
             return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
+    }
+
+    public boolean calculateVolume(Transport transport, List<Order> orders) {
+        List<Cargo> cargos = orders.stream()
+                .map(Order::getCargo)
+                .collect(Collectors.toList());
+
+        double totalVolume = 0.0;
+
+        for (Cargo cargo : cargos) {
+            double volume = cargo.getVolume();
+            totalVolume += volume;
+        }
+
+        return transport.getVolume() > totalVolume;
     }
 }

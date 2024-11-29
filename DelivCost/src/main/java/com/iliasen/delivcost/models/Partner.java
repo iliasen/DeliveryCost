@@ -59,6 +59,9 @@ public class Partner implements UserDetails{
     @OneToMany(mappedBy = "partner",cascade = CascadeType.ALL)
     private Set<Transport> transportList;
 
+    @OneToMany(mappedBy = "partner", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    private Set<Driver> driverList;
+
     @JsonIgnore
     @OneToMany(mappedBy = "partner",cascade = CascadeType.ALL)
     private List<Order> orders;

@@ -27,17 +27,20 @@ public class WarehouseService {
 
         List<Cargo> cargos = warehouse.getCargos();
 
-        // Вычисление суммарного веса грузов на складе
-        int totalWeight = cargos.stream()
-                .mapToInt(Cargo::getWeight)
-                .sum();
+
+        double totalVolume = 0.0;
+
+        for (Cargo cargo : cargos) {
+            double volume = cargo.getVolume();
+            totalVolume += volume;
+        }
 
         // Вычисление свободного места на складе
-        int freeSpace = warehouse.getVolume() - totalWeight;
+        int freeSpace = (int) (warehouse.getVolume() - totalVolume);
 
         // Формирование ответа
         Map<String, Integer> response = new HashMap<>();
-        response.put("totalWeight", totalWeight);
+        response.put("totalVolume", (int) totalVolume);
         response.put("freeSpace", freeSpace);
 
         return ResponseEntity.ok(response);

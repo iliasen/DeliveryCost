@@ -4,13 +4,13 @@ import { load } from '@2gis/mapgl'
 
 // const key = 'bce1dd40-8c89-4c5d-beea-fce9c1e8071f'
 
-const key = '061ff499-0e05-4984-b5b5-068b1fe35299' //основной
+//const key = '061ff499-0e05-4984-b5b5-068b1fe35299' //основной
 
 // const key = 'c104c8d1-9496-401d-9dd8-be12960697e5'
 
 // const key = '1cd344fc-02f9-49ec-8007-56f415a6f886'
 
-// const key = '0775c594-5d3a-49d2-a4b7-d4b5af596fa1'
+const key = '158628dd-3eb7-4612-bbc7-692c1d5db3d8' // cвежий
 
 export const getOrder = async () => {
   const { data } = await $authHost.get('api/order')
@@ -120,7 +120,7 @@ export const TSLRequest = async (selectedOrders, coordinates) => {
 }
 
 
-export const addOrder = async (id, pointOfDeparture, deliveryPoint, distance, transportType, comment, weight, price) => {
+export const addOrder = async (id, pointOfDeparture, deliveryPoint, distance, transportType, comment, weight,length, width, height, price) => {
   console.log(transportType)
   const order = {
     order: {
@@ -137,6 +137,8 @@ export const addOrder = async (id, pointOfDeparture, deliveryPoint, distance, tr
 
     cargo: {
       weight,
+      length,
+      width
     },
   }
   const { data } = await $authHost.post('/api/order/' + id, order)

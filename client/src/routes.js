@@ -1,13 +1,17 @@
 import {
   ABOUT_ROUTE,
-  BASKET_ROUTE,
   LOGIN_ROUTE,
   PAYMENT_ROUTE,
   REGISTRATION_ROUTE,
   GUARANTEES_ROUTE,
   MAIN_ROUTE,
   ACCOUNT_ROUTE,
-  ORDER_ROUTE, REGISTRATION_CLIENT_ROUTE, REGISTRATION_PARTNER_ROUTE, MY_ORDERS_ROUTE, RESOLVE_PROBLEM, WAREHOUSE_ROUTE,
+  ORDER_ROUTE,
+  REGISTRATION_CLIENT_ROUTE,
+  REGISTRATION_PARTNER_ROUTE,
+  MY_ORDERS_ROUTE,
+  RESOLVE_PROBLEM,
+  WAREHOUSE_ROUTE, TRANSPORT_ROUTE,
 } from './utils/consts'
 
 
@@ -24,6 +28,7 @@ import Regis from './pages/Regis'
 import MyOrders from './pages/MyOrders'
 import BackProblem from './pages/BackProblem'
 import Warehouse from './pages/Warehouse'
+import Transport from './pages/Transport'
 
 export const authRoutes = [
   {
@@ -45,6 +50,10 @@ export const authRoutes = [
   {
     path: WAREHOUSE_ROUTE,
     Component: Warehouse
+  },
+  {
+    path: TRANSPORT_ROUTE,
+    Component: Transport
   }
 ]
 

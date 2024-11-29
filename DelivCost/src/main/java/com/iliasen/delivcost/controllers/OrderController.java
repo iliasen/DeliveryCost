@@ -13,6 +13,8 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @RestController
 @RequiredArgsConstructor
 @RequestMapping(value = "/order")
@@ -31,6 +33,12 @@ public class OrderController {
     @GetMapping
     public ResponseEntity<?> getAllOrders(@RequestParam(required = false) String status,@AuthenticationPrincipal UserDetails userDetails){
         return orderService.getOrders(status,userDetails);
+    }
+
+    @PostMapping(value = "/transfer/{id}")
+    @PreAuthorize("hasAnyAuthority('PARTNER')")
+    public ResponseEntity<?> transferOrdersToTheDriver(@PathVariable Integer id, @RequestBody List<Order> orderList, @AuthenticationPrincipal UserDetails userDetails){
+        return orderService.transferOrdersToTheDriver(orderList, id, userDetails);
     }
 
     @PreAuthorize("hasAuthority('PARTNER')")

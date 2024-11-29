@@ -14,8 +14,7 @@ const MapBox = ({ selectedOrders }) => {
       map = new mapglAPI.Map('map_container', {
         center: [37.596713, 55.768474],
         zoom: 5,
-        key: 'c104c8d1-9496-401d-9dd8-be12960697e5',
-        // key: '0775c594-5d3a-49d2-a4b7-d4b5af596fa1',
+        key: '158628dd-3eb7-4612-bbc7-692c1d5db3d8'
       })
 
     })
@@ -26,7 +25,7 @@ const MapBox = ({ selectedOrders }) => {
 
 
   async function getSolution(task_id) {
-    const key='061ff499-0e05-4984-b5b5-068b1fe35299'
+    const key='158628dd-3eb7-4612-bbc7-692c1d5db3d8'
     try {
       const response = await axios.get(`http://catalog.api.2gis.com/logistics/vrp/1.0/status?key=${key}&task_id=${task_id}`);
       const parsed = response.data;

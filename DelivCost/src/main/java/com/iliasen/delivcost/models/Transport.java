@@ -2,17 +2,15 @@ package com.iliasen.delivcost.models;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
-@Data
+@Getter
+@Setter
 @AllArgsConstructor
 @NoArgsConstructor
 @Entity
 @Builder
-@Table(name = "tansports")
+@Table(name = "transports")
 public class Transport {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -23,10 +21,19 @@ public class Transport {
     private TransportType transportType;
 
     @Column
-    private float tonnage;
+    private double tonnage;
+
+    @Column
+    private double volume;
 
     @JsonIgnore
     @ManyToOne
     @JoinColumn(name = "partner_id")
     private Partner partner;
+
+    @OneToOne(fetch = FetchType.LAZY, orphanRemoval = true)
+    @JoinTable(name = "transport_driver",
+            joinColumns = @JoinColumn(name = "transport_id"),
+            inverseJoinColumns = @JoinColumn(name = "driver_id"))
+    private Driver driver;
 }

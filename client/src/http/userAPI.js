@@ -11,6 +11,16 @@ export const registrationClient = async (firstName, lastName, email, phone, pass
   return jwt_decode(data.token)
 }
 
+export const registrationDriver = async (firstName, lastName, email, phone, password) => {
+  const { data } = await $authHost.post('api/auth/singUp/driver', {
+    firstName, lastName, email, phone, password
+  })
+  console.log("Push to server")
+  localStorage.setItem('token', data.token)
+  return jwt_decode(data.token)
+}
+
+
 export const registrationPartner = async (companyName, inn, email,contactNumber, password) => {
   const { data } = await $host.post('api/auth/singUp/partner', {
     companyName, inn, contactNumber,email, password

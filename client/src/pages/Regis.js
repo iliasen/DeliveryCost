@@ -21,7 +21,7 @@ const Regis = () => {
         </button>
         <div className="line" />
         <button>
-          <NavLink to={REGISTRATION_CLIENT_ROUTE}>Грузовладелец</NavLink>
+          <NavLink to={`${REGISTRATION_CLIENT_ROUTE}?role=client`}>Грузовладелец</NavLink>
         </button>
       </div>
     </div>

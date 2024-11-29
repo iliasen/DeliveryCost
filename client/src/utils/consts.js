@@ -1,4 +1,5 @@
 export const LOGIN_ROUTE = '/login'
+
 export const REGISTRATION_ROUTE = '/registration'
 
 export const REGISTRATION_PARTNER_ROUTE = "/registration/partner"
@@ -22,3 +23,5 @@ export const MY_ORDERS_ROUTE = '/orders'
 export const RESOLVE_PROBLEM = '/back_problem'
 
 export const WAREHOUSE_ROUTE = '/warehouse'
+
+export const TRANSPORT_ROUTE = '/partner/trade'

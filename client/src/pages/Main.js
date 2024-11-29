@@ -8,6 +8,7 @@ import '../styles/ClientWorkspace.css'
 import WithoutAuth from '../components/WithoutAuth'
 import ClientWorkspace from '../components/ClientWorkspace'
 import PartnerWorkspace from '../components/PartnerWorkspace'
+import DriverWorkspace from '../components/DriverWorkspace'
 import PartnerData from '../components/PartnerData'
 import { checkFiends } from '../http/partnerAPI'
 
@@ -29,7 +30,7 @@ const Main = observer(() => {
           {user.user.role === 'CLIENT' && <ClientWorkspace />}
 
           {user.user.role === 'PARTNER' && <div>{!partnerStatus ? <PartnerData />: <PartnerWorkspace/>}</div>}
-          {/*{user.user.role === "PARTNER" && <PartnerWorkspace/>}*/}
+          {user.user.role === "DRIVER" && <DriverWorkspace/>}
         </>
       ) : (
         <WithoutAuth />

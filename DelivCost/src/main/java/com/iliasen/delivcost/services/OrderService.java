@@ -2,13 +2,12 @@ package com.iliasen.delivcost.services;
 
 import com.iliasen.delivcost.models.*;
 import com.iliasen.delivcost.repositories.ClientRepository;
+import com.iliasen.delivcost.repositories.DriverRepository;
 import com.iliasen.delivcost.repositories.OrderRepository;
 import com.iliasen.delivcost.repositories.PartnerRepository;
-import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
@@ -26,6 +25,8 @@ public class OrderService {
     private final OrderRepository orderRepository;
     private final PartnerRepository partnerRepository;
     private final ClientRepository clientRepository;
+    private final DriverRepository driverRepository;
+    private final TransportService transportService;
 
 
     public ResponseEntity<?> addOrder(Order order, Cargo cargo, Integer partnerId, UserDetails userDetails) {
@@ -46,6 +47,22 @@ public class OrderService {
         } catch (Exception e) {
             throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Error adding order", e);
         }
+    }
+
+    public ResponseEntity<?> transferOrdersToTheDriver(List<Order> orders, Integer driverId, UserDetails userDetails) {
+        partnerRepository.findByEmail(userDetails.getUsername())
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Partner not found"));
+
+        Driver driver = driverRepository.findById(driverId).orElseThrow(
+                () -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Driver not found"));
+
+        Transport transport = driver.getTransport();
+
+        if(transportService.calculateVolume(transport, orders)) {
+            driver.setOrders(orders);
+            driverRepository.save(driver);
+            return ResponseEntity.ok("Order transferred");
+        }else return ResponseEntity.badRequest().body("You have exceeded the load capacity of the vehicle");
     }
 
     public  ResponseEntity<?> getOrders(String status, UserDetails userDetails) {
@@ -130,12 +147,12 @@ public class OrderService {
 
         for (int i = 1; i <= orders.size(); i++) {
             Order order = orders.get(i - 1);
-            int weight = order.getCargo().getWeight();
+            double volume = order.getCargo().getVolume();
             int price = order.getPrice();
 
             for (int j = 1; j <= maxWeight; j++) {
-                if (weight <= j) {
-                    dp[i][j] = Math.max(dp[i - 1][j], dp[i - 1][j - weight] + price);
+                if (volume <= j) {
+                    dp[i][j] = Math.max(dp[i - 1][j], dp[i - 1][(int) (j - volume)] + price);
                 } else {
                     dp[i][j] = dp[i - 1][j];
                 }

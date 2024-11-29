@@ -15,7 +15,6 @@ const ChangeLocation =  observer(({show, onHide}) => {
 
     }
 
-
     return (
         <Modal show={show} onHide={onHide} centered>
                 <Modal.Header closeButton/>
