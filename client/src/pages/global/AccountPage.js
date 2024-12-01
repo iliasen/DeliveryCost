@@ -1,11 +1,11 @@
 import React, {useContext, useState} from 'react'
-import { Context } from '../index'
+import { Context } from '../../index'
 import { useNavigate } from 'react-router-dom'
-import {LOGIN_ROUTE, MAIN_ROUTE} from '../utils/consts'
+import {LOGIN_ROUTE, MAIN_ROUTE} from '../../utils/consts'
 
-import '../styles/AccountPage.css'
-import Delete from "../components/modals/DelAccount";
-import ChangePass from "../components/modals/ChangePass";
+import '../../styles/AccountPage.css'
+import Delete from "../../components/modals/DelAccount";
+import ChangePass from "../../components/modals/ChangePass";
 const AccountPage = () => {
   const {user} = useContext(Context)
   const [delVisible, setDelVisible] = useState(false)

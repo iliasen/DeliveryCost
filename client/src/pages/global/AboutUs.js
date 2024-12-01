@@ -1,7 +1,7 @@
 import React from 'react'
-import '../styles/AboutUs.css'
+import '../../styles/AboutUs.css'
 
-import Slideshow from '../components/modals/Slide'
+import Slideshow from '../../components/modals/Slide'
 
 const AboutUs = () => {
   return (

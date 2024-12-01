@@ -32,8 +32,8 @@ public class Transport {
     private Partner partner;
 
     @OneToOne(fetch = FetchType.LAZY, orphanRemoval = true)
-    @JoinTable(name = "transport_driver",
-            joinColumns = @JoinColumn(name = "transport_id"),
-            inverseJoinColumns = @JoinColumn(name = "driver_id"))
+//    @JoinTable(name = "transport_driver",
+//            joinColumns = @JoinColumn(name = "transport_id"),
+//            inverseJoinColumns = @JoinColumn(name = "driver_id"))
     private Driver driver;
 }

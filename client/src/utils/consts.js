@@ -24,4 +24,8 @@ export const RESOLVE_PROBLEM = '/back_problem'
 
 export const WAREHOUSE_ROUTE = '/warehouse'
 
-export const TRANSPORT_ROUTE = '/partner/trade'
+export const PARTNER_DRIVERS_ROUTE = '/partner/drivers'
+
+export const EQUIPMENT_ROUTE = '/partner/equipment'
+
+export const ADD_TRANSPORT_ROUTE = '/partner/add_transport'

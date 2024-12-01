@@ -1,9 +1,9 @@
 import React, { useState } from 'react'
-import { addTransport } from '../http/transportAPI'
+import { addTransport } from '../../http/transportAPI'
 import { useNavigate } from 'react-router-dom'
-import { MAIN_ROUTE } from '../utils/consts'
+import { MAIN_ROUTE } from '../../utils/consts'
 
-const Transport = () => {
+const AddTransport = () => {
 
   const [selectedType, setSelectedType] = useState(null)
   const [weight, setWeight] = useState(null)
@@ -36,7 +36,7 @@ const Transport = () => {
   function addNewTransport() {
     addTransport(selectedType, weight, volume).then()
     alert("Транспорт успешно добавлен")
-    nav(MAIN_ROUTE)
+    nav(-1)
   }
 
   return (
@@ -73,4 +73,4 @@ const Transport = () => {
   )
 }
 
-export default Transport
+export default AddTransport

@@ -2,6 +2,7 @@ package com.iliasen.delivcost.controllers;
 
 import com.iliasen.delivcost.models.Driver;
 import com.iliasen.delivcost.models.Order;
+import com.iliasen.delivcost.models.Transport;
 import com.iliasen.delivcost.services.DriverService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -29,7 +30,7 @@ public class DriverController {
     }
 
     @PutMapping(value = "/{id}")
-    public ResponseEntity<?> updateDriver(@PathVariable Integer id, @RequestBody Driver driver) {
-        return driverService.update(id, driver);
+    public ResponseEntity<?> addTransport(@PathVariable Integer id, @RequestBody Transport transport) {
+        return driverService.addTransportToDriver(id, transport);
     }
 }

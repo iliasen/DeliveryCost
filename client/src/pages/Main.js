@@ -5,11 +5,11 @@ import { observer } from 'mobx-react-lite'
 
 import '../styles/MainWithoutAuth.css'
 import '../styles/ClientWorkspace.css'
-import WithoutAuth from '../components/WithoutAuth'
-import ClientWorkspace from '../components/ClientWorkspace'
-import PartnerWorkspace from '../components/PartnerWorkspace'
-import DriverWorkspace from '../components/DriverWorkspace'
-import PartnerData from '../components/PartnerData'
+import WithoutAuth from './global/WithoutAuth'
+import ClientWorkspace from './client/ClientWorkspace'
+import PartnerWorkspace from './partner/PartnerWorkspace'
+import DriverWorkspace from './driver/DriverWorkspace'
+import PartnerData from './partner/PartnerData'
 import { checkFiends } from '../http/partnerAPI'
 
 

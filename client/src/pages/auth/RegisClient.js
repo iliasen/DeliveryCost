@@ -1,9 +1,9 @@
 import React, { useContext, useState } from 'react'
 import { Form } from 'react-bootstrap'
 import { NavLink, useNavigate } from 'react-router-dom'
-import { LOGIN_ROUTE, MAIN_ROUTE} from '../utils/consts'
-import { Context } from '../index'
-import {registrationClient, registrationDriver} from '../http/userAPI'
+import { LOGIN_ROUTE, MAIN_ROUTE} from '../../utils/consts'
+import { Context } from '../../index'
+import {registrationClient, registrationDriver} from '../../http/userAPI'
 
 const RegisClient = () => {
   const { user } = useContext(Context)
@@ -75,7 +75,7 @@ const RegisClient = () => {
   return (
     <div className="auth-сlient-container">
       <div className="card-content">
-        <a aria-label="Контакт Логистик" href="/" className="Logo"></a>
+        <a aria-label="Контакт Логистик" href="/public" className="Logo"></a>
         <h2 className="title">Регистрация</h2>
         <Form className="auth-form">
           <Form.Label>Имя</Form.Label>

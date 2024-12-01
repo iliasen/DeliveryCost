@@ -1,7 +1,7 @@
 import React from 'react'
-import "../styles/Regis.css"
+import "../../styles/Regis.css"
 import { NavLink, useNavigate } from 'react-router-dom'
-import { REGISTRATION_CLIENT_ROUTE, REGISTRATION_PARTNER_ROUTE } from '../utils/consts'
+import { REGISTRATION_CLIENT_ROUTE, REGISTRATION_PARTNER_ROUTE } from '../../utils/consts'
 
 const Regis = () => {
   let nav = useNavigate()

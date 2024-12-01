@@ -1,10 +1,10 @@
 import React, { useContext, useEffect, useState } from 'react'
-import { resolveProblem } from '../http/orderAPI'
-import { Context } from '../index'
-import ProblemItem from '../components/ProblemItem'
+import { resolveProblem } from '../../http/orderAPI'
+import { Context } from '../../index'
+import ProblemItem from '../../components/ProblemItem'
 import { Button } from 'react-bootstrap'
 
-import '../styles/BackProblem.css'
+import '../../styles/BackProblem.css'
 
 const BackProblem = () => {
   const [weight, setWeight] = useState(0);

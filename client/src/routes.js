@@ -11,24 +11,25 @@ import {
   REGISTRATION_PARTNER_ROUTE,
   MY_ORDERS_ROUTE,
   RESOLVE_PROBLEM,
-  WAREHOUSE_ROUTE, TRANSPORT_ROUTE,
+  WAREHOUSE_ROUTE, ADD_TRANSPORT_ROUTE, EQUIPMENT_ROUTE,
 } from './utils/consts'
 
 
 import Main from './pages/Main'
-import Auth from './pages/Auth'
-import AboutUs from './pages/AboutUs'
-import Payment from './pages/Payment'
-import Guarantees from './pages/Guarantees'
-import Account from './pages/AccountPage'
-import DoOrder from "./pages/DoOrder";
-import RegisClient from './pages/RegisClient'
-import RegisPartner from './pages/RegisPartner'
-import Regis from './pages/Regis'
+import Auth from './pages/global/Auth'
+import AboutUs from './pages/global/AboutUs'
+import Payment from './pages/global/Payment'
+import Guarantees from './pages/global/Guarantees'
+import Account from './pages/global/AccountPage'
+import DoOrder from "./pages/client/DoOrder";
+import RegisClient from './pages/auth/RegisClient'
+import RegisPartner from './pages/auth/RegisPartner'
+import Regis from './pages/auth/Regis'
 import MyOrders from './pages/MyOrders'
-import BackProblem from './pages/BackProblem'
-import Warehouse from './pages/Warehouse'
-import Transport from './pages/Transport'
+import BackProblem from './pages/partner/BackProblem'
+import Warehouse from './pages/client/Warehouse'
+import AddTransport from './pages/partner/AddTransport'
+import Equipment from './pages/partner/Equipment'
 
 export const authRoutes = [
   {
@@ -52,9 +53,13 @@ export const authRoutes = [
     Component: Warehouse
   },
   {
-    path: TRANSPORT_ROUTE,
-    Component: Transport
-  }
+    path: EQUIPMENT_ROUTE,
+    Component: Equipment
+  },
+  {
+    path: ADD_TRANSPORT_ROUTE,
+    Component: AddTransport
+  },
 ]
 
 export const publicRoutes = [

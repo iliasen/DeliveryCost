@@ -1,9 +1,9 @@
 import React, { useEffect, useState } from 'react';
 import { ProgressBar } from 'react-bootstrap';
 
-import { getSpace } from '../http/warehouseAPI'
+import { getSpace } from '../../http/warehouseAPI'
 
-import '../styles/Warehouse.css'
+import '../../styles/Warehouse.css'
 
 const Warehouse = () => {
   const [space, setSpace] = useState('');

@@ -1,11 +1,11 @@
 import React, { useContext, useEffect, useState } from 'react'
 import { observer } from 'mobx-react-lite'
-import { getOrder } from '../http/orderAPI'
-import { Context } from '../index'
+import { getOrder } from '../../http/orderAPI'
+import { Context } from '../../index'
 
-import MapBox from './MapBox'
+import MapBox from '../../components/MapBox'
 
-import '../styles/PartnerWorkspace.css'
+import '../../styles/PartnerWorkspace.css'
 
 
 const PartnerWorkspace = observer(() => {

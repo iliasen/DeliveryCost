@@ -7,6 +7,7 @@ import com.iliasen.delivcost.models.Transport;
 import com.iliasen.delivcost.repositories.DriverRepository;
 import com.iliasen.delivcost.repositories.OrderRepository;
 import com.iliasen.delivcost.repositories.PartnerRepository;
+import com.iliasen.delivcost.repositories.TransportRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -23,12 +24,21 @@ public class DriverService {
     private final DriverRepository driverRepository;
     private final PartnerRepository partnerRepository;
     private final OrderRepository orderRepository;
+    private final TransportRepository transportRepository;
 
-    public ResponseEntity<?> update(Integer id, Driver updatedDriver) {
-        driverRepository.findById(id).orElseThrow(
+    public ResponseEntity<?> addTransportToDriver(Integer id, Transport transport) {
+        Driver driver = driverRepository.findById(id).orElseThrow(
                 () -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Driver not found")
         );
-        driverRepository.save(updatedDriver);
+        //колхоз(
+        Transport old = transportRepository.findById(transport.getId()).orElseThrow();
+        transport.setDriver(driver);
+        transport.setPartner(old.getPartner());
+        transportRepository.save(transport);
+
+        driver.setTransport(transport);
+        driverRepository.save(driver);
+
         return ResponseEntity.ok("Transport added successfully");
     }
 

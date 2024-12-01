@@ -1,6 +1,6 @@
 import React, { useState } from 'react'
 import { Button, Form } from 'react-bootstrap'
-import { updateFields } from '../http/partnerAPI'
+import { updateFields } from '../../http/partnerAPI'
 
 const PartnerData = () => {
   const [companyOfficial, setCompanyOfficial] = useState('');

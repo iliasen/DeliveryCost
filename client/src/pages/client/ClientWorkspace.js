@@ -1,6 +1,6 @@
 import React, { useContext, useEffect, useState } from 'react'
-import Rating from './modals/Rating'
-import { Context } from '../index'
+import Rating from '../../components/modals/Rating'
+import { Context } from '../../index'
 import {
   getAverageRating,
   getPartners,
@@ -8,15 +8,15 @@ import {
   fetchRating,
   deleteRating,
   fetchLogoImage,
-} from '../http/partnerAPI'
+} from '../../http/partnerAPI'
 import { observer } from 'mobx-react-lite'
 
-import '../styles/ClientWorkspace.css'
-import { ORDER_ROUTE } from '../utils/consts'
+import '../../styles/ClientWorkspace.css'
+import { ORDER_ROUTE } from '../../utils/consts'
 import { NavLink } from 'react-router-dom'
 import { Button, Image } from 'react-bootstrap'
 
-import empty from '../res/ClientWorksapce/empty.png'
+import empty from '../../res/ClientWorksapce/empty.png'
 
 const ClientWorkspace = observer(() => {
 

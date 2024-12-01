@@ -1,13 +1,13 @@
 import React, { useContext, useEffect, useRef, useState } from 'react'
 import { Container, Spinner } from 'react-bootstrap'
-import {Context} from "../index";
+import {Context} from "../../index";
 import {observer} from "mobx-react-lite";
 
-import ConfirmTel from "../components/modals/ConfirmTel";
-import { addOrder, getAddress, getDistance } from '../http/orderAPI'
-import OrderCheck from "../components/modals/OrderCheck";
+import ConfirmTel from "../../components/modals/ConfirmTel";
+import { addOrder, getAddress, getDistance } from '../../http/orderAPI'
+import OrderCheck from "../../components/modals/OrderCheck";
 
-import '../styles/DoOrder.css'
+import '../../styles/DoOrder.css'
 
 
 const DoOrder = observer( () => {
@@ -305,10 +305,10 @@ const DoOrder = observer( () => {
                                     color: '#999',
                                     fontSize: 13,
                                 }}>Укажите как можно подробнее адрес забора товара</span>
-                                
+
                                 <h4 className='mt-5'>Детали груза</h4>
                                 <div className="d-flex">
-                            
+
                                     <div className="addressInputs">
                                         <label>Вес груза(кг.)</label>
                                         <input className="weight" name="weight" type="number" required value={weight}
@@ -316,12 +316,12 @@ const DoOrder = observer( () => {
                                     </div>
                                     <div className='addressInputs'>
                                         <label>Длина(см.)</label>
-                                        <input className='weight' name="length" type='number' required value={length} 
+                                        <input className='weight' name="length" type='number' required value={length}
                                             onChange={(e)=> setLength(e.target.value)}/>
                                     </div>
                                     <div className='addressInputs'>
                                         <label>Ширина(см.)</label>
-                                        <input className='weight' name="width" type='number' required value={width} 
+                                        <input className='weight' name="width" type='number' required value={width}
                                             onChange={(e)=> setWidth(e.target.value)}/>
                                     </div>
                                     <div className='addressInputs'>

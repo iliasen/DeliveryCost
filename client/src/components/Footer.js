@@ -49,7 +49,7 @@ export const Footer = () => {
 
           <div className="d-flex justify-content-between">
             Все права защищены
-            <div>© 2018-2023 OAO «KLOG»</div>
+            <div>© 2018-2024 OAO «KLOG»</div>
           </div>
         </div>
       </Container>

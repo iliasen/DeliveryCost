@@ -1,6 +1,6 @@
 import React from 'react'
 
-import '../styles/Payment_Guarantees.css'
+import '../../styles/Payment_Guarantees.css'
 const Payment = () => {
   return (
     <div className="payment-guarantees-back">

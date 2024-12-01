@@ -1,10 +1,10 @@
 import React, { useContext, useEffect, useState } from 'react'
-import '../styles/Auth.css'
+import '../../styles/Auth.css'
 import { NavLink, useLocation, useNavigate } from 'react-router-dom'
-import { LOGIN_ROUTE, REGISTRATION_ROUTE, MAIN_ROUTE } from '../utils/consts'
-import { login } from '../http/userAPI'
+import { LOGIN_ROUTE, REGISTRATION_ROUTE, MAIN_ROUTE } from '../../utils/consts'
+import { login } from '../../http/userAPI'
 import { observer } from 'mobx-react-lite'
-import { Context } from '../index'
+import { Context } from '../../index'
 import { Form } from 'react-bootstrap'
 
 const Auth = observer(() => {
@@ -40,7 +40,7 @@ const Auth = observer(() => {
   return (
     <div className="auth-container">
       <div className="card-content">
-        <a aria-label="Гефест" href="/" className="Logo"></a>
+        <a aria-label="Гефест" href="/public" className="Logo"></a>
         <h2 className="title">{isLogin ? 'Авторизация' : 'Регистрация'}</h2>
         <Form className="auth-form">
           <Form.Control

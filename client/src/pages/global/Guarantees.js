@@ -1,5 +1,5 @@
 import React from 'react'
-import { MAIN_ROUTE } from '../utils/consts'
+import { MAIN_ROUTE } from '../../utils/consts'
 import { NavLink } from 'react-router-dom'
 
 const Guarantees = () => {

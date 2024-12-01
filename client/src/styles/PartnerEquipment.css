@@ -1,0 +1,31 @@
+.card_for_transport, .card_for_driver {
+    margin-top: 6px;
+    padding: 4px;
+    display: flex;
+    flex-direction: column;
+    text-align: center;
+    background-color: #e2e2e2;
+    border-radius: 10px;
+}
+
+.add_some_button{
+    border-radius: 6px;
+    background: #f7765c;
+    color: #fff;
+    cursor: pointer;
+    padding: 5px 16px;
+    border: none;
+    margin: 5px;
+}
+
+.add_some_button:hover{
+    background: #f66d52;
+}
+
+/*.card_for_driver{*/
+/*    cursor: pointer;*/
+/*}*/
+
+/*.card_for_driver:hover{*/
+/*    background-color: #acada8;*/
+/*}*/

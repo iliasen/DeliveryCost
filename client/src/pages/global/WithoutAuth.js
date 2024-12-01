@@ -1,15 +1,15 @@
 import React from 'react'
 import { NavLink } from 'react-router-dom'
-import { LOGIN_ROUTE, REGISTRATION_CLIENT_ROUTE, REGISTRATION_PARTNER_ROUTE } from '../utils/consts'
+import { LOGIN_ROUTE, REGISTRATION_CLIENT_ROUTE, REGISTRATION_PARTNER_ROUTE } from '../../utils/consts'
 import { Image } from 'react-bootstrap'
 
-import box from '../res/Main/box.svg'
-import truck from '../res/Main/car.svg'
-import human from '../res/Main/human.svg'
-import safe from '../res/Main/safe1.png'
-import free from '../res/Main/free1.png'
+import box from '../../res/Main/box.svg'
+import truck from '../../res/Main/car.svg'
+import human from '../../res/Main/human.svg'
+import safe from '../../res/Main/safe1.png'
+import free from '../../res/Main/free1.png'
 
-import "../styles/MainWithoutAuth.css"
+import "../../styles/MainWithoutAuth.css"
 const WithoutAuth = () => {
   return (
 

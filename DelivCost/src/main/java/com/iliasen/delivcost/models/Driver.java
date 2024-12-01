@@ -46,6 +46,7 @@ public class Driver implements UserDetails {
     @ManyToOne(cascade = CascadeType.ALL)
     private Partner partner;
 
+    @JsonIgnore
     @OneToOne(mappedBy = "driver")
     private Transport transport;
 

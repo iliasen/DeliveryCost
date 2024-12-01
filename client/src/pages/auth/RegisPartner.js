@@ -1,8 +1,8 @@
 import React, { useContext, useState } from 'react'
-import { Context } from '../index'
+import { Context } from '../../index'
 import { NavLink, useNavigate } from 'react-router-dom'
-import { registrationPartner } from '../http/userAPI'
-import { LOGIN_ROUTE, MAIN_ROUTE } from '../utils/consts'
+import { registrationPartner } from '../../http/userAPI'
+import { LOGIN_ROUTE, MAIN_ROUTE } from '../../utils/consts'
 import { Form } from 'react-bootstrap'
 
 const RegisPartner = () => {
@@ -66,7 +66,7 @@ const RegisPartner = () => {
   return (
     <div className="auth-partner-container">
       <div className="card-content">
-        <a aria-label="Контакт Логистик" href="/" className="Logo"></a>
+        <a aria-label="Контакт Логистик" href="/public" className="Logo"></a>
         <h2 className="title">Регистрация</h2>
         <Form className="auth-form">
           <Form.Label>Имя</Form.Label>
