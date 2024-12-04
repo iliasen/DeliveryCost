@@ -31,6 +31,7 @@ public class Transport {
     @JoinColumn(name = "partner_id")
     private Partner partner;
 
+
     @OneToOne(fetch = FetchType.LAZY, orphanRemoval = true)
 //    @JoinTable(name = "transport_driver",
 //            joinColumns = @JoinColumn(name = "transport_id"),

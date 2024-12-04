@@ -22,10 +22,10 @@
     background: #f66d52;
 }
 
-/*.card_for_driver{*/
-/*    cursor: pointer;*/
-/*}*/
+.card_for_driver{
+    cursor: pointer;
+}
 
-/*.card_for_driver:hover{*/
-/*    background-color: #acada8;*/
-/*}*/
+.card_for_driver:hover{
+    background-color: #acada8;
+}

@@ -5,12 +5,14 @@ import { changeStatus, completeOrder } from '../http/orderAPI'
 import { Context } from '../index'
 import ChangeOrderStatus from './modals/ChangeOrderStatus'
 import { changeSubscribe } from '../http/notificationAPI'
+import { useNavigate } from 'react-router-dom'
+import { EQUIPMENT_ROUTE } from '../utils/consts'
 
 const OrderItem =observer(  ({ order }) => {
     const {user} = useContext(Context)
     const [showModal, setShowModal] = useState(false);
     const [isSubscribed, setIsSubscribed] = useState(order.clientSubscribe);
-
+    const navigate = useNavigate();
 
     const statusOptions = [
       { value: 'WITHOUT', label: 'Без статуса' },
@@ -47,14 +49,24 @@ const OrderItem =observer(  ({ order }) => {
               <p>Тип транспорта: {order.route.transportType}</p>
               <p>{order.comment && <div>Комментарий к заказу: {order.comment}</div>}</p>
             </div>
+
             {user.user.role === 'PARTNER' &&
-              <p>
-                Информация о клиенте:
-                <div>Имя: {order.client.firstName}</div>
-                <div>Фамилия: {order.client.lastName}</div>
-                <div>Email: {order.client.email}</div>
-                <div>Телефон: {order.client.phone}</div>
-              </p>
+              <div>
+                {order.driver ?
+                    <div className='mb-3'>
+                      Водитель: {order.driver.firstName}
+                    </div> : <button className="completeOrder mb-3" onClick={() =>navigate(EQUIPMENT_ROUTE)}>
+                      Выбрать водителя
+                    </button>
+                }
+                <p>
+                  Информация о клиенте:
+                  <div>Имя: {order.client.firstName}</div>
+                  <div>Фамилия: {order.client.lastName}</div>
+                  <div>Email: {order.client.email}</div>
+                  <div>Телефон: {order.client.phone}</div>
+                </p>
+              </div>
             }
 
             <div>
@@ -91,9 +103,10 @@ const OrderItem =observer(  ({ order }) => {
                 </div>
               )}
               <h4 >{getStatusLabel(order.orderStatus)}</h4>
-              <button className="completeOrder" onClick={completed}>
+              {order.orderStatus != 'COMPLETE' && <button className="completeOrder" onClick={completed}>
                 Заказ выполнен
-              </button>
+              </button>}
+
             </div>
             <div className="d-flex justify-content-end">
               <strong>Итого:</strong> {order.price} р.

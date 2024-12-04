@@ -96,6 +96,7 @@ public class AuthenticationService {
                 .email(registerRequest.getEmail())
                 .phone(registerRequest.getPhone())
                 .password(passwordEncoder.encode(registerRequest.getPassword()))
+                .partner(partner)
                 .role(Role.DRIVER)
                 .build();
 
@@ -129,16 +130,12 @@ public class AuthenticationService {
                     .map(GrantedAuthority::getAuthority)
                     .orElseThrow(() -> new IllegalStateException("У пользователя нет ролей"));
 
-            String jwtToken;
-            if (role.equals("CLIENT")) {
-                jwtToken = jwtService.generateToken(userDetails, Role.CLIENT);
-            } else if (role.equals("PARTNER")) {
-                jwtToken = jwtService.generateToken(userDetails, Role.PARTNER);
-            } else if (role.equals("DRIVER")) {
-                jwtToken = jwtService.generateToken(userDetails, Role.DRIVER);
-            } else {
-                throw new IllegalStateException("Недопустимая роль пользователя: " + role);
-            }
+            String jwtToken = switch (role) {
+                case "CLIENT" -> jwtService.generateToken(userDetails, Role.CLIENT);
+                case "PARTNER" -> jwtService.generateToken(userDetails, Role.PARTNER);
+                case "DRIVER" -> jwtService.generateToken(userDetails, Role.DRIVER);
+                default -> throw new IllegalStateException("Недопустимая роль пользователя: " + role);
+            };
 
             return AuthenticationResponse.builder()
                     .token(jwtToken)

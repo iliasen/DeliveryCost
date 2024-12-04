@@ -16,6 +16,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -51,8 +52,21 @@ public class DriverService {
     }
 
     public ResponseEntity<List<Driver>> getAll(UserDetails userDetails) {
-        Partner partner = partnerRepository.findByEmail(userDetails.getUsername()).orElseThrow();
+        Partner partner = partnerRepository.findByEmail(userDetails.getUsername()).orElseThrow(
+                () -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Partner not found")
+        );
         List<Driver> drivers = driverRepository.findDriversByPartner(partner);
+        return ResponseEntity.ok(drivers);
+    }
+
+    public ResponseEntity<List<Driver>> getFreeDrivers(UserDetails userDetails) {
+        Partner partner = partnerRepository.findByEmail(userDetails.getUsername()).orElseThrow(
+                () -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Partner not found")
+        );
+        List<Driver> drivers = driverRepository.findDriversByPartner(partner);
+        drivers = drivers.stream()
+                .filter(driver -> driver.getTransport() == null)
+                .collect(Collectors.toList());
         return ResponseEntity.ok(drivers);
     }
 }

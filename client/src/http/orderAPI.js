@@ -1,4 +1,4 @@
-import { $authHost } from './index'
+import { $authHost, $host } from './index'
 import axios from 'axios'
 import { load } from '@2gis/mapgl'
 
@@ -14,7 +14,16 @@ const key = '158628dd-3eb7-4612-bbc7-692c1d5db3d8' // cвежий
 
 export const getOrder = async () => {
   const { data } = await $authHost.get('api/order')
-  console.log(data)
+  return data
+}
+
+export const getWorkOrder = async () => {
+  const { data } = await $authHost.get('api/order/partner')
+  return data
+}
+
+export const getOrdersForDriver = async (id) => {
+  const { data } = await $authHost.get('api/order/driver/'+id)
   return data
 }
 
@@ -144,6 +153,12 @@ export const addOrder = async (id, pointOfDeparture, deliveryPoint, distance, tr
   const { data } = await $authHost.post('/api/order/' + id, order)
   return data
 }
+
+export const transferOrdersToDriver = async (id, selectedOrders) => {
+
+  const { data } = await $host.post('api/order/transfer/' + id, {orderList: selectedOrders});
+  return data;
+};
 
 export const changeStatus = async (id, status) => {
   const { data } = await $authHost.put(`/api/order/status/${id}`, null, {

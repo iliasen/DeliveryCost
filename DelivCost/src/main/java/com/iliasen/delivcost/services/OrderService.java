@@ -1,11 +1,14 @@
 package com.iliasen.delivcost.services;
 
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.iliasen.delivcost.models.*;
 import com.iliasen.delivcost.repositories.ClientRepository;
 import com.iliasen.delivcost.repositories.DriverRepository;
 import com.iliasen.delivcost.repositories.OrderRepository;
 import com.iliasen.delivcost.repositories.PartnerRepository;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -16,6 +19,7 @@ import org.springframework.web.server.ResponseStatusException;
 import java.util.*;
 import java.util.stream.Collectors;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class OrderService {
@@ -49,20 +53,24 @@ public class OrderService {
         }
     }
 
-    public ResponseEntity<?> transferOrdersToTheDriver(List<Order> orders, Integer driverId, UserDetails userDetails) {
-        partnerRepository.findByEmail(userDetails.getUsername())
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Partner not found"));
-
+    public ResponseEntity<?> transferOrdersToTheDriver(Integer driverId,List<Order> orders) {
         Driver driver = driverRepository.findById(driverId).orElseThrow(
                 () -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Driver not found"));
 
         Transport transport = driver.getTransport();
 
-        if(transportService.calculateVolume(transport, orders)) {
-            driver.setOrders(orders);
+        if (transportService.calculateVolume(transport, orders)) {
+            // Добавляем каждый заказ по отдельности
+            for (Order order : orders) {
+                order.setDriver(driver);
+                orderRepository.save(order);
+                driver.getOrders().add(order);
+            }
             driverRepository.save(driver);
-            return ResponseEntity.ok("Order transferred");
-        }else return ResponseEntity.badRequest().body("You have exceeded the load capacity of the vehicle");
+            return ResponseEntity.ok("Orders transferred");
+        } else {
+            return ResponseEntity.badRequest().body("You have exceeded the load capacity of the vehicle");
+        }
     }
 
     public  ResponseEntity<?> getOrders(String status, UserDetails userDetails) {
@@ -78,6 +86,11 @@ public class OrderService {
                     .orElseThrow(() -> new NoSuchElementException("Client not found"));
 
             orders = orderRepository.findByClientId(client.getId());
+        } else if (userDetails.getAuthorities().contains(new SimpleGrantedAuthority("DRIVER"))) {
+            Driver driver = driverRepository.findByEmail(userDetails.getUsername())
+                    .orElseThrow(() -> new NoSuchElementException("Driver not found"));
+
+            orders = orderRepository.findByDriverId(driver.getId());
         }
 
         if (status != null) {
@@ -86,7 +99,6 @@ public class OrderService {
                     .filter(order -> order.getOrderStatus() == filterStatus)
                     .collect(Collectors.toList());
         }
-
         Collections.sort(orders, Comparator.comparing(
                 Order::getOrderStatus,
                 Comparator.nullsLast(Comparator.comparing(OrderStatus::ordinal))
@@ -95,6 +107,60 @@ public class OrderService {
             return ResponseEntity.ok(orders);
         }else {
             return ResponseEntity.ok(Collections.emptyList());
+        }
+    }
+
+    public ResponseEntity<?> getOrdersForPartner(UserDetails userDetails) {
+        Partner partner = partnerRepository.findByEmail(userDetails.getUsername())
+                .orElseThrow(() -> new NoSuchElementException("Partner not found"));
+        List<Order> orders = orderRepository.findByPartnerId(partner.getId());
+
+        orders = orders.stream()
+                .filter(order -> order.getOrderStatus() != OrderStatus.COMPLETE)
+                .collect(Collectors.toList());
+        Collections.sort(orders, Comparator.comparing(
+                Order::getOrderStatus,
+                Comparator.nullsLast(Comparator.comparing(OrderStatus::ordinal))
+        ));
+        if (!orders.isEmpty()) {
+            return ResponseEntity.ok(orders);
+        }else {
+            return ResponseEntity.ok(Collections.emptyList());
+        }
+    }
+
+    public ResponseEntity<List<Order>> getOrdersForDriver(Integer id, UserDetails userDetails) {
+        Partner partner = partnerRepository.findByEmail(userDetails.getUsername())
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Partner not found"));
+        Driver driver = driverRepository.findById(id)
+                .orElseThrow(()-> new ResponseStatusException(HttpStatus.NOT_FOUND, "Driver not found"));
+
+        List<Order> orders = orderRepository.findByPartnerId(partner.getId());
+        orders = orders.stream()
+                .filter(order -> order.getRoute().getTransportType() == driver.getTransport().getTransportType() && order.getOrderStatus() != OrderStatus.COMPLETE && order.getDriver() == null)
+                .collect(Collectors.toList());
+        return ResponseEntity.ok(orders);
+    }
+
+    public ResponseEntity<?> getOrdersByTransportType(String type, UserDetails userDetails) {
+        Partner partner = partnerRepository.findByEmail(userDetails.getUsername())
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Partner not found"));
+
+        try {
+            ObjectMapper objectMapper = new ObjectMapper();
+            JsonNode jsonNode = objectMapper.readTree(type);
+
+            String transportTypeString = jsonNode.path("type").asText();
+
+            TransportType transportType = TransportType.valueOf(transportTypeString);
+            List<Order> orders = orderRepository.findByPartnerId(partner.getId());
+            orders = orders.stream()
+                    .filter(order -> order.getRoute().getTransportType() == transportType)
+                    .collect(Collectors.toList());
+            return ResponseEntity.ok(orders);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 
@@ -170,4 +236,5 @@ public class OrderService {
 
         return new ResponseEntity<>(selectedOrders, HttpStatus.OK);
     }
+
 }

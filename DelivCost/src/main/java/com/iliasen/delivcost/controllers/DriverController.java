@@ -24,6 +24,11 @@ public class DriverController {
         return driverService.getAll(userDetails);
     }
 
+    @GetMapping(value = "/free")
+    public ResponseEntity<List<Driver>> getFreeDrivers(@AuthenticationPrincipal UserDetails userDetails) {
+        return driverService.getFreeDrivers(userDetails);
+    }
+
     @GetMapping(value = "/{id}/orders")
     public ResponseEntity<List<Order>> getAllOrders(@PathVariable Integer id) {
         return driverService.getOrders(id);

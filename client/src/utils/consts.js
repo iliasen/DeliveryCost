@@ -24,7 +24,7 @@ export const RESOLVE_PROBLEM = '/back_problem'
 
 export const WAREHOUSE_ROUTE = '/warehouse'
 
-export const PARTNER_DRIVERS_ROUTE = '/partner/drivers'
+export const PARTNER_TRANSFER_ROUTE = '/partner/transfer/:driverId'
 
 export const EQUIPMENT_ROUTE = '/partner/equipment'
 

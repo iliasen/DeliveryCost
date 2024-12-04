@@ -11,7 +11,7 @@ import {
   REGISTRATION_PARTNER_ROUTE,
   MY_ORDERS_ROUTE,
   RESOLVE_PROBLEM,
-  WAREHOUSE_ROUTE, ADD_TRANSPORT_ROUTE, EQUIPMENT_ROUTE,
+  WAREHOUSE_ROUTE, ADD_TRANSPORT_ROUTE, EQUIPMENT_ROUTE, PARTNER_TRANSFER_ROUTE,
 } from './utils/consts'
 
 
@@ -30,6 +30,7 @@ import BackProblem from './pages/partner/BackProblem'
 import Warehouse from './pages/client/Warehouse'
 import AddTransport from './pages/partner/AddTransport'
 import Equipment from './pages/partner/Equipment'
+import TransferOrders from './pages/partner/TransferOrders'
 
 export const authRoutes = [
   {
@@ -60,6 +61,10 @@ export const authRoutes = [
     path: ADD_TRANSPORT_ROUTE,
     Component: AddTransport
   },
+  {
+    path: PARTNER_TRANSFER_ROUTE,
+    Component: TransferOrders
+  }
 ]
 
 export const publicRoutes = [

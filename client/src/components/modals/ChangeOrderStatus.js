@@ -21,7 +21,6 @@ const ChangeOrderStatus = observer(({ show, onHide, orderId}) => {
 
   const handleSaveStatus = () => {
     changeStatus(orderId, selectedStatus).then((r) => onHide())
-    // window.location.reload()
   };
 
   return (

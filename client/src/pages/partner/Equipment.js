@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react'
 import { NavLink, useNavigate } from 'react-router-dom'
-import { ADD_TRANSPORT_ROUTE, REGISTRATION_CLIENT_ROUTE } from '../../utils/consts'
+import { ADD_TRANSPORT_ROUTE, PARTNER_TRANSFER_ROUTE, REGISTRATION_CLIENT_ROUTE } from '../../utils/consts'
 import { getTransports } from '../../http/transportAPI'
 import { getDrivers } from '../../http/driverAPI'
 import { Image } from 'react-bootstrap'
@@ -39,13 +39,23 @@ const Equipment = () => {
   }, [])
 
 
+  console.log(drivers)
+
   const handleAddDriver = (transport) => {
     setSelectedTransport(transport);
     setVisible(true);
   };
 
+  const goToTransfer = (driverId) => {
+    nav(PARTNER_TRANSFER_ROUTE.replace(':driverId', driverId));
+  }
+
+  // const goToTransfer = (driverId, type) => {
+  //   nav(PARTNER_TRANSFER_ROUTE.replace(':driverId', driverId).replace(':type', type));
+  // };
+
   return (
-    <div className="container" style={{height:'80vh'}}>
+    <div className="container" style={{height:'90vh'}}>
       <button className="orderSentButton" onClick={() => nav(ADD_TRANSPORT_ROUTE)}>Добавить транспорт</button>
       <h4 className="mt-3">Транспорт: </h4>
       <div className='d-flex g-5'>
@@ -66,6 +76,7 @@ const Equipment = () => {
       </div>
 
       <h4 className="mt-3">Перевозчики</h4>
+      <AddDriver show={visible} onHide={() => setVisible(false)} transport={selectedTransport} />
 
       <button className="orderSentButton">
         <NavLink style={{color: 'white'}} to={`${REGISTRATION_CLIENT_ROUTE}?role=driver`}>
@@ -74,7 +85,7 @@ const Equipment = () => {
       </button>
       <div className="d-flex mt-3 mb-3">
         {drivers.map(driver => (
-          <div key={driver.id} className='card_for_driver d-flex flex-column align-items-center' style={{marginRight: '10px'}}>
+          <div key={driver.id} className='card_for_driver d-flex flex-column align-items-center' style={{marginRight: '10px'}} onClick={()=>goToTransfer(driver.id)}>
             <Image src='https://img.icons8.com/?size=100&id=nULzKoWMIRQw&format=png&color=000000' style={{width:'100px'}} />
             <div>{driver.firstName} {driver.lastName}</div>
             <div>{driver.phone}</div>
@@ -83,7 +94,6 @@ const Equipment = () => {
         )}
       </div>
 
-      <AddDriver show={visible} onHide={() => setVisible(false)} transport={selectedTransport} />
     </div>
   )
 }

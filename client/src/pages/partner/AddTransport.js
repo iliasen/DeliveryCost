@@ -37,6 +37,7 @@ const AddTransport = () => {
     addTransport(selectedType, weight, volume).then()
     alert("Транспорт успешно добавлен")
     nav(-1)
+    // window.location.reload()
   }
 
   return (

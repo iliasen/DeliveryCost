@@ -43,17 +43,17 @@ public class Order {
     @OneToMany(mappedBy = "order")
     private List<Notification> notification;
 
+
     @ManyToOne
     @JoinColumn(name = "partner_id")
     private Partner partner;
+
 
     @ManyToOne
     @JoinColumn(name = "client_id")
     private Client client;
 
-
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "driver_id")
     private Driver driver;
-
 }

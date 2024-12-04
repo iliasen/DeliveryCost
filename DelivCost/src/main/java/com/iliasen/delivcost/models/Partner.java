@@ -1,6 +1,7 @@
 package com.iliasen.delivcost.models;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -75,6 +76,7 @@ public class Partner implements UserDetails{
     private List<Notification> notifications;
 
     @Override
+    @JsonDeserialize(using = GrantedAuthorityDeserializer.class)
     public Collection<? extends GrantedAuthority> getAuthorities() {
         return List.of(new SimpleGrantedAuthority(role.name()));
     }

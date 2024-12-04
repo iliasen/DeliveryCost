@@ -1,24 +1,26 @@
-import React, {useEffect, useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import Modal from 'react-bootstrap/Modal'
 import { Button, Dropdown, Form } from 'react-bootstrap'
 import { observer } from 'mobx-react-lite'
-import { addTransport, getDrivers } from '../../http/driverAPI'
+import { addTransport, getFreeDrivers } from '../../http/driverAPI'
 
 const AddDriver = observer(({ show, onHide, transport }) => {
 
   const [drivers, setDrivers] = useState([])
-  const [selectedDriver, setSelectedDriver] = useState("")
+  const [selectedDriver, setSelectedDriver] = useState('')
 
   useEffect(() => {
-    getDrivers().then(data => setDrivers(data))
+    getFreeDrivers().then(data => setDrivers(data))
   }, [])
 
-    console.log(drivers)
+  console.log(drivers)
   console.log(transport)
-  const addTransportToDriver = () =>{
+  const addTransportToDriver = () => {
     // console.log(item.selectedBrand.id, value)
     // changeBrand(item.selectedBrand.id, value, country).then(data =>  {onHide()})
-    addTransport(selectedDriver, transport).then(r => {onHide()})
+    addTransport(selectedDriver, transport).then(r => {
+      onHide()
+    })
     console.log(transport)
   }
 
@@ -33,26 +35,33 @@ const AddDriver = observer(({ show, onHide, transport }) => {
         <Form>
           <div>
             <Form.Text>Водители</Form.Text>
-            <Dropdown className="mt-2 mb-2">
-              <Dropdown.Toggle variant='outline-dark'>{selectedDriver.firstName || "Выберите водителя"}</Dropdown.Toggle>
-              <Dropdown.Menu>
-                {drivers.map(driver =>
+
+            {drivers.length != 0 ? <>{drivers.map(driver =>
+              <Dropdown className="mt-2 mb-2">
+                <Dropdown.Toggle
+                  variant="outline-dark">{selectedDriver.firstName || 'Выберите водителя'}</Dropdown.Toggle>
+                <Dropdown.Menu>
                   <Dropdown.Item
-                    onClick={() =>setSelectedDriver(driver)}
+                    onClick={() => setSelectedDriver(driver)}
                     key={driver.id}
                   >
                     {driver.firstName} {driver.lastName}
                   </Dropdown.Item>
-                )}
-              </Dropdown.Menu>
-            </Dropdown>
+                </Dropdown.Menu>
+              </Dropdown>,
+            )}</> :
+              <div>Свободных водителей нет, наймите водителя !</div>
+            }
+
+
           </div>
         </Form>
       </Modal.Body>
       <Modal.Footer>
+        {drivers.length != 0 &&
         <Button variant="outline-success" onClick={addTransportToDriver}>
           Подтвердить
-        </Button>
+        </Button>}
       </Modal.Footer>
     </Modal>
   )

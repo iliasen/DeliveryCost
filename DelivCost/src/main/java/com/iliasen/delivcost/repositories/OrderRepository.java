@@ -11,5 +11,8 @@ public interface OrderRepository extends CrudRepository<Order, Integer> {
 
     List<Order> findByClientId(Integer id);
 
+    List<Order> findByDriverId(Integer id);
+
     List<Order> findByPartnerAndPartnerChecked(Partner partner, boolean b);
+
 }

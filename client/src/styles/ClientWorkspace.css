@@ -93,6 +93,15 @@ table {
     padding: 5px 0 5px 30px;
 }
 
+.transportType{
+    margin-top: 6px;
+    padding: 4px;
+    display: flex;
+    flex-direction: column;
+    text-align: center;
+    background-color: #e2e2e2;
+    border-radius: 10px;
+}
 
 
 

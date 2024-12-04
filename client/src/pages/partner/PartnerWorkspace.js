@@ -1,6 +1,6 @@
 import React, { useContext, useEffect, useState } from 'react'
 import { observer } from 'mobx-react-lite'
-import { getOrder } from '../../http/orderAPI'
+import { getWorkOrder } from '../../http/orderAPI'
 import { Context } from '../../index'
 
 import MapBox from '../../components/MapBox'
@@ -13,7 +13,7 @@ const PartnerWorkspace = observer(() => {
   const [selectedOrders, setSelectedOrders] = useState([]);
 
   useEffect(()=> {
-    getOrder().then((orders)=> order.setOrder(orders))
+    getWorkOrder().then((orders)=> order.setOrder(orders))
   },[order])
 
   const handleOrderClick = (order) => {

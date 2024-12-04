@@ -5,6 +5,7 @@ import {observer} from "mobx-react-lite";
 
 import ConfirmTel from "../../components/modals/ConfirmTel";
 import { addOrder, getAddress, getDistance } from '../../http/orderAPI'
+import { getTransportsForUser } from '../../http/transportAPI'
 import OrderCheck from "../../components/modals/OrderCheck";
 
 import '../../styles/DoOrder.css'
@@ -31,6 +32,8 @@ const DoOrder = observer( () => {
     const [deliverySearchResults, setDeliverySearchResults] = useState([]);
     const [isDepartureSearching, setIsDepartureSearching] = useState(false);
     const [isDeliverySearching, setIsDeliverySearching] = useState(false);
+    const [transports, setTransports] = useState([]);
+
     const transportTypes = ['CAR', 'TRUCK', 'TRAIN', 'SHIP', 'AIRPLANE'];
     const transportPrices = {
         'CAR': 0.5,
@@ -39,28 +42,20 @@ const DoOrder = observer( () => {
         'SHIP': 1.2,
         'AIRPLANE': 2.0
     };
-    const weightLimit = {
-        'CAR': 1000,
-        'TRUCK': 5000,
-        'TRAIN': 100000,
-        'SHIP': 1000000,
-        'AIRPLANE': 1500
-    }
-    const [selectedType, setSelectedType] = useState(null);
+
+    const [selectedTransport, setSelectedTransport] = useState("");
     const innerFormRef = useRef(null)
 
-    const transportWeight = weightLimit[selectedType];
-
      const calculateShippingCost = ()=> {
-        if (distance === null || selectedType === null) {
+        if (distance === null || selectedTransport === null) {
             return null; // Возвращаем null, если значения distance или selectedType не определены
         }
 
-        if (!transportPrices.hasOwnProperty(selectedType)) {
-            throw new Error("Invalid transport type");
-        }
+        // if (!transportPrices.hasOwnProperty(selectedTransport.transportType)) {
+        //     throw new Error("Invalid transport type");
+        // }
 
-        const transportPrice = transportPrices[selectedType];
+        const transportPrice = transportPrices[selectedTransport.transportType];
         const baseCost = distance.routes[0].distance * transportPrice;
         const supplierCost = baseCost * (1 + partners.selectedPartner.margin/100);
 
@@ -171,6 +166,10 @@ const DoOrder = observer( () => {
         }
     }, [departureSearchResults, deliverySearchResults]);
 
+    useEffect(() => {
+        getTransportsForUser(partners.selectedPartner.id).then((r) => setTransports(r))
+    }, [])
+
     const handleChange = (e) => {
         let input = e.target.value;
 
@@ -239,7 +238,7 @@ const DoOrder = observer( () => {
 
     const submitOrder = (event) => {
         event.preventDefault();
-        addOrder(partners.selectedPartner.id, pointOfDeparture, deliveryPoint, distance.routes[0].distance, selectedType, comment, weight, length, width, height, calculateShippingCost()).then(()=>setVisible(true))
+        addOrder(partners.selectedPartner.id, pointOfDeparture, deliveryPoint, distance.routes[0].distance, selectedTransport.transportType, comment, weight, length, width, height, calculateShippingCost()).then(()=>setVisible(true))
     }
 
     return (
@@ -342,13 +341,13 @@ const DoOrder = observer( () => {
 
 
                             <label className="mt-4 f">Тип доставки</label>
-                            {weight > transportWeight && <div className="overloadMessage"><strong>Перегруз!</strong></div>}
+                            {weight > selectedTransport.tonnage && <div className="overloadMessage"><strong>Перегруз!</strong></div>}
                             <div className="d-flex gap-5">
-                                {transportTypes.map((type) => (
-                                  <div key={type} className={`deliveryType ${selectedType === type && 'selected'}`}
-                                       onClick={() => setSelectedType(type)}>
-                                      {getIconForTransportType(type)}
-                                      {type}
+                                {transports.map((transport) => (
+                                  <div key={transport} className={`deliveryType ${selectedTransport === transport && 'selected'}`}
+                                       onClick={() => setSelectedTransport(transport)}>
+                                      {getIconForTransportType(transport.transportType)}
+                                      {transport.transportType}
                                   </div>
                                 ))}
                             </div>
@@ -386,8 +385,8 @@ const DoOrder = observer( () => {
                             {calculateShippingCost() && <div className='mt-3'>
                                 <strong>Итого: </strong>{calculateShippingCost()} р.
                             </div>}
-                            <button className={`orderSentButton ${weight > transportWeight && 'disabled'}`}
-                                    type="submit" disabled={weight > transportWeight}>
+                            <button className={`orderSentButton ${weight > selectedTransport.tonnage && 'disabled'}`}
+                                    type="submit" disabled={weight > selectedTransport.tonnage}>
                                 Заказать
                             </button>
                         </div>

@@ -17,6 +17,7 @@ import { NavLink } from 'react-router-dom'
 import { Button, Image } from 'react-bootstrap'
 
 import empty from '../../res/ClientWorksapce/empty.png'
+import { getTransportsForUser } from '../../http/transportAPI'
 
 const ClientWorkspace = observer(() => {
 
@@ -25,6 +26,7 @@ const ClientWorkspace = observer(() => {
   const [rating, setRating] = useState([])
   const [img, setImg] = useState('')
   const [isLoading, setIsLoading] = useState(true)
+  const [transports, setTransports] = useState([]);
 
   useEffect(() => {
     if (partners.selectedPartner) {
@@ -59,6 +61,32 @@ const ClientWorkspace = observer(() => {
       getAverageRating(partners.selectedPartner.id).then((avg) => setAverage(avg))
     }
   }, [partners.selectedPartner.id])
+
+  useEffect(() => {
+    if (partners.selectedPartner.id) {
+    getTransportsForUser(partners.selectedPartner.id).then((r) => setTransports(r))
+    }
+  }, [partners.selectedPartner.id])
+
+
+  const getIconForTransportType = (type) => {
+    switch (type) {
+      case 'CAR':
+        return <img width="100" height="100" src="https://img.icons8.com/papercut/120/car.png" alt="car" />
+      case 'TRUCK':
+        return <img width="100" height="100" src="https://img.icons8.com/papercut/120/truck.png" alt="truck" />
+      case 'TRAIN':
+        return <img width="100" height="100" src="https://img.icons8.com/papercut/120/train.png" alt="train" />
+      case 'SHIP':
+        return <img width="100" height="100" src="https://img.icons8.com/color/96/cruise-ship.png"
+                    alt="cruise-ship" />
+      case 'AIRPLANE':
+        return <img width="100" height="100" src="https://img.icons8.com/arcade/128/airplane-front-view.png"
+                    alt="airplane-front-view" />
+      default:
+        return null
+    }
+  }
 
   const CreateRating = (rate, feedback) => {
     createRating(partners.selectedPartner.id, rate, feedback).then(() => {
@@ -190,13 +218,25 @@ const ClientWorkspace = observer(() => {
                 </div>
               </div>
 
+              <div className="mt-3">
+                <h3 className="regular-site__block-title"><span>Транспорт пренадлежащий партнеру</span></h3>
+                <div className="d-flex gap-5">
+                  {transports.map((transport) => (
+                    <div key={transport} className="transportType">
+                      {getIconForTransportType(transport.transportType)}
+                      {transport.transportType}
+                    </div>
+                  ))}
+                </div>
+              </div>
+
               <div className="mt-5">
                 <h3 className="regular-site__block-title"><span>Надёжность\Отзывы</span></h3>
               </div>
               <div>
                 <div className="d-flex">
                   <div className="mark_rate">
-                   Рейтинг поставщика: {average}
+                    Рейтинг поставщика: {average}
                   </div>
                   <div className="rate"></div>
                   <div id="after_feedback"></div>
