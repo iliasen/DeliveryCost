@@ -19,12 +19,12 @@ public class NotificationController {
     }
 
     @PutMapping(value = "/subscribe/{id}")
-    public ResponseEntity<?> setSubscribe(@PathVariable Integer id,@RequestParam boolean subscribe, @AuthenticationPrincipal UserDetails userDetails){
+    public ResponseEntity<?> setSubscribe(@PathVariable Long id,@RequestParam boolean subscribe, @AuthenticationPrincipal UserDetails userDetails){
         return notificationService.changeSubscribe(id, subscribe, userDetails);
     }
 
     @PutMapping(value = "/view/{id}")
-    public ResponseEntity<?> viewingTheNotify(@PathVariable Integer id, @AuthenticationPrincipal UserDetails userDetails){
+    public ResponseEntity<?> viewingTheNotify(@PathVariable Long id, @AuthenticationPrincipal UserDetails userDetails){
         return notificationService.viewNotify(id, userDetails);
     }
 

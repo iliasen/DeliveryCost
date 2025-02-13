@@ -1,11 +1,7 @@
 package com.iliasen.delivcost.controllers;
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.iliasen.delivcost.models.Transport;
-import com.iliasen.delivcost.models.TransportType;
 import com.iliasen.delivcost.services.TransportService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -28,7 +24,7 @@ public class TransportController {
     }
 
     @GetMapping(value = "/{id}")
-    public ResponseEntity<?> getForUser(@PathVariable Integer id) {
+    public ResponseEntity<?> getForUser(@PathVariable Long id) {
         return transportService.getTransportForUser(id);
     }
 
@@ -36,7 +32,4 @@ public class TransportController {
     public ResponseEntity<?> getByType(@RequestBody(required = false) String type, @AuthenticationPrincipal UserDetails userDetails) {
         return transportService.getTransportByType(type, userDetails);
     }
-
-//    @GetMapping(value = "/to_order")
-//    public ResponseEntity<?> getToOrder(@AuthenticationPrincipal UserDetails userDetails) {}
 }

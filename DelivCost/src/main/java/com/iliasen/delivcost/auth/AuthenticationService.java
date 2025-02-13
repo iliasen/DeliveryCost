@@ -1,7 +1,7 @@
 package com.iliasen.delivcost.auth;
 
 import com.iliasen.delivcost.configs.JwtService;
-import com.iliasen.delivcost.exeptions.UserNotFoundException;
+import com.iliasen.delivcost.exeptions.NotFoundException;
 import com.iliasen.delivcost.models.*;
 import com.iliasen.delivcost.repositories.ClientRepository;
 import com.iliasen.delivcost.repositories.DriverRepository;
@@ -17,9 +17,6 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
-
-import java.security.Principal;
-
 
 @Service
 @RequiredArgsConstructor
@@ -141,7 +138,7 @@ public class AuthenticationService {
                     .token(jwtToken)
                     .build();
         } else {
-            throw new UserNotFoundException("Пользователь не найден");
+            throw new NotFoundException("Пользователь не найден");
         }
     }
 }

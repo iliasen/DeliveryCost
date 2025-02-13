@@ -15,22 +15,22 @@ public class RatingController {
     private final RatingService ratingService;
 
     @PostMapping(value = "/{id}")
-    public ResponseEntity<?> addRating(@PathVariable Integer id, @RequestBody Rating req, @AuthenticationPrincipal UserDetails userDetails){
+    public ResponseEntity<?> addRating(@PathVariable Long id, @RequestBody Rating req, @AuthenticationPrincipal UserDetails userDetails){
         return ratingService.createRating(id, req, userDetails);
     }
 
     @GetMapping(value = "/{id}")
-    public ResponseEntity<?> getPartner(@PathVariable Integer id){
+    public ResponseEntity<?> getPartner(@PathVariable Long id){
         return ratingService.getById(id);
     }
 
     @GetMapping(value = "/average/{id}")
-    public ResponseEntity<?> getAverage(@PathVariable Integer id){
+    public ResponseEntity<?> getAverage(@PathVariable Long id){
         return ratingService.getAverageRating(id);
     }
 
     @DeleteMapping(value = "/{id}")
-    public ResponseEntity<?> deleteRating(@PathVariable Integer id, @AuthenticationPrincipal UserDetails userDetails){
+    public ResponseEntity<?> deleteRating(@PathVariable Long id, @AuthenticationPrincipal UserDetails userDetails){
         return ratingService.deleteRatingById(id, userDetails);
     }
 }

@@ -2,17 +2,19 @@ package com.iliasen.delivcost.repositories;
 
 import com.iliasen.delivcost.models.Notification;
 import org.springframework.data.repository.CrudRepository;
+import org.springframework.stereotype.Repository;
 
 import java.util.List;
 import java.util.Optional;
 
-public interface NotificationRepository extends CrudRepository<Notification, Integer> {
-    List<Notification> findByClientId(Integer id);
-    List<Notification> findByPartnerId(Integer id);
+@Repository
+public interface NotificationRepository extends CrudRepository<Notification, Long> {
+    List<Notification> findByClientId(Long id);
+    List<Notification> findByPartnerId(Long id);
 
-    List<Notification> findByOrderId(Integer orderId);
+    List<Notification> findByOrderId(Long orderId);
 
-    void deleteByPartnerId(Integer id);
+    void deleteByPartnerId(Long id);
 
-    void deleteByClientId(Integer id);
+    void deleteByClientId(Long id);
 }

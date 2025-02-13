@@ -81,7 +81,7 @@ public class TransportService {
         }
     }
 
-    public ResponseEntity<?> getTransportForUser(Integer id) {
+    public ResponseEntity<?> getTransportForUser(Long id) {
         partnerRepository.findById(id)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Partner not found"));
 

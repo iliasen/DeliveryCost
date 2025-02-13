@@ -37,7 +37,7 @@ public class PartnerService {
         return ResponseEntity.ok(partners);
     }
 
-    public ResponseEntity<Partner> getOne(Integer id) {
+    public ResponseEntity<Partner> getOne(Long id) {
         Partner partner = partnerRepository.findById(id).orElseThrow();
         return ResponseEntity.ok(partner);
     }

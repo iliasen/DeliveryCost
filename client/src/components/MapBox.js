@@ -5,7 +5,7 @@ import { getAddress, TSLRequest } from '../http/orderAPI'
 import { MapContext} from '../index'
 import axios from 'axios'
 
-const MapBox = ({ selectedOrders }) => {
+const MapBox = ({ selectedOrders, order }) => {
   const [taskResult, setTaskResult] = useState(null)
   const [_, setMapInstance] = React.useContext(MapContext);
   let map
@@ -104,7 +104,7 @@ const MapBox = ({ selectedOrders }) => {
     }
   }
 
-  const getCoordinates = async (selectedOrders) => {
+  const getCoordinates = async (selectedOrders, order) => {
     let coordinates =[]
     const getAddressPromises = selectedOrders.map(async (order) => {
       const pointOfDepartureAddressPromise = getAddress(order.route.pointOfDeparture);
@@ -153,7 +153,7 @@ const MapBox = ({ selectedOrders }) => {
     };
 
     fetchTSLData().then();
-  }, [selectedOrders]);
+  }, []);
 
   console.log(taskResult)
 

@@ -4,13 +4,10 @@ import { load } from '@2gis/mapgl'
 
 // const key = 'bce1dd40-8c89-4c5d-beea-fce9c1e8071f'
 
-//const key = '061ff499-0e05-4984-b5b5-068b1fe35299' //основной
+const key = 'a770be7e-8467-4627-a537-556695108731' //основной
 
-// const key = 'c104c8d1-9496-401d-9dd8-be12960697e5'
 
-// const key = '1cd344fc-02f9-49ec-8007-56f415a6f886'
-
-const key = '158628dd-3eb7-4612-bbc7-692c1d5db3d8' // cвежий
+// const key = '158628dd-3eb7-4612-bbc7-692c1d5db3d8' // cвежий
 
 export const getOrder = async () => {
   const { data } = await $authHost.get('api/order')
@@ -19,6 +16,12 @@ export const getOrder = async () => {
 
 export const getWorkOrder = async () => {
   const { data } = await $authHost.get('api/order/partner')
+  return data
+}
+
+export const getDriverOrders = async (id) => {
+  const { data } = await $authHost.get('api/order/driver/have/'+id)
+  console.log("data", data)
   return data
 }
 

@@ -28,7 +28,7 @@ public class CargoService {
         cargoRepository.save(cargo);
     }
 
-    public ResponseEntity<?> getCargo(Integer id){
+    public ResponseEntity<?> getCargo(Long id){
         Cargo cargo = cargoRepository.findById(id)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Order not found"));
         return ResponseEntity.ok(cargo);

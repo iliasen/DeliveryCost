@@ -2,6 +2,12 @@ package com.iliasen.delivcost.services;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.iliasen.delivcost.dto.OrderAndCargoRequest;
+import com.iliasen.delivcost.dto.OrderDTO;
+import com.iliasen.delivcost.exeptions.NotFoundException;
+import com.iliasen.delivcost.exeptions.TransportOverloadedException;
+import com.iliasen.delivcost.mapper.CargoMapper;
+import com.iliasen.delivcost.mapper.OrderMapper;
 import com.iliasen.delivcost.models.*;
 import com.iliasen.delivcost.repositories.ClientRepository;
 import com.iliasen.delivcost.repositories.DriverRepository;
@@ -31,47 +37,70 @@ public class OrderService {
     private final ClientRepository clientRepository;
     private final DriverRepository driverRepository;
     private final TransportService transportService;
+    private final OrderMapper orderMapper;
 
+    public OrderDTO addOrder(OrderAndCargoRequest request, Long partnerId, UserDetails userDetails) {
+        Client client = clientRepository.findByEmail(userDetails.getUsername())
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Client not found"));
+        Partner partner = partnerRepository.findById(partnerId)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Partner not found"));
 
-    public ResponseEntity<?> addOrder(Order order, Cargo cargo, Integer partnerId, UserDetails userDetails) {
-        try {
-            Client client = clientRepository.findByEmail(userDetails.getUsername())
-                    .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Client not found"));
-            Partner partner = partnerRepository.findById(partnerId)
-                    .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Partner not found"));
+        Order order = OrderMapper.INSTANCE.toOrder(request.order());
+        Cargo cargo = CargoMapper.INSTANCE.toCargo(request.cargo());
 
-            order.setClient(client);
-            order.setPartner(partner);
-            order.setCargo(cargo);
-            orderRepository.save(order);
+        order.setClient(client);
+        order.setPartner(partner);
+        order.setCargo(cargo);
+        orderRepository.save(order);
 
-            cargoService.addCargo(cargo, order);
+        cargoService.addCargo(cargo, order);
 
-            return ResponseEntity.ok("Order added");
-        } catch (Exception e) {
-            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Error adding order", e);
-        }
+        return OrderMapper.INSTANCE.toOrderDTO(order);
     }
 
-    public ResponseEntity<?> transferOrdersToTheDriver(Integer driverId,List<Order> orders) {
-        Driver driver = driverRepository.findById(driverId).orElseThrow(
-                () -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Driver not found"));
+    public ResponseEntity<?> transferOrdersToTheDriver(Long driverId, List<OrderDTO> orderList) {
+        Driver driver = driverRepository.findById(driverId)
+                .orElseThrow(() -> new NotFoundException("Driver not found"));
+
+
+        List<Order> orders = orderList.stream()
+                .map(orderMapper::toOrder)
+                .collect(Collectors.toList());
 
         Transport transport = driver.getTransport();
+        List<Order> foundOrders = findOrdersByIds(orders);
 
-        if (transportService.calculateVolume(transport, orders)) {
-            // Добавляем каждый заказ по отдельности
-            for (Order order : orders) {
-                order.setDriver(driver);
-                orderRepository.save(order);
-                driver.getOrders().add(order);
-            }
-            driverRepository.save(driver);
+        if (transportService.calculateVolume(transport, foundOrders)) {
+            transferOrdersToDriver(driver, foundOrders);
             return ResponseEntity.ok("Orders transferred");
         } else {
-            return ResponseEntity.badRequest().body("You have exceeded the load capacity of the vehicle");
+            throw new TransportOverloadedException("You have exceeded the load capacity of the vehicle");
         }
     }
+
+    private List<Order> findOrdersByIds(List<Order> orders) {
+        List<Order> foundOrders = new ArrayList<>();
+        for (Order order : orders) {
+            Order foundOrder = orderRepository.findById(order.getId()).orElse(null);
+            if (foundOrder != null) {
+                foundOrders.add(foundOrder);
+            }
+        }
+        if (foundOrders.isEmpty()) {
+            throw new NotFoundException("No valid orders found in the provided list");
+        }
+        return foundOrders;
+    }
+
+    private void transferOrdersToDriver(Driver driver, List<Order> orders) {
+        for (Order order : orders) {
+            order.setDriver(driver);
+            orderRepository.save(order);
+            driver.getOrders().add(order);
+        }
+        driverRepository.save(driver);
+    }
+
 
     public  ResponseEntity<?> getOrders(String status, UserDetails userDetails) {
         List<Order> orders = new ArrayList<>();
@@ -110,6 +139,12 @@ public class OrderService {
         }
     }
 
+    public ResponseEntity<?> getDriverOrders(Long id){
+        Driver driver = driverRepository.findById(id).orElseThrow(()-> new ResponseStatusException(HttpStatus.NOT_FOUND, "Driver not found"));
+        List<Order> orders = orderRepository.findByDriverId(driver.getId());
+        return ResponseEntity.ok(orders);
+    }
+
     public ResponseEntity<?> getOrdersForPartner(UserDetails userDetails) {
         Partner partner = partnerRepository.findByEmail(userDetails.getUsername())
                 .orElseThrow(() -> new NoSuchElementException("Partner not found"));
@@ -129,7 +164,7 @@ public class OrderService {
         }
     }
 
-    public ResponseEntity<List<Order>> getOrdersForDriver(Integer id, UserDetails userDetails) {
+    public ResponseEntity<List<Order>> getOrdersForTransferToDriver(Long id, UserDetails userDetails) {
         Partner partner = partnerRepository.findByEmail(userDetails.getUsername())
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Partner not found"));
         Driver driver = driverRepository.findById(id)
@@ -171,13 +206,13 @@ public class OrderService {
         return ResponseEntity.ok(orders);
     }
 
-    public ResponseEntity<?> getOrder(Integer id) {
+    public ResponseEntity<?> getOrder(Long id) {
         Order order = orderRepository.findById(id)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Order not found"));
         return ResponseEntity.ok(order);
     }
 
-    public ResponseEntity<?> updateStatus(Integer id, OrderStatus newStatus) {
+    public ResponseEntity<?> updateStatus(Long id, OrderStatus newStatus) {
         Order order = orderRepository.findById(id)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Order not found"));
 
@@ -193,7 +228,7 @@ public class OrderService {
         return ResponseEntity.ok("Status update");
     }
 
-    public ResponseEntity<?> setPartnerView(Integer id) {
+    public ResponseEntity<?> setPartnerView(Long id) {
         Order order = orderRepository.findById(id)
                 .orElseThrow(() -> new NoSuchElementException("Order not found"));
         order.setPartnerChecked(true);

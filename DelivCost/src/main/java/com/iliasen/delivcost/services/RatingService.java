@@ -23,7 +23,7 @@ public class RatingService {
     private final ClientRepository clientRepository;
     private final PartnerRepository partnerRepository;
 
-    public ResponseEntity<?> createRating(Integer partnerId,Rating req, UserDetails userDetails) {
+    public ResponseEntity<?> createRating(Long partnerId,Rating req, UserDetails userDetails) {
 
         Client client = clientRepository.findByEmail(userDetails.getUsername())
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Client not found"));
@@ -49,7 +49,7 @@ public class RatingService {
     }
 
 
-    public ResponseEntity<?> getById(Integer partnerId) {
+    public ResponseEntity<?> getById(Long partnerId) {
         Partner partner = partnerRepository.findById(partnerId)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Partner not found"));
 
@@ -61,7 +61,7 @@ public class RatingService {
     }
 
 
-    public ResponseEntity<?> getAverageRating(Integer partnerId) {
+    public ResponseEntity<?> getAverageRating(Long partnerId) {
         Partner partner = partnerRepository.findById(partnerId)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Partner not found"));
         if(partner == null){
@@ -83,7 +83,7 @@ public class RatingService {
         }
     }
 
-    public ResponseEntity<?> deleteRatingById(Integer partnerId, UserDetails userDetails) {
+    public ResponseEntity<?> deleteRatingById(Long partnerId, UserDetails userDetails) {
 
         Client client = clientRepository.findByEmail(userDetails.getUsername())
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Client not found"));

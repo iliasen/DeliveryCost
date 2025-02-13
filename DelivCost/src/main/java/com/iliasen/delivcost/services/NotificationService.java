@@ -62,7 +62,7 @@ public class NotificationService {
         notificationRepository.saveAll(notifications);
     }
 
-    public ResponseEntity<?> viewNotify(Integer id, UserDetails userDetails) {
+    public ResponseEntity<?> viewNotify(Long id, UserDetails userDetails) {
         Notification notification;
         if (userDetails.getAuthorities().contains(new SimpleGrantedAuthority("PARTNER"))) {
             partnerRepository.findByEmail(userDetails.getUsername())
@@ -100,7 +100,7 @@ public class NotificationService {
         return ResponseEntity.ok(notifications);
     }
 
-    public ResponseEntity<?> changeSubscribe(Integer orderId,boolean subscribe, UserDetails userDetails){
+    public ResponseEntity<?> changeSubscribe(Long orderId,boolean subscribe, UserDetails userDetails){
         Client client = clientRepository.findByEmail(userDetails.getUsername())
                 .orElseThrow(() -> new NoSuchElementException("Client not found"));
         Order order = orderRepository.findById(orderId)

@@ -1,0 +1,35 @@
+spring:
+  application:
+    name: DeliveryCost
+  jpa:
+    hibernate:
+      ddl-auto: update
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.PostgreSQLDialect
+  datasource:
+    url: jdbc:postgresql://localhost:5432/deliv_cost
+    username: postgres
+    password: 7756
+    driver-class-name: org.postgresql.Driver
+  liquibase:
+    change-log: classpath:db/changelog/changelog.xml
+  security:
+    user:
+      password:
+        encoder: bCrypt
+
+server:
+  port: 5000
+  servlet:
+    context-path: /api
+  security:
+    jwt:
+      secret-key: 5zTHB1ZfZvMcNhB4zxy9nHr6CfO/1hB9w2WkM6mKfLw=
+      expiration: 86400000 #1 day
+
+logging:
+  level:
+    org:
+      springframework:
+        security: DEBUG

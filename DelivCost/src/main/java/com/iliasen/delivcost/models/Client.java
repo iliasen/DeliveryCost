@@ -21,7 +21,7 @@ public class Client implements UserDetails {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer id;
+    private Long id;
 
     @Column(unique = true,nullable = false)
     private String email;
@@ -59,6 +59,7 @@ public class Client implements UserDetails {
     private List<Notification> notifications;
 
     @Override
+    @JsonIgnore
     public Collection<? extends GrantedAuthority> getAuthorities() {
         return List.of(new SimpleGrantedAuthority(role.name()));
     }

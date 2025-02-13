@@ -14,7 +14,7 @@ import java.util.List;
 public class Warehouse {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer id;
+    private Long id;
 
     @Column
     private int length = 1600;

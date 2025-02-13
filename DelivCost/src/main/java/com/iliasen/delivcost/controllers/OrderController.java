@@ -1,10 +1,11 @@
 package com.iliasen.delivcost.controllers;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.iliasen.delivcost.dto.MaxWeightDTO;
 import com.iliasen.delivcost.dto.OrderAndCargoRequest;
+import com.iliasen.delivcost.dto.OrderDTO;
 import com.iliasen.delivcost.dto.OrderListDTO;
-import com.iliasen.delivcost.models.Cargo;
-import com.iliasen.delivcost.models.Order;
+import com.iliasen.delivcost.mapper.OrderMapper;
 import com.iliasen.delivcost.models.OrderStatus;
 import com.iliasen.delivcost.services.OrderService;
 import lombok.RequiredArgsConstructor;
@@ -14,19 +15,20 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 
+
 @RestController
 @RequiredArgsConstructor
 @RequestMapping(value = "/order")
 public class OrderController {
     private final OrderService orderService;
 
+    private final OrderMapper orderMapper;
+
     @PreAuthorize("isAuthenticated()")
     @PostMapping(value = "/{id}")
-    public ResponseEntity<?> createOrder(@RequestBody OrderAndCargoRequest request, @PathVariable Integer id, @AuthenticationPrincipal UserDetails userDetails){
-//        System.out.println(request);
-        Order orderRequest = request.getOrder();
-        Cargo cargoRequest = request.getCargo();
-        return orderService.addOrder(orderRequest, cargoRequest, id, userDetails);
+    public ResponseEntity<OrderDTO> createOrder(@RequestBody OrderAndCargoRequest request, @PathVariable Long id, @AuthenticationPrincipal UserDetails userDetails) throws JsonProcessingException {
+        OrderDTO orderDTO = orderService.addOrder(request, id, userDetails);
+        return ResponseEntity.ok(orderDTO);
     }
 
     @GetMapping
@@ -40,14 +42,18 @@ public class OrderController {
         return orderService.getOrdersForPartner(userDetails);
     }
 
+    @GetMapping(value = "/driver/have/{id}")
+    public ResponseEntity<?> getOrdersForDriver(@PathVariable Long id){
+        return orderService.getDriverOrders(id);
+    }
+
     @GetMapping(value = "/driver/{id}")
-    public ResponseEntity<?> getOrderForDriver(@PathVariable Integer id, @AuthenticationPrincipal UserDetails userDetails){
-        return orderService.getOrdersForDriver(id, userDetails);
+    public ResponseEntity<?> getOrdersForTransferToDriver(@PathVariable Long id, @AuthenticationPrincipal UserDetails userDetails){
+        return orderService.getOrdersForTransferToDriver(id, userDetails);
     }
 
     @PostMapping(value = "/transfer/{id}")
-    public ResponseEntity<?> transferOrdersToTheDriver(@PathVariable Integer id, @RequestBody OrderListDTO orderList){
-        System.out.println(orderList.toString());
+    public ResponseEntity<?> transferOrdersToTheDriver(@PathVariable Long id, @RequestBody OrderListDTO orderList){
         return orderService.transferOrdersToTheDriver(id, orderList.getOrderList());
     }
 
@@ -63,14 +69,14 @@ public class OrderController {
     }
     
     @GetMapping(value = "/{id}")
-    public ResponseEntity<?> getOrder(@PathVariable Integer id){return orderService.getOrder(id);}
+    public ResponseEntity<?> getOrder(@PathVariable Long id){return orderService.getOrder(id);}
 
     @PutMapping(value = "/status/{id}")
-    public ResponseEntity<?> updateOrderStatus(@PathVariable Integer id, @RequestParam OrderStatus status){return orderService.updateStatus(id, status);}
+    public ResponseEntity<?> updateOrderStatus(@PathVariable Long id, @RequestParam OrderStatus status){return orderService.updateStatus(id, status);}
 
     @PreAuthorize("hasAuthority('PARTNER')")
     @PutMapping(value = "/review/{id}")
-    public ResponseEntity<?> reviewedOrder(@PathVariable Integer id){return orderService.setPartnerView(id);}
+    public ResponseEntity<?> reviewedOrder(@PathVariable Long id){return orderService.setPartnerView(id);}
 
     @PreAuthorize("hasAuthority('PARTNER')")
     @PostMapping(value = "/back_problem")

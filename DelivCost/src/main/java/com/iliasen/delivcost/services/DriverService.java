@@ -24,10 +24,9 @@ public class DriverService {
 
     private final DriverRepository driverRepository;
     private final PartnerRepository partnerRepository;
-    private final OrderRepository orderRepository;
     private final TransportRepository transportRepository;
 
-    public ResponseEntity<?> addTransportToDriver(Integer id, Transport transport) {
+    public ResponseEntity<?> addTransportToDriver(Long id, Transport transport) {
         Driver driver = driverRepository.findById(id).orElseThrow(
                 () -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Driver not found")
         );
@@ -43,7 +42,7 @@ public class DriverService {
         return ResponseEntity.ok("Transport added successfully");
     }
 
-    public ResponseEntity<List<Order>> getOrders(Integer driverId) {
+    public ResponseEntity<List<Order>> getOrders(Long driverId) {
         Driver driver = driverRepository.findById(driverId).orElseThrow(
                 ()-> new ResponseStatusException(HttpStatus.NOT_FOUND, "Driver not found")
         );

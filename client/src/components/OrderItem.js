@@ -50,7 +50,7 @@ const OrderItem =observer(  ({ order }) => {
               <p>{order.comment && <div>Комментарий к заказу: {order.comment}</div>}</p>
             </div>
 
-            {user.user.role === 'PARTNER' &&
+            {(user.user.role === 'PARTNER' && order.orderStatus !== 'COMPLETE') &&
               <div>
                 {order.driver ?
                     <div className='mb-3'>
@@ -95,7 +95,7 @@ const OrderItem =observer(  ({ order }) => {
 
           <div className='d-flex flex-column justify-content-between'>
             <div>
-              {user.user.role === 'PARTNER' && (
+              {(user.user.role === 'PARTNER' || user.user.role === 'DRIVER') && (
                 <div className="changeOrderStatus" onClick={() => {
                   setShowModal(true)
                 }}>
@@ -103,7 +103,7 @@ const OrderItem =observer(  ({ order }) => {
                 </div>
               )}
               <h4 >{getStatusLabel(order.orderStatus)}</h4>
-              {order.orderStatus != 'COMPLETE' && <button className="completeOrder" onClick={completed}>
+              {order.orderStatus !== 'COMPLETE' && <button className="completeOrder" onClick={completed}>
                 Заказ выполнен
               </button>}
 

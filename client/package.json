@@ -4,6 +4,7 @@
   "private": true,
   "dependencies": {
     "@2gis/mapgl": "^1.47.0",
+    "@2gis/mapgl-directions": "^2.0.3",
     "@testing-library/jest-dom": "^5.16.5",
     "@testing-library/react": "^13.4.0",
     "@testing-library/user-event": "^13.5.0",

@@ -82,7 +82,7 @@ const ClientWorkspace = observer(() => {
                     alt="cruise-ship" />
       case 'AIRPLANE':
         return <img width="100" height="100" src="https://img.icons8.com/arcade/128/airplane-front-view.png"
-                    alt="airplane-front-view" />
+                    alt="airplane" />
       default:
         return null
     }

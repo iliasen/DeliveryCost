@@ -30,12 +30,12 @@ public class DriverController {
     }
 
     @GetMapping(value = "/{id}/orders")
-    public ResponseEntity<List<Order>> getAllOrders(@PathVariable Integer id) {
+    public ResponseEntity<List<Order>> getAllOrders(@PathVariable Long id) {
         return driverService.getOrders(id);
     }
 
     @PutMapping(value = "/{id}")
-    public ResponseEntity<?> addTransport(@PathVariable Integer id, @RequestBody Transport transport) {
+    public ResponseEntity<?> addTransport(@PathVariable Long id, @RequestBody Transport transport) {
         return driverService.addTransportToDriver(id, transport);
     }
 }

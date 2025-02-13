@@ -24,7 +24,7 @@ import java.util.Set;
 public class Partner implements UserDetails{
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer id;
+    private Long id;
 
     @Column(unique = true, nullable = false)
     private String companyName;
@@ -75,8 +75,13 @@ public class Partner implements UserDetails{
     @OneToMany(mappedBy = "partner",cascade = CascadeType.ALL)
     private List<Notification> notifications;
 
+//    @JsonDeserialize(using = GrantedAuthorityDeserializer.class)
+//    public Collection<? extends GrantedAuthority> getAuthorities() {
+//        return List.of(new SimpleGrantedAuthority(role.name()));
+//    }
+
     @Override
-    @JsonDeserialize(using = GrantedAuthorityDeserializer.class)
+    @JsonIgnore
     public Collection<? extends GrantedAuthority> getAuthorities() {
         return List.of(new SimpleGrantedAuthority(role.name()));
     }

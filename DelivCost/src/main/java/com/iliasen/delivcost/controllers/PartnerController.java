@@ -33,7 +33,7 @@ public class PartnerController {
     }
 
     @GetMapping(value = "/{id}")
-    public ResponseEntity<Partner> getPartner(@PathVariable Integer id){
+    public ResponseEntity<Partner> getPartner(@PathVariable Long id){
         return partnerService.getOne(id);
     }
 
