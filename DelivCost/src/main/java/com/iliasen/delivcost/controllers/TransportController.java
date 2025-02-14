@@ -1,4 +1,5 @@
 package com.iliasen.delivcost.controllers;
+import com.iliasen.delivcost.dto.TransportDTO;
 import com.iliasen.delivcost.models.Transport;
 import com.iliasen.delivcost.services.TransportService;
 import lombok.RequiredArgsConstructor;
@@ -7,6 +8,8 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @RestController
 @RequiredArgsConstructor
 @RequestMapping(value = "/transport")
@@ -14,22 +17,22 @@ public class TransportController {
     private final TransportService transportService;
 
     @PostMapping
-    public ResponseEntity<?> create(@RequestBody Transport transport, @AuthenticationPrincipal UserDetails userDetails) {
-        return transportService.addTransport(transport, userDetails);
+    public ResponseEntity<String> create(@RequestBody Transport transport, @AuthenticationPrincipal UserDetails userDetails) {
+        return ResponseEntity.ok(transportService.addTransport(transport, userDetails));
     }
 
     @GetMapping
-    public ResponseEntity<?> getAll(@AuthenticationPrincipal UserDetails userDetails) {
-        return transportService.getTransport(userDetails);
+    public ResponseEntity<List<TransportDTO>> getAll(@AuthenticationPrincipal UserDetails userDetails) {
+        return ResponseEntity.ok(transportService.getTransport(userDetails));
     }
 
     @GetMapping(value = "/{id}")
-    public ResponseEntity<?> getForUser(@PathVariable Long id) {
-        return transportService.getTransportForUser(id);
+    public ResponseEntity<List<TransportDTO>> getForUser(@PathVariable Long id) {
+        return ResponseEntity.ok(transportService.getTransportForUser(id));
     }
 
     @GetMapping(value = "/by_type")
-    public ResponseEntity<?> getByType(@RequestBody(required = false) String type, @AuthenticationPrincipal UserDetails userDetails) {
-        return transportService.getTransportByType(type, userDetails);
+    public ResponseEntity<List<TransportDTO>> getByType(@RequestBody(required = false) String type, @AuthenticationPrincipal UserDetails userDetails) {
+        return ResponseEntity.ok(transportService.getTransportByType(type, userDetails));
     }
 }

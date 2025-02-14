@@ -38,6 +38,7 @@ public class OrderService {
     private final DriverRepository driverRepository;
     private final TransportService transportService;
     private final OrderMapper orderMapper;
+    private final CargoMapper cargoMapper;
 
     public OrderDTO addOrder(OrderAndCargoRequest request, Long partnerId, UserDetails userDetails) {
         Client client = clientRepository.findByEmail(userDetails.getUsername())
@@ -45,8 +46,8 @@ public class OrderService {
         Partner partner = partnerRepository.findById(partnerId)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Partner not found"));
 
-        Order order = OrderMapper.INSTANCE.toOrder(request.order());
-        Cargo cargo = CargoMapper.INSTANCE.toCargo(request.cargo());
+        Order order = orderMapper.toOrder(request.order());
+        Cargo cargo = cargoMapper.toCargo(request.cargo());
 
         order.setClient(client);
         order.setPartner(partner);
@@ -55,10 +56,10 @@ public class OrderService {
 
         cargoService.addCargo(cargo, order);
 
-        return OrderMapper.INSTANCE.toOrderDTO(order);
+        return orderMapper.toOrderDTO(order);
     }
 
-    public ResponseEntity<?> transferOrdersToTheDriver(Long driverId, List<OrderDTO> orderList) {
+    public String transferOrdersToTheDriver(Long driverId, List<OrderDTO> orderList) {
         Driver driver = driverRepository.findById(driverId)
                 .orElseThrow(() -> new NotFoundException("Driver not found"));
 
@@ -72,7 +73,7 @@ public class OrderService {
 
         if (transportService.calculateVolume(transport, foundOrders)) {
             transferOrdersToDriver(driver, foundOrders);
-            return ResponseEntity.ok("Orders transferred");
+            return "Orders transferred";
         } else {
             throw new TransportOverloadedException("You have exceeded the load capacity of the vehicle");
         }
@@ -102,23 +103,20 @@ public class OrderService {
     }
 
 
-    public  ResponseEntity<?> getOrders(String status, UserDetails userDetails) {
+    public List<OrderDTO> getOrders(String status, UserDetails userDetails) {
         List<Order> orders = new ArrayList<>();
 
         if (userDetails.getAuthorities().contains(new SimpleGrantedAuthority("PARTNER"))) {
             Partner partner = partnerRepository.findByEmail(userDetails.getUsername())
                     .orElseThrow(() -> new NoSuchElementException("Partner not found"));
-
             orders = orderRepository.findByPartnerId(partner.getId());
         } else if (userDetails.getAuthorities().contains(new SimpleGrantedAuthority("CLIENT"))) {
             Client client = clientRepository.findByEmail(userDetails.getUsername())
                     .orElseThrow(() -> new NoSuchElementException("Client not found"));
-
             orders = orderRepository.findByClientId(client.getId());
         } else if (userDetails.getAuthorities().contains(new SimpleGrantedAuthority("DRIVER"))) {
             Driver driver = driverRepository.findByEmail(userDetails.getUsername())
                     .orElseThrow(() -> new NoSuchElementException("Driver not found"));
-
             orders = orderRepository.findByDriverId(driver.getId());
         }
 
@@ -128,24 +126,31 @@ public class OrderService {
                     .filter(order -> order.getOrderStatus() == filterStatus)
                     .collect(Collectors.toList());
         }
-        Collections.sort(orders, Comparator.comparing(
+
+        orders.sort(Comparator.comparing(
                 Order::getOrderStatus,
                 Comparator.nullsLast(Comparator.comparing(OrderStatus::ordinal))
         ));
-        if (!orders.isEmpty()) {
-            return ResponseEntity.ok(orders);
-        }else {
-            return ResponseEntity.ok(Collections.emptyList());
-        }
+
+        return orders.isEmpty()
+                ? Collections.emptyList()
+                : orders.stream()
+                .map(orderMapper::toOrderDTO)
+                .collect(Collectors.toList());
     }
 
-    public ResponseEntity<?> getDriverOrders(Long id){
+    public List<OrderDTO> getDriverOrders(Long id){
         Driver driver = driverRepository.findById(id).orElseThrow(()-> new ResponseStatusException(HttpStatus.NOT_FOUND, "Driver not found"));
         List<Order> orders = orderRepository.findByDriverId(driver.getId());
-        return ResponseEntity.ok(orders);
+
+        return orders.isEmpty()
+                ? Collections.emptyList()
+                : orders.stream()
+                .map(orderMapper::toOrderDTO)
+                .collect(Collectors.toList());
     }
 
-    public ResponseEntity<?> getOrdersForPartner(UserDetails userDetails) {
+    public List<OrderDTO> getOrdersForPartner(UserDetails userDetails) {
         Partner partner = partnerRepository.findByEmail(userDetails.getUsername())
                 .orElseThrow(() -> new NoSuchElementException("Partner not found"));
         List<Order> orders = orderRepository.findByPartnerId(partner.getId());
@@ -153,66 +158,52 @@ public class OrderService {
         orders = orders.stream()
                 .filter(order -> order.getOrderStatus() != OrderStatus.COMPLETE)
                 .collect(Collectors.toList());
+
         Collections.sort(orders, Comparator.comparing(
                 Order::getOrderStatus,
                 Comparator.nullsLast(Comparator.comparing(OrderStatus::ordinal))
         ));
-        if (!orders.isEmpty()) {
-            return ResponseEntity.ok(orders);
-        }else {
-            return ResponseEntity.ok(Collections.emptyList());
-        }
+
+        return orders.isEmpty()
+                ? Collections.emptyList()
+                : orders.stream()
+                .map(orderMapper::toOrderDTO)
+                .collect(Collectors.toList());
     }
 
-    public ResponseEntity<List<Order>> getOrdersForTransferToDriver(Long id, UserDetails userDetails) {
+    public List<OrderDTO> getOrdersForTransferToDriver(Long id, UserDetails userDetails) {
         Partner partner = partnerRepository.findByEmail(userDetails.getUsername())
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Partner not found"));
         Driver driver = driverRepository.findById(id)
                 .orElseThrow(()-> new ResponseStatusException(HttpStatus.NOT_FOUND, "Driver not found"));
 
         List<Order> orders = orderRepository.findByPartnerId(partner.getId());
-        orders = orders.stream()
-                .filter(order -> order.getRoute().getTransportType() == driver.getTransport().getTransportType() && order.getOrderStatus() != OrderStatus.COMPLETE && order.getDriver() == null)
+
+        List<OrderDTO> orderDTOList = orders.stream()
+                .filter(order -> order.getRoute().getTransportType() == driver.getTransport().getTransportType() &&
+                        order.getOrderStatus() != OrderStatus.COMPLETE &&
+                        order.getDriver() == null)
+                .map(orderMapper::toOrderDTO)
+                .sorted(Comparator.comparing(OrderDTO::getOrderStatus))
                 .collect(Collectors.toList());
-        return ResponseEntity.ok(orders);
+
+        return orderDTOList;
     }
 
-    public ResponseEntity<?> getOrdersByTransportType(String type, UserDetails userDetails) {
-        Partner partner = partnerRepository.findByEmail(userDetails.getUsername())
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Partner not found"));
-
-        try {
-            ObjectMapper objectMapper = new ObjectMapper();
-            JsonNode jsonNode = objectMapper.readTree(type);
-
-            String transportTypeString = jsonNode.path("type").asText();
-
-            TransportType transportType = TransportType.valueOf(transportTypeString);
-            List<Order> orders = orderRepository.findByPartnerId(partner.getId());
-            orders = orders.stream()
-                    .filter(order -> order.getRoute().getTransportType() == transportType)
-                    .collect(Collectors.toList());
-            return ResponseEntity.ok(orders);
-        } catch (Exception e) {
-            e.printStackTrace();
-            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
-        }
-    }
-
-    public ResponseEntity<?> getNewOrders(UserDetails userDetails) {
+    public List<OrderDTO> getNewOrders(UserDetails userDetails) {
         Partner partner = partnerRepository.findByEmail(userDetails.getUsername())
                 .orElseThrow(() -> new NoSuchElementException("Partner not found"));
-        List<Order> orders = orderRepository.findByPartnerAndPartnerChecked(partner, false);
-        return ResponseEntity.ok(orders);
+
+        return orderRepository.findByPartnerAndPartnerChecked(partner, false).stream().map(orderMapper::toOrderDTO).toList();
     }
 
-    public ResponseEntity<?> getOrder(Long id) {
+    public OrderDTO getOrder(Long id) {
         Order order = orderRepository.findById(id)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Order not found"));
-        return ResponseEntity.ok(order);
+        return orderMapper.toOrderDTO(order);
     }
 
-    public ResponseEntity<?> updateStatus(Long id, OrderStatus newStatus) {
+    public String updateStatus(Long id, OrderStatus newStatus) {
         Order order = orderRepository.findById(id)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Order not found"));
 
@@ -225,51 +216,52 @@ public class OrderService {
 
         notificationService.createNotify(order);
 
-        return ResponseEntity.ok("Status update");
+        return "Status update";
     }
 
-    public ResponseEntity<?> setPartnerView(Long id) {
+    public String setPartnerView(Long id) {
         Order order = orderRepository.findById(id)
                 .orElseThrow(() -> new NoSuchElementException("Order not found"));
         order.setPartnerChecked(true);
         orderRepository.save(order);
-        return ResponseEntity.ok("Partner checked order");
+        return "Partner checked order";
     }
 
-    public ResponseEntity<?> backpackProblemSolver(int maxWeight, UserDetails userDetails) {
-        Partner partner = partnerRepository.findByEmail(userDetails.getUsername())
-                .orElseThrow(() -> new NoSuchElementException("Partner not found"));
-
-        List<Order> orders = orderRepository.findByPartnerId(partner.getId());
-
-        List<Order> selectedOrders = new ArrayList<>();
-
-        int[][] dp = new int[orders.size() + 1][maxWeight + 1];
-
-        for (int i = 1; i <= orders.size(); i++) {
-            Order order = orders.get(i - 1);
-            double volume = order.getCargo().getVolume();
-            int price = order.getPrice();
-
-            for (int j = 1; j <= maxWeight; j++) {
-                if (volume <= j) {
-                    dp[i][j] = Math.max(dp[i - 1][j], dp[i - 1][(int) (j - volume)] + price);
-                } else {
-                    dp[i][j] = dp[i - 1][j];
-                }
-            }
-        }
-
-        int remainingWeight = maxWeight;
-        for (int i = orders.size(); i > 0; i--) {
-            if (dp[i][remainingWeight] != dp[i - 1][remainingWeight]) {
-                Order selectedOrder = orders.get(i - 1);
-                selectedOrders.add(selectedOrder);
-                remainingWeight -= selectedOrder.getCargo().getWeight();
-            }
-        }
-
-        return new ResponseEntity<>(selectedOrders, HttpStatus.OK);
-    }
+    //нужно переделать
+//    public ResponseEntity<?> backpackProblemSolver(int maxWeight, UserDetails userDetails) {
+//        Partner partner = partnerRepository.findByEmail(userDetails.getUsername())
+//                .orElseThrow(() -> new NoSuchElementException("Partner not found"));
+//
+//        List<Order> orders = orderRepository.findByPartnerId(partner.getId());
+//
+//        List<Order> selectedOrders = new ArrayList<>();
+//
+//        int[][] dp = new int[orders.size() + 1][maxWeight + 1];
+//
+//        for (int i = 1; i <= orders.size(); i++) {
+//            Order order = orders.get(i - 1);
+//            double volume = order.getCargo().getVolume();
+//            int price = order.getPrice();
+//
+//            for (int j = 1; j <= maxWeight; j++) {
+//                if (volume <= j) {
+//                    dp[i][j] = Math.max(dp[i - 1][j], dp[i - 1][(int) (j - volume)] + price);
+//                } else {
+//                    dp[i][j] = dp[i - 1][j];
+//                }
+//            }
+//        }
+//
+//        int remainingWeight = maxWeight;
+//        for (int i = orders.size(); i > 0; i--) {
+//            if (dp[i][remainingWeight] != dp[i - 1][remainingWeight]) {
+//                Order selectedOrder = orders.get(i - 1);
+//                selectedOrders.add(selectedOrder);
+//                remainingWeight -= selectedOrder.getCargo().getWeight();
+//            }
+//        }
+//
+//        return new ResponseEntity<>(selectedOrders, HttpStatus.OK);
+//    }
 
 }

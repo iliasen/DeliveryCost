@@ -1,5 +1,7 @@
 package com.iliasen.delivcost.services;
 
+import com.iliasen.delivcost.dto.NotificationDTO;
+import com.iliasen.delivcost.mapper.NotificationMapper;
 import com.iliasen.delivcost.models.*;
 import com.iliasen.delivcost.repositories.ClientRepository;
 import com.iliasen.delivcost.repositories.NotificationRepository;
@@ -16,6 +18,7 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.NoSuchElementException;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -24,6 +27,7 @@ public class NotificationService {
     private final ClientRepository clientRepository;
     private final PartnerRepository partnerRepository;
     private final OrderRepository orderRepository;
+    private final NotificationMapper notificationMapper;
 
     public void createNotify(Order order) {
 
@@ -62,7 +66,7 @@ public class NotificationService {
         notificationRepository.saveAll(notifications);
     }
 
-    public ResponseEntity<?> viewNotify(Long id, UserDetails userDetails) {
+    public String viewNotify(Long id, UserDetails userDetails) {
         Notification notification;
         if (userDetails.getAuthorities().contains(new SimpleGrantedAuthority("PARTNER"))) {
             partnerRepository.findByEmail(userDetails.getUsername())
@@ -81,10 +85,10 @@ public class NotificationService {
             notificationRepository.save(notification);
 
         }
-        return ResponseEntity.ok("Checked status update");
+        return "Checked status update";
     }
 
-    public ResponseEntity<?> getAllNotifications(UserDetails userDetails){
+    public List<NotificationDTO> getAllNotifications(UserDetails userDetails){
         List<Notification> notifications = new ArrayList<>();
         if (userDetails.getAuthorities().contains(new SimpleGrantedAuthority("PARTNER"))) {
             Partner partner = partnerRepository.findByEmail(userDetails.getUsername())
@@ -97,24 +101,26 @@ public class NotificationService {
 
             notifications = notificationRepository.findByClientId(client.getId());
         }
-        return ResponseEntity.ok(notifications);
+        List<NotificationDTO> notificationDTOS = notifications.stream().map(notificationMapper::toNotificationDTO).collect(Collectors.toList());
+        return notificationDTOS;
     }
 
-    public ResponseEntity<?> changeSubscribe(Long orderId,boolean subscribe, UserDetails userDetails){
+    public String changeSubscribe(Long orderId, boolean subscribe, UserDetails userDetails) {
         Client client = clientRepository.findByEmail(userDetails.getUsername())
                 .orElseThrow(() -> new NoSuchElementException("Client not found"));
         Order order = orderRepository.findById(orderId)
                 .orElseThrow(() -> new NoSuchElementException("Order not found"));
-        if(order.getClient()==client){
+        if (order.getClient() == client) {
             order.setClientSubscribe(subscribe);
             orderRepository.save(order);
-            return ResponseEntity.ok("Subscribe changes");
+            return "Subscribe changes";
         }
-        return ResponseEntity.notFound().build();
+        throw new NoSuchElementException("Order not found");
     }
 
+
     @Transactional
-    public ResponseEntity<?> deleteAllNotifications(UserDetails userDetails) {
+    public String deleteAllNotifications(UserDetails userDetails) {
         if (userDetails.getAuthorities().contains(new SimpleGrantedAuthority("PARTNER"))) {
             Partner partner = partnerRepository.findByEmail(userDetails.getUsername())
                     .orElseThrow(() -> new NoSuchElementException("Partner not found"));
@@ -127,6 +133,6 @@ public class NotificationService {
             notificationRepository.deleteByClientId(client.getId());
         }
 
-        return ResponseEntity.ok("All notifications have been deleted.");
+        return "All notifications have been deleted.";
     }
 }

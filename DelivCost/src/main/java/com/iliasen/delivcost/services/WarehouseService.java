@@ -22,7 +22,7 @@ public class WarehouseService {
     private final WarehouseRepository warehouseRepository;
 
 
-    public ResponseEntity<?> getFreeSpace(UserDetails userDetails) {
+    public Map<String, Integer> getFreeSpace(UserDetails userDetails) {
         Warehouse warehouse = warehouseRepository.findByClientEmail(userDetails.getUsername())
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Warehouse not found"));
 
@@ -44,6 +44,6 @@ public class WarehouseService {
         response.put("totalVolume", (int) totalVolume);
         response.put("freeSpace", freeSpace);
 
-        return ResponseEntity.ok(response);
+        return response;
     }
 }

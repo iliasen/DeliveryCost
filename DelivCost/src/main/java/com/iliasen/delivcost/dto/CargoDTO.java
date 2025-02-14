@@ -4,7 +4,7 @@ import lombok.Data;
 
 @Data
 public class CargoDTO {
-    private Integer id;
+    private Long id;
     private double weight;
     private double length;
     private double width;

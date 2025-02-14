@@ -2,6 +2,8 @@ package com.iliasen.delivcost.services;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.iliasen.delivcost.dto.TransportDTO;
+import com.iliasen.delivcost.mapper.TransportMapper;
 import com.iliasen.delivcost.models.*;
 import com.iliasen.delivcost.repositories.PartnerRepository;
 import com.iliasen.delivcost.repositories.TransportRepository;
@@ -20,81 +22,77 @@ import java.util.stream.Collectors;
 public class TransportService {
     private final TransportRepository transportRepository;
     private final PartnerRepository partnerRepository;
+    private final TransportMapper transportMapper;
 
-    public ResponseEntity<?> addTransport(Transport transport, UserDetails userDetails) {
+    public String addTransport(Transport transport, UserDetails userDetails) {
         Partner partner = partnerRepository.findByEmail(userDetails.getUsername())
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Partner not found"));
 
         transport.setPartner(partner);
         transportRepository.save(transport);
-        return new ResponseEntity<>(HttpStatus.CREATED);
+        return "Transport created";
     }
 
-    public ResponseEntity<?> getTransportByType(String type, UserDetails userDetails) {
+    public List<TransportDTO> getTransportByType(String type, UserDetails userDetails) {
         Partner partner = partnerRepository.findByEmail(userDetails.getUsername())
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Partner not found"));
 
-        try {
-            List<Transport> transportList;
+        List<Transport> transportList;
 
-            if (type != null) {
-                try {
-                    ObjectMapper objectMapper = new ObjectMapper();
-                    JsonNode jsonNode = objectMapper.readTree(type);
+        if (type != null) {
+            try {
+                ObjectMapper objectMapper = new ObjectMapper();
+                JsonNode jsonNode = objectMapper.readTree(type);
 
-                    String transportTypeString = jsonNode.path("type").asText();
+                String transportTypeString = jsonNode.path("type").asText();
 
-                    TransportType transportType = TransportType.valueOf(transportTypeString);
-                    transportList = transportRepository.findByPartnerIdAndTransportType(partner.getId(), transportType);
-                    transportList = transportList.stream()
-                            .filter(transport -> transport.getDriver() != null)
-                            .collect(Collectors.toList());
+                TransportType transportType = TransportType.valueOf(transportTypeString);
+                transportList = transportRepository.findByPartnerIdAndTransportType(partner.getId(), transportType);
+                transportList = transportList.stream()
+                        .filter(transport -> transport.getDriver() != null)
+                        .collect(Collectors.toList());
 
-                } catch (Exception e) {
-                    e.printStackTrace();
-                    return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
-                }
-
-            } else {
-                transportList = transportRepository.findByPartnerId(partner.getId());
+            } catch (Exception e) {
+                throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Error parsing transport type", e);
             }
-
-            if (transportList.isEmpty()) {
-                return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-            }
-
-            return new ResponseEntity<>(transportList, HttpStatus.OK);
-        } catch (Exception e) {
-            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+        } else {
+            transportList = transportRepository.findByPartnerId(partner.getId());
         }
+
+        if (transportList.isEmpty()) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "No transport found");
+        }
+
+        return transportList.stream().map(transportMapper::toTransportDTO).collect(Collectors.toList());
     }
 
-    public ResponseEntity<?> getTransport(UserDetails userDetails) {
+
+    public List<TransportDTO> getTransport(UserDetails userDetails) {
         Partner partner = partnerRepository.findByEmail(userDetails.getUsername())
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Partner not found"));
 
-        try {
-            List<Transport> transportList = transportRepository.findByPartnerId(partner.getId());
-            return transportList.isEmpty() ? new ResponseEntity<>(HttpStatus.NOT_FOUND) : new ResponseEntity<>(transportList, HttpStatus.OK);
-        } catch (Exception e) {
-            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+        List<Transport> transportList = transportRepository.findByPartnerId(partner.getId());
+        if (transportList.isEmpty()) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "No transport found");
         }
+        return transportList.stream().map(transportMapper::toTransportDTO).collect(Collectors.toList());
     }
 
-    public ResponseEntity<?> getTransportForUser(Long id) {
+
+    public List<TransportDTO> getTransportForUser(Long id) {
         partnerRepository.findById(id)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Partner not found"));
 
-        try {
-            List<Transport> transportList = transportRepository.findByPartnerId(id);
-            transportList = transportList.stream()
-                    .filter(transport -> transport.getDriver() != null)
-                    .collect(Collectors.toList());
-            return transportList.isEmpty() ? new ResponseEntity<>(HttpStatus.NOT_FOUND) : new ResponseEntity<>(transportList, HttpStatus.OK);
-        } catch (Exception e) {
-            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+        List<Transport> transportList = transportRepository.findByPartnerId(id);
+        transportList = transportList.stream()
+                .filter(transport -> transport.getDriver() != null)
+                .collect(Collectors.toList());
+        if (transportList.isEmpty()) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "No transport found");
         }
+        return transportList.stream().map(transportMapper::toTransportDTO).collect(Collectors.toList());
     }
+
 
     public boolean calculateVolume(Transport transport, List<Order> orders) {
         List<Cargo> cargos = orders.stream()

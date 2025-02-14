@@ -1,5 +1,7 @@
 package com.iliasen.delivcost.services;
 
+import com.iliasen.delivcost.dto.RatingDTO;
+import com.iliasen.delivcost.mapper.RatingMapper;
 import com.iliasen.delivcost.models.Client;
 import com.iliasen.delivcost.models.Partner;
 import com.iliasen.delivcost.models.Rating;
@@ -15,6 +17,12 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.NoSuchElementException;
+import java.util.stream.Collectors;
+import java.util.stream.StreamSupport;
+
 @Service
 @RequiredArgsConstructor
 public class RatingService {
@@ -22,8 +30,9 @@ public class RatingService {
     private final RatingRepository ratingRepository;
     private final ClientRepository clientRepository;
     private final PartnerRepository partnerRepository;
+    private final RatingMapper ratingMapper;
 
-    public ResponseEntity<?> createRating(Long partnerId,Rating req, UserDetails userDetails) {
+    public RatingDTO createRating(Long partnerId, Rating req, UserDetails userDetails) {
 
         Client client = clientRepository.findByEmail(userDetails.getUsername())
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Client not found"));
@@ -32,11 +41,11 @@ public class RatingService {
 
         Rating rating = ratingRepository.findByClientIdAndPartnerId(client.getId(), partner.getId());
 
-        if (rating != null) {
+        if (rating != null) {//if new
             rating.setRate(req.getRate());
             rating.setFeedback(req.getFeedback());
             ratingRepository.save(rating);
-            return ResponseEntity.ok(rating);
+            return ratingMapper.toRatingDTO(rating);
         } else {
             rating = new Rating();
             rating.setRate(req.getRate());
@@ -44,29 +53,28 @@ public class RatingService {
             rating.setClient(client);
             rating.setPartner(partner);
             ratingRepository.save(rating);
-            return ResponseEntity.ok(rating);
+            return ratingMapper.toRatingDTO(rating);
         }
     }
 
 
-    public ResponseEntity<?> getById(Long partnerId) {
-        Partner partner = partnerRepository.findById(partnerId)
+    public List<RatingDTO> getById(Long partnerId) {
+        partnerRepository.findById(partnerId)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Partner not found"));
 
-        if (partner == null) {
-            return ResponseEntity.notFound().build();
-        }
         Iterable<Rating> ratings = ratingRepository.findByPartnerId(partnerId);
-        return ResponseEntity.ok(ratings);
+        List<RatingDTO> ratingsDTO = StreamSupport.stream(ratings.spliterator(), false)
+                .map(ratingMapper::toRatingDTO)
+                .collect(Collectors.toList());
+        return ratingsDTO;
     }
 
 
-    public ResponseEntity<?> getAverageRating(Long partnerId) {
-        Partner partner = partnerRepository.findById(partnerId)
+
+    public double getAverageRating(Long partnerId) {
+        partnerRepository.findById(partnerId)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Partner not found"));
-        if(partner == null){
-            return  ResponseEntity.notFound().build();
-        }
+
         Iterable<Rating> ratings = ratingRepository.findByPartnerId(partnerId);
         int count = 0;
         int sum = 0;
@@ -76,24 +84,23 @@ public class RatingService {
         }
 
         if (count > 0) {
-            float average = (float) sum / count;
-            return ResponseEntity.ok(average);
+            return (double) sum / count;
         } else {
-            return ResponseEntity.ok(0f);
+            throw new NoSuchElementException();
         }
     }
 
-    public ResponseEntity<?> deleteRatingById(Long partnerId, UserDetails userDetails) {
+    public String deleteRatingById(Long partnerId, UserDetails userDetails) {
 
         Client client = clientRepository.findByEmail(userDetails.getUsername())
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Client not found"));
 
         Rating rating = ratingRepository.findByClientIdAndPartnerId(client.getId(), partnerId);
         if (rating == null) {
-            return ResponseEntity.notFound().build();
+            throw new NoSuchElementException();
         }
         ratingRepository.deleteById(rating.getId());
-        return ResponseEntity.ok("Rating wad delete");
+        return "Rating wad delete";
     }
 
 }

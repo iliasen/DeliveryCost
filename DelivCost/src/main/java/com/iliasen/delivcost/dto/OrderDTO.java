@@ -4,7 +4,7 @@ import lombok.Data;
 
 @Data
 public class OrderDTO {
-    private Integer id;
+    private Long id;
     private String route;
     private boolean partnerChecked;
     private boolean clientSubscribe;

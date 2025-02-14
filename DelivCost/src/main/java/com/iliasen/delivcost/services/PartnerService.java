@@ -1,5 +1,7 @@
 package com.iliasen.delivcost.services;
 
+import com.iliasen.delivcost.dto.PartnerDTO;
+import com.iliasen.delivcost.mapper.PartnerMapper;
 import com.iliasen.delivcost.models.Partner;
 import com.iliasen.delivcost.models.Transport;
 import com.iliasen.delivcost.repositories.PartnerRepository;
@@ -23,23 +25,29 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
 import java.util.*;
+import java.util.stream.Collectors;
+import java.util.stream.StreamSupport;
 
 @Service
 @RequiredArgsConstructor
 public class PartnerService {
     private final PartnerRepository partnerRepository;
+    private final PartnerMapper partnerMapper;
 
 
-    public ResponseEntity<List<Partner>> getAll() {
+    public List<PartnerDTO> getAll() {
         Iterable<Partner> partnersIterable = partnerRepository.findAll();
-        List<Partner> partners = new ArrayList<>();
-        partnersIterable.forEach(partners::add);
-        return ResponseEntity.ok(partners);
+        List<Partner> partners = StreamSupport.stream(partnersIterable.spliterator(), false)
+                .toList();
+
+        return partners.stream()
+                .map(partnerMapper::toPartnerDTO)
+                .collect(Collectors.toList());
     }
 
-    public ResponseEntity<Partner> getOne(Long id) {
+    public PartnerDTO getOne(Long id) {
         Partner partner = partnerRepository.findById(id).orElseThrow();
-        return ResponseEntity.ok(partner);
+        return partnerMapper.toPartnerDTO(partner);
     }
 
     public <T> ResponseEntity<String> updateField(String field, T value, String successMessage, UserDetails userDetails) {

@@ -1,5 +1,6 @@
 package com.iliasen.delivcost.controllers;
 
+import com.iliasen.delivcost.dto.PartnerDTO;
 import com.iliasen.delivcost.dto.PartnerFieldDTO;
 import com.iliasen.delivcost.models.Partner;
 import com.iliasen.delivcost.services.PartnerService;
@@ -28,13 +29,13 @@ public class PartnerController {
     private final PartnerService partnerService;
 
     @GetMapping(value = "/all")
-    public ResponseEntity<List<Partner>> getPartners(){
-        return partnerService.getAll();
+    public ResponseEntity<List<PartnerDTO>> getPartners(){
+        return ResponseEntity.ok(partnerService.getAll());
     }
 
     @GetMapping(value = "/{id}")
-    public ResponseEntity<Partner> getPartner(@PathVariable Long id){
-        return partnerService.getOne(id);
+    public ResponseEntity<PartnerDTO> getPartner(@PathVariable Long id){
+        return ResponseEntity.ok(partnerService.getOne(id));
     }
 
     @GetMapping(value = "/fields_check")
