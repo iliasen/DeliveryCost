@@ -20,13 +20,19 @@ public class DriverController {
     private final DriverService driverService;
 
     @GetMapping(value = "/all")
-    public ResponseEntity<List<DriverDTO>> getAllDrivers(@AuthenticationPrincipal UserDetails userDetails) {
-        return ResponseEntity.ok(driverService.getAll(userDetails));
+    public ResponseEntity<List<DriverDTO>> getAllDrivers(
+            @RequestParam(value = "offset", defaultValue = "0")  Integer offset,
+            @RequestParam(value = "limit", defaultValue = "20") Integer limit,
+            @AuthenticationPrincipal UserDetails userDetails) {
+        return ResponseEntity.ok(driverService.getAll(offset, limit, userDetails));
     }
 
     @GetMapping(value = "/free")
-    public ResponseEntity<List<DriverDTO>> getFreeDrivers(@AuthenticationPrincipal UserDetails userDetails) {
-        return ResponseEntity.ok(driverService.getFreeDrivers(userDetails));
+    public ResponseEntity<List<DriverDTO>> getFreeDrivers(
+            @RequestParam(value = "offset", defaultValue = "0")  Integer offset,
+            @RequestParam(value = "limit", defaultValue = "20") Integer limit,
+            @AuthenticationPrincipal UserDetails userDetails) {
+        return ResponseEntity.ok(driverService.getFreeDrivers(offset, limit,userDetails));
     }
 
     @GetMapping(value = "/{id}/orders")

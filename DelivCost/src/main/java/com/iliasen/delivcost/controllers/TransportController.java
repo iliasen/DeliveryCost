@@ -8,6 +8,7 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 
+
 import java.util.List;
 
 @RestController
@@ -22,8 +23,10 @@ public class TransportController {
     }
 
     @GetMapping
-    public ResponseEntity<List<TransportDTO>> getAll(@AuthenticationPrincipal UserDetails userDetails) {
-        return ResponseEntity.ok(transportService.getTransport(userDetails));
+    public ResponseEntity<List<TransportDTO>> getAll(@RequestParam(value = "offset", defaultValue = "0") Integer offset,
+                                                     @RequestParam(value = "limit", defaultValue = "10") Integer limit,
+                                                     @AuthenticationPrincipal UserDetails userDetails) {
+        return ResponseEntity.ok(transportService.getTransport(offset, limit, userDetails));
     }
 
     @GetMapping(value = "/{id}")

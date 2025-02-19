@@ -8,6 +8,8 @@ import com.iliasen.delivcost.repositories.PartnerRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.UrlResource;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -33,8 +35,8 @@ public class PartnerService {
     private final PartnerMapper partnerMapper;
 
 
-    public List<PartnerDTO> getAll() {
-        Iterable<Partner> partnersIterable = partnerRepository.findAll();
+    public List<PartnerDTO> getAll(Integer offset, Integer limit) {
+        Page<Partner> partnersIterable = partnerRepository.findAll(PageRequest.of(offset, limit));
         List<Partner> partners = StreamSupport.stream(partnersIterable.spliterator(), false)
                 .toList();
 

@@ -8,12 +8,15 @@ import com.iliasen.delivcost.models.*;
 import com.iliasen.delivcost.repositories.PartnerRepository;
 import com.iliasen.delivcost.repositories.TransportRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 @Service
@@ -66,11 +69,11 @@ public class TransportService {
     }
 
 
-    public List<TransportDTO> getTransport(UserDetails userDetails) {
+    public List<TransportDTO> getTransport(Integer offset, Integer limit, UserDetails userDetails) {
         Partner partner = partnerRepository.findByEmail(userDetails.getUsername())
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Partner not found"));
 
-        List<Transport> transportList = transportRepository.findByPartnerId(partner.getId());
+        Page<Transport> transportList = transportRepository.findByPartnerIdWithPagination(partner.getId(), PageRequest.of(offset, limit));
         if (transportList.isEmpty()) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "No transport found");
         }
@@ -89,8 +92,20 @@ public class TransportService {
         if (transportList.isEmpty()) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "No transport found");
         }
-        return transportList.stream().map(transportMapper::toTransportDTO).collect(Collectors.toList());
+
+        // Фильтрация по уникальным типам транспорта
+        Map<TransportType, Transport> uniqueTransportMap = transportList.stream()
+                .collect(Collectors.toMap(
+                        Transport::getTransportType,
+                        transport -> transport,
+                        (existing, replacement) -> existing
+                ));
+
+        return uniqueTransportMap.values().stream()
+                .map(transportMapper::toTransportDTO)
+                .collect(Collectors.toList());
     }
+
 
 
     public boolean calculateVolume(Transport transport, List<Order> orders) {

@@ -12,6 +12,7 @@ import com.iliasen.delivcost.repositories.PartnerRepository;
 import com.iliasen.delivcost.repositories.TransportRepository;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
@@ -58,18 +59,18 @@ public class DriverService {
         return orders;
     }
 
-    public List<DriverDTO> getAll(UserDetails userDetails) {
+    public List<DriverDTO> getAll(Integer offset, Integer limit, UserDetails userDetails) {
         Partner partner = partnerRepository.findByEmail(userDetails.getUsername()).orElseThrow(
                 () -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Partner not found")
         );
-        return driverRepository.findDriversByPartner(partner).stream().map(driverMapper::toDriverDTO).collect(Collectors.toList());
+        return driverRepository.findDriversByPartner(partner, PageRequest.of(offset, limit)).stream().map(driverMapper::toDriverDTO).collect(Collectors.toList());
     }
 
-    public List<DriverDTO> getFreeDrivers(UserDetails userDetails) {
+    public List<DriverDTO> getFreeDrivers(Integer offset, Integer limit, UserDetails userDetails) {
         Partner partner = partnerRepository.findByEmail(userDetails.getUsername()).orElseThrow(
                 () -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Partner not found")
         );
-        List<DriverDTO> drivers = driverRepository.findDriversByPartner(partner).stream()
+        List<DriverDTO> drivers = driverRepository.findDriversByPartner(partner, PageRequest.of(offset, limit)).stream()
                 .filter(driver -> driver.getTransport() == null)
                 .map(driverMapper::toDriverDTO)
                 .collect(Collectors.toList());

@@ -29,8 +29,10 @@ public class PartnerController {
     private final PartnerService partnerService;
 
     @GetMapping(value = "/all")
-    public ResponseEntity<List<PartnerDTO>> getPartners(){
-        return ResponseEntity.ok(partnerService.getAll());
+    public ResponseEntity<List<PartnerDTO>> getPartners(
+            @RequestParam(value = "offset", defaultValue = "0") Integer offset,
+            @RequestParam(value = "limit", defaultValue = "10") Integer limit){
+        return ResponseEntity.ok(partnerService.getAll(offset, limit));
     }
 
     @GetMapping(value = "/{id}")

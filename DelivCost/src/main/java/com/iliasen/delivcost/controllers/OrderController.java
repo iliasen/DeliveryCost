@@ -8,6 +8,7 @@ import com.iliasen.delivcost.dto.OrderListDTO;
 import com.iliasen.delivcost.models.OrderStatus;
 import com.iliasen.delivcost.services.OrderService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -31,19 +32,29 @@ public class OrderController {
     }
 
     @GetMapping
-    public ResponseEntity<List<OrderDTO>> getAllOrders(@RequestParam(required = false) String status, @AuthenticationPrincipal UserDetails userDetails){
-        return ResponseEntity.ok(orderService.getOrders(status,userDetails));
+    public ResponseEntity<Page<OrderDTO>> getAllOrders(
+            @RequestParam(value = "offset", defaultValue = "0")  Integer offset,
+            @RequestParam(value = "limit", defaultValue = "20") Integer limit,
+            @RequestParam(required = false) String status,
+            @AuthenticationPrincipal UserDetails userDetails){
+        return ResponseEntity.ok(orderService.getOrders(offset, limit,status,userDetails));
     }
 
     @GetMapping(value = "/partner")
     @PreAuthorize("hasAuthority('PARTNER')")
-    public ResponseEntity<List<OrderDTO>> getOrdersForPartner(@AuthenticationPrincipal UserDetails userDetails){
-        return ResponseEntity.ok(orderService.getOrdersForPartner(userDetails));
+    public ResponseEntity<Page<OrderDTO>> getOrdersForPartner(
+            @RequestParam(value = "offset", defaultValue = "0")  Integer offset,
+            @RequestParam(value = "limit", defaultValue = "20") Integer limit,
+            @AuthenticationPrincipal UserDetails userDetails){
+        return ResponseEntity.ok(orderService.getOrdersForPartner(offset, limit, userDetails));
     }
 
     @GetMapping(value = "/driver/have/{id}")
-    public ResponseEntity<List<OrderDTO>> getOrdersForDriver(@PathVariable Long id){
-        return ResponseEntity.ok(orderService.getDriverOrders(id));
+    public ResponseEntity<List<OrderDTO>> getOrdersForDriver(
+            @RequestParam(value = "offset", defaultValue = "0")  Integer offset,
+            @RequestParam(value = "limit", defaultValue = "20") Integer limit,
+            @PathVariable Long id){
+        return ResponseEntity.ok(orderService.getDriverOrders(offset, limit, id));
     }
 
     @GetMapping(value = "/driver/{id}")
