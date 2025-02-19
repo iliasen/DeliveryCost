@@ -1,7 +1,7 @@
 package com.iliasen.delivcost.services;
 
 import com.iliasen.delivcost.dto.NotificationDTO;
-import com.iliasen.delivcost.mapper.NotificationMapper;
+import com.iliasen.delivcost.dto.mapper.NotificationMapper;
 import com.iliasen.delivcost.models.*;
 import com.iliasen.delivcost.repositories.ClientRepository;
 import com.iliasen.delivcost.repositories.NotificationRepository;
@@ -9,7 +9,6 @@ import com.iliasen.delivcost.repositories.OrderRepository;
 import com.iliasen.delivcost.repositories.PartnerRepository;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;

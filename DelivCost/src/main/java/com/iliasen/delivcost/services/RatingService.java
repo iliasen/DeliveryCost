@@ -1,7 +1,7 @@
 package com.iliasen.delivcost.services;
 
 import com.iliasen.delivcost.dto.RatingDTO;
-import com.iliasen.delivcost.mapper.RatingMapper;
+import com.iliasen.delivcost.dto.mapper.RatingMapper;
 import com.iliasen.delivcost.models.Client;
 import com.iliasen.delivcost.models.Partner;
 import com.iliasen.delivcost.models.Rating;
@@ -10,14 +10,10 @@ import com.iliasen.delivcost.repositories.PartnerRepository;
 import com.iliasen.delivcost.repositories.RatingRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.stream.Collectors;

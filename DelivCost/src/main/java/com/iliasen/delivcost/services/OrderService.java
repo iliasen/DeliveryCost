@@ -1,13 +1,12 @@
 package com.iliasen.delivcost.services;
 
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.iliasen.delivcost.dto.OrderAndCargoRequest;
 import com.iliasen.delivcost.dto.OrderDTO;
-import com.iliasen.delivcost.exeptions.NotFoundException;
+import com.iliasen.delivcost.exeptions.DriverNotFoundException;
+import com.iliasen.delivcost.exeptions.OrderNotFoundException;
 import com.iliasen.delivcost.exeptions.TransportOverloadedException;
-import com.iliasen.delivcost.mapper.CargoMapper;
-import com.iliasen.delivcost.mapper.OrderMapper;
+import com.iliasen.delivcost.dto.mapper.CargoMapper;
+import com.iliasen.delivcost.dto.mapper.OrderMapper;
 import com.iliasen.delivcost.models.*;
 import com.iliasen.delivcost.repositories.ClientRepository;
 import com.iliasen.delivcost.repositories.DriverRepository;
@@ -16,7 +15,6 @@ import com.iliasen.delivcost.repositories.PartnerRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
@@ -46,8 +44,8 @@ public class OrderService {
         Partner partner = partnerRepository.findById(partnerId)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Partner not found"));
 
-        Order order = orderMapper.toOrder(request.order());
-        Cargo cargo = cargoMapper.toCargo(request.cargo());
+        Order order = orderMapper.toEntity(request.order());
+        Cargo cargo = cargoMapper.toEntity(request.cargo());
 
         order.setClient(client);
         order.setPartner(partner);
@@ -61,11 +59,11 @@ public class OrderService {
 
     public String transferOrdersToTheDriver(Long driverId, List<OrderDTO> orderList) {
         Driver driver = driverRepository.findById(driverId)
-                .orElseThrow(() -> new NotFoundException("Driver not found"));
+                .orElseThrow(() -> new DriverNotFoundException("Driver not found"));
 
 
         List<Order> orders = orderList.stream()
-                .map(orderMapper::toOrder)
+                .map(orderMapper::toEntity)
                 .collect(Collectors.toList());
 
         Transport transport = driver.getTransport();
@@ -88,7 +86,7 @@ public class OrderService {
             }
         }
         if (foundOrders.isEmpty()) {
-            throw new NotFoundException("No valid orders found in the provided list");
+            throw new OrderNotFoundException("No valid orders found in the provided list");
         }
         return foundOrders;
     }

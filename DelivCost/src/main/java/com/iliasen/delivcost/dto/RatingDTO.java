@@ -1,12 +1,15 @@
 package com.iliasen.delivcost.dto;
 
-import lombok.Data;
+import lombok.Value;
 
-@Data
+/**
+ * DTO for {@link com.iliasen.delivcost.models.Rating}
+ */
+@Value
 public class RatingDTO {
-    private Long id;
-    private Integer rate;
-    private String feedback;
-    private Long clientId;
-    private Long partnerId;
+    Long id;
+    Integer rate;
+    String feedback;
+    ClientDTO client;
+    PartnerDTO partner;
 }

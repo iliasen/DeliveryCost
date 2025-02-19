@@ -1,7 +1,6 @@
 package com.iliasen.delivcost.auth;
 
 import com.iliasen.delivcost.configs.JwtService;
-import com.iliasen.delivcost.exeptions.NotFoundException;
 import com.iliasen.delivcost.models.*;
 import com.iliasen.delivcost.repositories.ClientRepository;
 import com.iliasen.delivcost.repositories.DriverRepository;
@@ -138,7 +137,7 @@ public class AuthenticationService {
                     .token(jwtToken)
                     .build();
         } else {
-            throw new NotFoundException("Пользователь не найден");
+            throw new RuntimeException("Пользователь не найден");
         }
     }
 }

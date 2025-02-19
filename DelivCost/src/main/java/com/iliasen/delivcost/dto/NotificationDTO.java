@@ -1,18 +1,21 @@
 package com.iliasen.delivcost.dto;
 
 import com.iliasen.delivcost.models.OrderStatus;
-import lombok.Data;
+import lombok.Value;
 
 import java.time.LocalDateTime;
 
-@Data
+/**
+ * DTO for {@link com.iliasen.delivcost.models.Notification}
+ */
+@Value
 public class NotificationDTO {
-    private Long id;
-    private OrderStatus newStatus;
-    private boolean partnerChecked;
-    private boolean clientChecked;
-    private LocalDateTime changeTime;
-    private Long orderId;
-    private Long partnerId;
-    private Long clientId;
+    Long id;
+    OrderStatus newStatus;
+    boolean partnerChecked;
+    boolean clientChecked;
+    LocalDateTime changeTime;
+    OrderDTO order;
+    PartnerDTO partner;
+    ClientDTO client;
 }
