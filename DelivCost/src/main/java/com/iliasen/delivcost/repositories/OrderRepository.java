@@ -21,5 +21,5 @@ public interface OrderRepository extends JpaRepository<Order, Long> {
 
     List<Order> findByPartnerAndPartnerChecked(Partner partner, boolean b);
 
-    List<Order> findByPartnerIdWithoutPagination(Long id);
+    List<Order> findByPartnerId(Long id);
 }

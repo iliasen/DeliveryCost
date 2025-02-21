@@ -63,17 +63,20 @@ public class DriverService {
         Partner partner = partnerRepository.findByEmail(userDetails.getUsername()).orElseThrow(
                 () -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Partner not found")
         );
-        return driverRepository.findDriversByPartner(partner, PageRequest.of(offset, limit)).stream().map(driverMapper::toDriverDTO).collect(Collectors.toList());
+        return driverRepository.findDriversByPartner(partner, PageRequest.of(offset, limit))
+                .stream()
+                .map(driverMapper::toDriverDTO)
+                .collect(Collectors.toList());
     }
 
     public List<DriverDTO> getFreeDrivers(Integer offset, Integer limit, UserDetails userDetails) {
         Partner partner = partnerRepository.findByEmail(userDetails.getUsername()).orElseThrow(
                 () -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Partner not found")
         );
-        List<DriverDTO> drivers = driverRepository.findDriversByPartner(partner, PageRequest.of(offset, limit)).stream()
-                .filter(driver -> driver.getTransport() == null)
+
+        return driverRepository.findDriversByPartnerAndTransportIsNull(partner, PageRequest.of(offset, limit))
+                .stream()
                 .map(driverMapper::toDriverDTO)
                 .collect(Collectors.toList());
-        return drivers;
     }
 }

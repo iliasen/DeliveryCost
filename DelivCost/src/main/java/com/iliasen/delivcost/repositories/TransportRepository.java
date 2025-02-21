@@ -15,5 +15,5 @@ public interface TransportRepository extends CrudRepository<Transport, Long> {
 
     List<Transport> findByPartnerIdAndTransportType(Long id, TransportType type);
 
-    Page<Transport> findByPartnerIdWithPagination(Long id, Pageable of);
+    Page<Transport> findByPartnerId(Long id, Pageable of);
 }

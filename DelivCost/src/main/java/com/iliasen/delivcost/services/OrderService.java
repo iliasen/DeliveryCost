@@ -193,7 +193,7 @@ public class OrderService {
         Driver driver = driverRepository.findById(id)
                 .orElseThrow(()-> new ResponseStatusException(HttpStatus.NOT_FOUND, "Driver not found"));
 
-        List<Order> orders = orderRepository.findByPartnerIdWithoutPagination(partner.getId());
+        List<Order> orders = orderRepository.findByPartnerId(partner.getId());
 
         List<OrderDTO> orderDTOList = orders.stream()
                 .filter(order -> order.getRoute().getTransportType() == driver.getTransport().getTransportType() &&

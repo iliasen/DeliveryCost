@@ -73,7 +73,7 @@ public class TransportService {
         Partner partner = partnerRepository.findByEmail(userDetails.getUsername())
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Partner not found"));
 
-        Page<Transport> transportList = transportRepository.findByPartnerIdWithPagination(partner.getId(), PageRequest.of(offset, limit));
+        Page<Transport> transportList = transportRepository.findByPartnerId(partner.getId(), PageRequest.of(offset, limit));
         if (transportList.isEmpty()) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "No transport found");
         }

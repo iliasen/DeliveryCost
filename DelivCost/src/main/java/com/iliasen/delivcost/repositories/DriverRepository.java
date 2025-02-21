@@ -8,6 +8,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
+import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 
@@ -16,4 +17,6 @@ public interface DriverRepository extends JpaRepository<Driver, Long> {
     Optional<Driver> findByEmail(String email);
     boolean existsByEmail(String email);
     Page<Driver> findDriversByPartner(Partner partner, Pageable pageRequest);
+
+    Page<Driver> findDriversByPartnerAndTransportIsNull(Partner partner, PageRequest of);
 }
