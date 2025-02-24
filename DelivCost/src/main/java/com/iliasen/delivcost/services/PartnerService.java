@@ -3,13 +3,16 @@ package com.iliasen.delivcost.services;
 import com.iliasen.delivcost.dto.PartnerDTO;
 import com.iliasen.delivcost.dto.mapper.PartnerMapper;
 import com.iliasen.delivcost.models.Partner;
+import com.iliasen.delivcost.models.Role;
 import com.iliasen.delivcost.models.Transport;
 import com.iliasen.delivcost.repositories.PartnerRepository;
+import com.iliasen.delivcost.specification.PartnerSpecification;
 import lombok.RequiredArgsConstructor;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.UrlResource;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -131,5 +134,21 @@ public class PartnerService {
         } else {
             return ResponseEntity.notFound().build();
         }
+    }
+
+    public List<Partner> filterAndSortPartners(String companyName, Long inn, String email, Role role, boolean sortByCompanyNameAsc) {
+        Specification<Partner> spec = Specification
+                .where(PartnerSpecification.hasCompanyName(companyName))
+                .and(PartnerSpecification.hasInn(inn))
+                .and(PartnerSpecification.hasEmail(email))
+                .and(PartnerSpecification.hasRole(role));
+
+        if (sortByCompanyNameAsc) {
+            spec = spec.and(PartnerSpecification.orderByCompanyName(true));
+        } else {
+            spec = spec.and(PartnerSpecification.orderByCompanyName(false));
+        }
+
+        return partnerRepository.findAll(spec);
     }
 }

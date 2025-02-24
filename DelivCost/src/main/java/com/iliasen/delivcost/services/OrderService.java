@@ -12,11 +12,13 @@ import com.iliasen.delivcost.repositories.ClientRepository;
 import com.iliasen.delivcost.repositories.DriverRepository;
 import com.iliasen.delivcost.repositories.OrderRepository;
 import com.iliasen.delivcost.repositories.PartnerRepository;
+import com.iliasen.delivcost.specification.OrderSpecification;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -241,6 +243,22 @@ public class OrderService {
         order.setPartnerChecked(true);
         orderRepository.save(order);
         return "Partner checked order";
+    }
+
+    public List<Order> filterAndSortOrders(String comment, int minPrice, boolean partnerChecked, OrderStatus orderStatus, boolean sortByPriceAsc) {
+        Specification<Order> spec = Specification
+                .where(OrderSpecification.hasComment(comment))
+                .and(OrderSpecification.hasPriceGreaterThan(minPrice))
+                .and(OrderSpecification.isPartnerChecked(partnerChecked))
+                .and(OrderSpecification.hasOrderStatus(orderStatus));
+
+        if (sortByPriceAsc) {
+            spec = spec.and(OrderSpecification.orderByPrice(true));
+        } else {
+            spec = spec.and(OrderSpecification.orderByPrice(false));
+        }
+
+        return orderRepository.findAll(spec);
     }
 
     //нужно переделать

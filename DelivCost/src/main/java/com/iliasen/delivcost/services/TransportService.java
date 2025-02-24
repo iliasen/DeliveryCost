@@ -7,9 +7,11 @@ import com.iliasen.delivcost.dto.mapper.TransportMapper;
 import com.iliasen.delivcost.models.*;
 import com.iliasen.delivcost.repositories.PartnerRepository;
 import com.iliasen.delivcost.repositories.TransportRepository;
+import com.iliasen.delivcost.specification.TransportSpecification;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
@@ -106,7 +108,21 @@ public class TransportService {
                 .collect(Collectors.toList());
     }
 
+    public List<Transport> filterAndSortTransports(TransportType transportType, double minTonnage, double minVolume, Partner partner, boolean sortByTonnageAsc) {
+        Specification<Transport> spec = Specification
+                .where(TransportSpecification.hasTransportType(transportType))
+                .and(TransportSpecification.hasTonnageGreaterThan(minTonnage))
+                .and(TransportSpecification.hasVolumeGreaterThan(minVolume))
+                .and(TransportSpecification.hasPartner(partner));
 
+        if (sortByTonnageAsc) {
+            spec = spec.and(TransportSpecification.orderByTonnage(true));
+        } else {
+            spec = spec.and(TransportSpecification.orderByTonnage(false));
+        }
+
+        return transportRepository.findAll(spec);
+    }
 
     public boolean calculateVolume(Transport transport, List<Order> orders) {
         List<Cargo> cargos = orders.stream()

@@ -6,13 +6,16 @@ import com.iliasen.delivcost.dto.mapper.DriverMapper;
 import com.iliasen.delivcost.dto.mapper.OrderMapper;
 import com.iliasen.delivcost.models.Driver;
 import com.iliasen.delivcost.models.Partner;
+import com.iliasen.delivcost.models.Role;
 import com.iliasen.delivcost.models.Transport;
 import com.iliasen.delivcost.repositories.DriverRepository;
 import com.iliasen.delivcost.repositories.PartnerRepository;
 import com.iliasen.delivcost.repositories.TransportRepository;
+import com.iliasen.delivcost.specification.DriverSpecification;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
@@ -78,5 +81,22 @@ public class DriverService {
                 .stream()
                 .map(driverMapper::toDriverDTO)
                 .collect(Collectors.toList());
+    }
+
+    public List<Driver> filterAndSortDrivers(String firstName, String lastName, String phone, String email, Role role, boolean sortByFirstNameAsc) {
+        Specification<Driver> spec = Specification
+                .where(DriverSpecification.hasFirstName(firstName))
+                .and(DriverSpecification.hasLastName(lastName))
+                .and(DriverSpecification.hasPhone(phone))
+                .and(DriverSpecification.hasEmail(email))
+                .and(DriverSpecification.hasRole(role));
+
+        if (sortByFirstNameAsc) {
+            spec = spec.and(DriverSpecification.orderByFirstName(true));
+        } else {
+            spec = spec.and(DriverSpecification.orderByFirstName(false));
+        }
+
+        return driverRepository.findAll(spec);
     }
 }

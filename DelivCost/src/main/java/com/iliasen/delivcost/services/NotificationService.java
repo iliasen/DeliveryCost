@@ -7,8 +7,10 @@ import com.iliasen.delivcost.repositories.ClientRepository;
 import com.iliasen.delivcost.repositories.NotificationRepository;
 import com.iliasen.delivcost.repositories.OrderRepository;
 import com.iliasen.delivcost.repositories.PartnerRepository;
+import com.iliasen.delivcost.specification.NotificationSpecification;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
@@ -133,5 +135,25 @@ public class NotificationService {
         }
 
         return "All notifications have been deleted.";
+    }
+
+
+    public List<Notification> filterAndSortNotifications(OrderStatus newStatus, boolean partnerChecked, boolean clientChecked, LocalDateTime changeTime, Order order, Partner partner, Client client, boolean sortByChangeTimeAsc) {
+        Specification<Notification> spec = Specification
+                .where(NotificationSpecification.hasNewStatus(newStatus))
+                .and(NotificationSpecification.isPartnerChecked(partnerChecked))
+                .and(NotificationSpecification.isClientChecked(clientChecked))
+                .and(NotificationSpecification.hasChangeTimeAfter(changeTime))
+                .and(NotificationSpecification.hasOrder(order))
+                .and(NotificationSpecification.hasPartner(partner))
+                .and(NotificationSpecification.hasClient(client));
+
+        if (sortByChangeTimeAsc) {
+            spec = spec.and(NotificationSpecification.orderByChangeTime(true));
+        } else {
+            spec = spec.and(NotificationSpecification.orderByChangeTime(false));
+        }
+
+        return notificationRepository.findAll(spec);
     }
 }
