@@ -5,6 +5,9 @@ import com.iliasen.delivcost.services.TransportService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -30,11 +33,10 @@ public class TransportController {
 
     @Operation(summary = "Get all transport", description = "Returns a paginated list of all transport entities")
     @GetMapping
-    public ResponseEntity<List<TransportDTO>> getAll(
-            @RequestParam(value = "offset", defaultValue = "0") Integer offset,
-            @RequestParam(value = "limit", defaultValue = "10") Integer limit,
+    public ResponseEntity<Page<TransportDTO>> getAll(
+            @PageableDefault(page = 0, size = 20) Pageable pageable,
             @AuthenticationPrincipal UserDetails userDetails) {
-        return ResponseEntity.ok(transportService.getTransport(offset, limit, userDetails));
+        return ResponseEntity.ok(transportService.getTransport(pageable, userDetails));
     }
 
     @Operation(summary = "Get transport for user", description = "Returns a list of transport entities for a specific user")

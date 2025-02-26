@@ -18,6 +18,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -103,22 +104,22 @@ public class OrderService {
     }
 
 
-    public Page<OrderDTO> getOrders(Integer offset, Integer limit, String status, UserDetails userDetails) {
+    public Page<OrderDTO> getOrders(Pageable pageable, String status, UserDetails userDetails) {
         Page<Order> orders = Page.empty();
 
         try {
             if (userDetails.getAuthorities().contains(new SimpleGrantedAuthority("PARTNER"))) {
                 Partner partner = partnerRepository.findByEmail(userDetails.getUsername())
                         .orElseThrow(() -> new NoSuchElementException("Partner not found"));
-                orders = orderRepository.findByPartnerId(partner.getId(), PageRequest.of(offset, limit));
+                orders = orderRepository.findByPartnerId(partner.getId(), pageable);
             } else if (userDetails.getAuthorities().contains(new SimpleGrantedAuthority("CLIENT"))) {
                 Client client = clientRepository.findByEmail(userDetails.getUsername())
                         .orElseThrow(() -> new NoSuchElementException("Client not found"));
-                orders = orderRepository.findByClientId(client.getId(), PageRequest.of(offset, limit));
+                orders = orderRepository.findByClientId(client.getId(), pageable);
             } else if (userDetails.getAuthorities().contains(new SimpleGrantedAuthority("DRIVER"))) {
                 Driver driver = driverRepository.findByEmail(userDetails.getUsername())
                         .orElseThrow(() -> new NoSuchElementException("Driver not found"));
-                orders = orderRepository.findByDriverId(driver.getId(), PageRequest.of(offset, limit));
+                orders = orderRepository.findByDriverId(driver.getId(), pageable);
             } else {
                 throw new IllegalArgumentException("Invalid authority");
             }

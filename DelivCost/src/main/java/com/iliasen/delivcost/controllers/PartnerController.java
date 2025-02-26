@@ -6,6 +6,9 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.core.io.Resource;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -26,10 +29,9 @@ public class PartnerController {
 
     @Operation(summary = "Get all partners", description = "Returns a paginated list of all partners")
     @GetMapping(value = "/all")
-    public ResponseEntity<List<PartnerDTO>> getPartners(
-            @RequestParam(value = "offset", defaultValue = "0") Integer offset,
-            @RequestParam(value = "limit", defaultValue = "10") Integer limit) {
-        return ResponseEntity.ok(partnerService.getAll(offset, limit));
+    public ResponseEntity<Page<PartnerDTO>> getPartners(
+            @PageableDefault(page = 0, size = 20) Pageable pageable) {
+        return ResponseEntity.ok(partnerService.getAll(pageable));
     }
 
     @Operation(summary = "Get partner by ID", description = "Returns a specific partner by its ID")

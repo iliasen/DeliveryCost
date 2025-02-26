@@ -10,6 +10,8 @@ import com.iliasen.delivcost.repositories.PartnerRepository;
 import com.iliasen.delivcost.specification.NotificationSpecification;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -89,22 +91,26 @@ public class NotificationService {
         return "Checked status update";
     }
 
-    public List<NotificationDTO> getAllNotifications(UserDetails userDetails){
-        List<Notification> notifications = new ArrayList<>();
+    public Page<NotificationDTO> getAllNotifications(Pageable pageable, UserDetails userDetails) {
+        Page<Notification> notifications;
+
         if (userDetails.getAuthorities().contains(new SimpleGrantedAuthority("PARTNER"))) {
             Partner partner = partnerRepository.findByEmail(userDetails.getUsername())
-                    .orElseThrow(() -> new NoSuchElementException("Partner not found"));
+                    .orElseThrow(() -> new NoSuchElementException("Партнер не найден"));
 
-            notifications = notificationRepository.findByPartnerId(partner.getId());
+            notifications = notificationRepository.findByPartnerId(partner.getId(), pageable);
         } else if (userDetails.getAuthorities().contains(new SimpleGrantedAuthority("CLIENT"))) {
             Client client = clientRepository.findByEmail(userDetails.getUsername())
-                    .orElseThrow(() -> new NoSuchElementException("Client not found"));
+                    .orElseThrow(() -> new NoSuchElementException("Клиент не найден"));
 
-            notifications = notificationRepository.findByClientId(client.getId());
+            notifications = notificationRepository.findByClientId(client.getId(), pageable);
+        } else {
+            throw new IllegalArgumentException("Неверный уровень доступа");
         }
-        List<NotificationDTO> notificationDTOS = notifications.stream().map(notificationMapper::toNotificationDTO).collect(Collectors.toList());
-        return notificationDTOS;
+
+        return notifications.map(notificationMapper::toNotificationDTO);
     }
+
 
     public String changeSubscribe(Long orderId, boolean subscribe, UserDetails userDetails) {
         Client client = clientRepository.findByEmail(userDetails.getUsername())

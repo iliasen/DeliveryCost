@@ -11,6 +11,8 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -41,11 +43,10 @@ public class OrderController {
     @Operation(summary = "Get all orders", description = "Returns a paginated list of all orders with optional status filter")
     @GetMapping
     public ResponseEntity<Page<OrderDTO>> getAllOrders(
-            @RequestParam(value = "offset", defaultValue = "0") Integer offset,
-            @RequestParam(value = "limit", defaultValue = "20") Integer limit,
+            @PageableDefault(page = 0, size = 20) Pageable pageable,
             @RequestParam(required = false) String status,
             @AuthenticationPrincipal UserDetails userDetails) {
-        return ResponseEntity.ok(orderService.getOrders(offset, limit, status, userDetails));
+        return ResponseEntity.ok(orderService.getOrders(pageable, status, userDetails));
     }
 
     @PreAuthorize("hasAuthority('PARTNER')")

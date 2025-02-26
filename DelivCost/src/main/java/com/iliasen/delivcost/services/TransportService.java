@@ -11,6 +11,7 @@ import com.iliasen.delivcost.specification.TransportSpecification;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -71,15 +72,15 @@ public class TransportService {
     }
 
 
-    public List<TransportDTO> getTransport(Integer offset, Integer limit, UserDetails userDetails) {
+    public Page<TransportDTO> getTransport(Pageable pageable, UserDetails userDetails) {
         Partner partner = partnerRepository.findByEmail(userDetails.getUsername())
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Partner not found"));
 
-        Page<Transport> transportList = transportRepository.findByPartnerId(partner.getId(), PageRequest.of(offset, limit));
+        Page<Transport> transportList = transportRepository.findByPartnerId(partner.getId(), pageable);
         if (transportList.isEmpty()) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "No transport found");
         }
-        return transportList.stream().map(transportMapper::toTransportDTO).collect(Collectors.toList());
+        return transportList.map(transportMapper::toTransportDTO);
     }
 
 

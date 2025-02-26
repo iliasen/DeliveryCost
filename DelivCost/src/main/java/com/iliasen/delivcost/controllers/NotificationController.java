@@ -5,6 +5,9 @@ import com.iliasen.delivcost.services.NotificationService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -21,9 +24,10 @@ public class NotificationController {
 
     @Operation(summary = "Get all notifications", description = "Returns a list of all notifications for the user")
     @GetMapping
-    public ResponseEntity<List<NotificationDTO>> getNotifications(
+    public ResponseEntity<Page<NotificationDTO>> getNotifications(
+            @PageableDefault(page = 0, size = 20) Pageable pageable,
             @AuthenticationPrincipal UserDetails userDetails) {
-        return ResponseEntity.ok(notificationService.getAllNotifications(userDetails));
+        return ResponseEntity.ok(notificationService.getAllNotifications(pageable ,userDetails));
     }
 
     @Operation(summary = "Subscribe or unsubscribe to notifications", description = "Changes the subscription status for a specific notification")

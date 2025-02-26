@@ -19,5 +19,5 @@ public interface DriverRepository extends JpaRepository<Driver, Long>, JpaSpecif
     boolean existsByEmail(String email);
     Page<Driver> findDriversByPartner(Partner partner, Pageable pageRequest);
 
-    Page<Driver> findDriversByPartnerAndTransportIsNull(Partner partner, PageRequest of);
+    Page<Driver> findDriversByPartnerAndTransportIsNull(Partner partner, Pageable pageRequest);
 }
