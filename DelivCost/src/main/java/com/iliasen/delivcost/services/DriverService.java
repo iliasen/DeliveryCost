@@ -14,8 +14,7 @@ import com.iliasen.delivcost.repositories.TransportRepository;
 import com.iliasen.delivcost.specification.DriverSpecification;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.*;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -63,41 +62,30 @@ public class DriverService {
         return orders;
     }
 
-    public List<DriverDTO> getAll(Pageable pageable, UserDetails userDetails) {
-        Partner partner = partnerRepository.findByEmail(userDetails.getUsername()).orElseThrow(
-                () -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Partner not found")
-        );
-        return driverRepository.findDriversByPartner(partner, pageable)
-                .stream()
-                .map(driverMapper::toDriverDTO)
-                .collect(Collectors.toList());
-    }
-
-    public List<DriverDTO> getFreeDrivers(Pageable pageable, UserDetails userDetails) {
+    public Page<DriverDTO> getDrivers(Pageable pageable, UserDetails userDetails, boolean freeOnly, String firstName, String lastName, String phone, String email, Role role, boolean sortByFirstNameAsc) {
         Partner partner = partnerRepository.findByEmail(userDetails.getUsername()).orElseThrow(
                 () -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Partner not found")
         );
 
-        return driverRepository.findDriversByPartnerAndTransportIsNull(partner, pageable)
-                .stream()
-                .map(driverMapper::toDriverDTO)
-                .collect(Collectors.toList());
-    }
-
-    public List<Driver> filterAndSortDrivers(String firstName, String lastName, String phone, String email, Role role, boolean sortByFirstNameAsc) {
         Specification<Driver> spec = Specification
-                .where(DriverSpecification.hasFirstName(firstName))
+                .where(DriverSpecification.hasPartner(partner))
+                .and(DriverSpecification.hasFirstName(firstName))
                 .and(DriverSpecification.hasLastName(lastName))
                 .and(DriverSpecification.hasPhone(phone))
                 .and(DriverSpecification.hasEmail(email))
                 .and(DriverSpecification.hasRole(role));
 
-        if (sortByFirstNameAsc) {
-            spec = spec.and(DriverSpecification.orderByFirstName(true));
-        } else {
-            spec = spec.and(DriverSpecification.orderByFirstName(false));
+        if (freeOnly) {
+            spec = spec.and(DriverSpecification.hasNoTransport());
         }
 
-        return driverRepository.findAll(spec);
+        Sort sort = Sort.by("firstName");
+        sort = sortByFirstNameAsc ? sort.ascending() : sort.descending();
+        Pageable sortedPageable = PageRequest.of(pageable.getPageNumber(), pageable.getPageSize(), sort);
+
+        Page<Driver> filteredAndSortedDriversPage = driverRepository.findAll(spec, sortedPageable);
+
+        return filteredAndSortedDriversPage.map(driverMapper::toDriverDTO);
     }
+
 }

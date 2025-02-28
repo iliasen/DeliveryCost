@@ -31,25 +31,25 @@ public class TransportController {
         return ResponseEntity.ok(transportService.addTransport(transport, userDetails));
     }
 
-    @Operation(summary = "Get all transport", description = "Returns a paginated list of all transport entities")
+    @Operation(summary = "Get transport", description = "Returns a list of transport entities based on filters")
     @GetMapping
-    public ResponseEntity<Page<TransportDTO>> getAll(
+    public ResponseEntity<Page<TransportDTO>> getTransport(
             @PageableDefault(page = 0, size = 20) Pageable pageable,
+            @RequestParam(required = false) String transportType,
+            @RequestParam(required = false) Long partnerId,
+            @RequestParam(required = false) Boolean onlyWithDriver,
+            @RequestParam(required = false) Boolean uniqueTypes,
             @AuthenticationPrincipal UserDetails userDetails) {
-        return ResponseEntity.ok(transportService.getTransport(pageable, userDetails));
-    }
 
-    @Operation(summary = "Get transport for user", description = "Returns a list of transport entities for a specific user")
-    @GetMapping(value = "/{id}")
-    public ResponseEntity<List<TransportDTO>> getForUser(@PathVariable Long id) {
-        return ResponseEntity.ok(transportService.getTransportForUser(id));
-    }
+        Page<TransportDTO> transports = transportService.getTransport(
+                pageable,
+                userDetails,
+                partnerId,
+                transportType,
+                onlyWithDriver,
+                uniqueTypes
+        );
 
-    @Operation(summary = "Get transport by type", description = "Returns a list of transport entities filtered by type")
-    @GetMapping(value = "/by_type")
-    public ResponseEntity<List<TransportDTO>> getByType(
-            @RequestBody(required = false) String type,
-            @AuthenticationPrincipal UserDetails userDetails) {
-        return ResponseEntity.ok(transportService.getTransportByType(type, userDetails));
+        return ResponseEntity.ok(transports);
     }
 }

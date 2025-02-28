@@ -2,11 +2,13 @@ package com.iliasen.delivcost.controllers;
 
 import com.iliasen.delivcost.dto.DriverDTO;
 import com.iliasen.delivcost.dto.OrderDTO;
+import com.iliasen.delivcost.models.Role;
 import com.iliasen.delivcost.models.Transport;
 import com.iliasen.delivcost.services.DriverService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.http.ResponseEntity;
@@ -26,15 +28,22 @@ public class DriverController {
 
     @Operation(summary = "Get all drivers", description = "Returns a list of all drivers with pagination")
     @GetMapping(value = "/all")
-    public ResponseEntity<List<DriverDTO>> getAllDrivers(
+    public ResponseEntity<Page<DriverDTO>> getAllDrivers(
             @PageableDefault(page = 0, size = 20) Pageable pageable,
-            @AuthenticationPrincipal UserDetails userDetails) {
-        return ResponseEntity.ok(driverService.getAll(pageable, userDetails));
+            @AuthenticationPrincipal UserDetails userDetails,
+            @RequestParam(required = false) String firstName,
+            @RequestParam(required = false) String lastName,
+            @RequestParam(required = false) String phone,
+            @RequestParam(required = false) String email,
+            @RequestParam(required = false) Role role,
+            @RequestParam(required = false, defaultValue = "false") boolean freeOnly,
+            @RequestParam(required = false, defaultValue = "false") boolean sortByFirstNameAsc) {
+        return ResponseEntity.ok(driverService.getDrivers(pageable, userDetails, freeOnly, firstName, lastName, phone, email, role, sortByFirstNameAsc));
     }
 
     @Operation(summary = "Get free drivers", description = "Returns a list of free drivers with pagination")
     @GetMapping(value = "/free")
-    public ResponseEntity<List<DriverDTO>> getFreeDrivers(
+    public ResponseEntity<Page<DriverDTO>> getFreeDrivers(
             @PageableDefault(page = 0, size = 20) Pageable pageable,
             @AuthenticationPrincipal UserDetails userDetails) {
         return ResponseEntity.ok(driverService.getFreeDrivers(pageable, userDetails));

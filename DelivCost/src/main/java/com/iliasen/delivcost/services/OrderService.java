@@ -104,47 +104,86 @@ public class OrderService {
     }
 
 
-    public Page<OrderDTO> getOrders(Pageable pageable, String status, UserDetails userDetails) {
-        Page<Order> orders = Page.empty();
+    public Page<OrderDTO> getOrders(
+            Pageable pageable,
+            String status,
+            UserDetails userDetails,
+            Long driverId,
+            Long partnerId,
+            Long clientId,
+            boolean forTransfer) {
 
         try {
+            Specification<Order> spec = Specification.where(null);
+
+            // Парсинг статуса
+            OrderStatus filterStatus = null;
+            if (status != null) {
+                try {
+                    filterStatus = OrderStatus.valueOf(status);
+                } catch (IllegalArgumentException e) {
+                    throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Invalid status value");
+                }
+                spec = spec.and(OrderSpecification.hasStatus(filterStatus));
+            }
+
+            // Фильтрация по пользователю
             if (userDetails.getAuthorities().contains(new SimpleGrantedAuthority("PARTNER"))) {
                 Partner partner = partnerRepository.findByEmail(userDetails.getUsername())
-                        .orElseThrow(() -> new NoSuchElementException("Partner not found"));
-                orders = orderRepository.findByPartnerId(partner.getId(), pageable);
+                        .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Partner not found"));
+                spec = spec.and(OrderSpecification.belongsToPartner(partner.getId()));
             } else if (userDetails.getAuthorities().contains(new SimpleGrantedAuthority("CLIENT"))) {
                 Client client = clientRepository.findByEmail(userDetails.getUsername())
-                        .orElseThrow(() -> new NoSuchElementException("Client not found"));
-                orders = orderRepository.findByClientId(client.getId(), pageable);
+                        .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Client not found"));
+                spec = spec.and(OrderSpecification.belongsToClient(client.getId()));
             } else if (userDetails.getAuthorities().contains(new SimpleGrantedAuthority("DRIVER"))) {
                 Driver driver = driverRepository.findByEmail(userDetails.getUsername())
-                        .orElseThrow(() -> new NoSuchElementException("Driver not found"));
-                orders = orderRepository.findByDriverId(driver.getId(), pageable);
+                        .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Driver not found"));
+                spec = spec.and(OrderSpecification.assignedToDriver(driver.getId()));
             } else {
                 throw new IllegalArgumentException("Invalid authority");
             }
 
-            if (status != null) {
-                try {
-                    OrderStatus filterStatus = OrderStatus.valueOf(status);
-                    orders = new PageImpl<>(
-                            orders.getContent().stream()
-                                    .filter(order -> order.getOrderStatus() == filterStatus)
-                                    .collect(Collectors.toList()),
-                            orders.getPageable(),
-                            orders.getTotalElements()
-                    );
-                } catch (IllegalArgumentException e) {
-                    throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Invalid status value");
+            // Дополнительная фильтрация по параметрам
+            if (driverId != null) {
+                spec = spec.and(OrderSpecification.assignedToDriver(driverId));
+            }
+
+            if (partnerId != null) {
+                spec = spec.and(OrderSpecification.belongsToPartner(partnerId));
+            }
+
+            if (clientId != null) {
+                spec = spec.and(OrderSpecification.belongsToClient(clientId));
+            }
+
+            if (forTransfer) {
+                spec = spec.and(OrderSpecification.hasNoDriver())
+                        .and(OrderSpecification.isNotComplete());
+
+                // Если нужно фильтровать по типу транспорта драйвера
+                if (driverId != null) {
+                    Driver driver = driverRepository.findById(driverId)
+                            .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Driver not found"));
+                    spec = spec.and(OrderSpecification.hasTransportType(driver.getTransport().getTransportType()));
                 }
             }
 
-            orders.getContent().sort(Comparator.comparing(
-                    Order::getOrderStatus,
-                    Comparator.nullsLast(Comparator.comparing(OrderStatus::ordinal))
-            ));
 
-            return orders.map(orderMapper::toOrderDTO);
+            Page<Order> orders = orderRepository.findAll(spec, pageable);
+
+            List<Order> sortedOrders = orders.getContent().stream()
+                    .sorted(Comparator.comparing(
+                            Order::getOrderStatus,
+                            Comparator.nullsLast(Comparator.comparing(OrderStatus::ordinal))
+                    ))
+                    .collect(Collectors.toList());
+
+            List<OrderDTO> orderDTOs = sortedOrders.stream()
+                    .map(orderMapper::toOrderDTO)
+                    .collect(Collectors.toList());
+
+            return new PageImpl<>(orderDTOs, pageable, orders.getTotalElements());
 
         } catch (NoSuchElementException e) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, e.getMessage(), e);
@@ -156,58 +195,6 @@ public class OrderService {
     }
 
 
-
-    public List<OrderDTO> getDriverOrders(Integer offset, Integer limit, Long id){
-        Driver driver = driverRepository.findById(id).orElseThrow(()-> new ResponseStatusException(HttpStatus.NOT_FOUND, "Driver not found"));
-        Page<Order> orders = orderRepository.findByDriverId(driver.getId(), PageRequest.of(offset, limit));
-
-        return orders.isEmpty()
-                ? Collections.emptyList()
-                : orders.stream()
-                .map(orderMapper::toOrderDTO)
-                .collect(Collectors.toList());
-    }
-
-    public Page<OrderDTO> getOrdersForPartner(Integer offset, Integer limit, UserDetails userDetails) {
-        Partner partner = partnerRepository.findByEmail(userDetails.getUsername())
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Partner not found"));
-
-        Page<Order> orderPage = orderRepository.findByPartnerId(partner.getId(), PageRequest.of(offset, limit));
-
-        List<Order> filteredOrders = orderPage.getContent().stream()
-                .filter(order -> order.getOrderStatus() != OrderStatus.COMPLETE)
-                .collect(Collectors.toList());
-
-        filteredOrders.sort(Comparator.comparing(
-                Order::getOrderStatus,
-                Comparator.nullsLast(Comparator.comparing(OrderStatus::ordinal))
-        ));
-
-        List<OrderDTO> orderDTOs = filteredOrders.stream()
-                .map(orderMapper::toOrderDTO)
-                .collect(Collectors.toList());
-
-        return new PageImpl<>(orderDTOs, PageRequest.of(offset, limit), orderPage.getTotalElements());
-    }
-
-        public List<OrderDTO> getOrdersForTransferToDriver(Long id, UserDetails userDetails) {
-        Partner partner = partnerRepository.findByEmail(userDetails.getUsername())
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Partner not found"));
-        Driver driver = driverRepository.findById(id)
-                .orElseThrow(()-> new ResponseStatusException(HttpStatus.NOT_FOUND, "Driver not found"));
-
-        List<Order> orders = orderRepository.findByPartnerId(partner.getId());
-
-        List<OrderDTO> orderDTOList = orders.stream()
-                .filter(order -> order.getRoute().getTransportType() == driver.getTransport().getTransportType() &&
-                        order.getOrderStatus() != OrderStatus.COMPLETE &&
-                        order.getDriver() == null)
-                .map(orderMapper::toOrderDTO)
-                .sorted(Comparator.comparing(OrderDTO::getOrderStatus))
-                .collect(Collectors.toList());
-
-        return orderDTOList;
-    }
 
     public List<OrderDTO> getNewOrders(UserDetails userDetails) {
         Partner partner = partnerRepository.findByEmail(userDetails.getUsername())
@@ -246,21 +233,6 @@ public class OrderService {
         return "Partner checked order";
     }
 
-    public List<Order> filterAndSortOrders(String comment, int minPrice, boolean partnerChecked, OrderStatus orderStatus, boolean sortByPriceAsc) {
-        Specification<Order> spec = Specification
-                .where(OrderSpecification.hasComment(comment))
-                .and(OrderSpecification.hasPriceGreaterThan(minPrice))
-                .and(OrderSpecification.isPartnerChecked(partnerChecked))
-                .and(OrderSpecification.hasOrderStatus(orderStatus));
-
-        if (sortByPriceAsc) {
-            spec = spec.and(OrderSpecification.orderByPrice(true));
-        } else {
-            spec = spec.and(OrderSpecification.orderByPrice(false));
-        }
-
-        return orderRepository.findAll(spec);
-    }
 
     //нужно переделать
 //    public ResponseEntity<?> backpackProblemSolver(int maxWeight, UserDetails userDetails) {

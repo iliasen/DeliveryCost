@@ -42,38 +42,27 @@ public class OrderController {
 
     @Operation(summary = "Get all orders", description = "Returns a paginated list of all orders with optional status filter")
     @GetMapping
-    public ResponseEntity<Page<OrderDTO>> getAllOrders(
+
+    public ResponseEntity<Page<OrderDTO>> getOrders(
             @PageableDefault(page = 0, size = 20) Pageable pageable,
             @RequestParam(required = false) String status,
+            @RequestParam(required = false) Long driverId,
+            @RequestParam(required = false) Long partnerId,
+            @RequestParam(required = false) Long clientId,
+            @RequestParam(required = false) Boolean forTransfer,
             @AuthenticationPrincipal UserDetails userDetails) {
-        return ResponseEntity.ok(orderService.getOrders(pageable, status, userDetails));
-    }
 
-    @PreAuthorize("hasAuthority('PARTNER')")
-    @Operation(summary = "Get orders for partner", description = "Returns a paginated list of orders for a specific partner")
-    @GetMapping(value = "/partner")
-    public ResponseEntity<Page<OrderDTO>> getOrdersForPartner(
-            @RequestParam(value = "offset", defaultValue = "0") Integer offset,
-            @RequestParam(value = "limit", defaultValue = "20") Integer limit,
-            @AuthenticationPrincipal UserDetails userDetails) {
-        return ResponseEntity.ok(orderService.getOrdersForPartner(offset, limit, userDetails));
-    }
+        Page<OrderDTO> orders = orderService.getOrders(
+                pageable,
+                status,
+                userDetails,
+                driverId,
+                partnerId,
+                clientId,
+                forTransfer != null && forTransfer
+        );
 
-    @Operation(summary = "Get orders for driver", description = "Returns a list of orders assigned to a specific driver with pagination")
-    @GetMapping(value = "/driver/have/{id}")
-    public ResponseEntity<List<OrderDTO>> getOrdersForDriver(
-            @RequestParam(value = "offset", defaultValue = "0") Integer offset,
-            @RequestParam(value = "limit", defaultValue = "20") Integer limit,
-            @PathVariable Long id) {
-        return ResponseEntity.ok(orderService.getDriverOrders(offset, limit, id));
-    }
-
-    @Operation(summary = "Get orders available for transfer to driver", description = "Returns a list of orders available for transfer to a specific driver")
-    @GetMapping(value = "/driver/{id}")
-    public ResponseEntity<List<OrderDTO>> getOrdersForTransferToDriver(
-            @PathVariable Long id,
-            @AuthenticationPrincipal UserDetails userDetails) {
-        return ResponseEntity.ok(orderService.getOrdersForTransferToDriver(id, userDetails));
+        return ResponseEntity.ok(orders);
     }
 
     @Operation(summary = "Transfer orders to driver", description = "Transfers a list of orders to a specific driver")

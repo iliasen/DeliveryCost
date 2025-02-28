@@ -5,6 +5,7 @@ import com.iliasen.delivcost.dto.mapper.PartnerMapper;
 import com.iliasen.delivcost.models.Partner;
 import com.iliasen.delivcost.models.Role;
 import com.iliasen.delivcost.models.Transport;
+import com.iliasen.delivcost.models.TransportType;
 import com.iliasen.delivcost.repositories.PartnerRepository;
 import com.iliasen.delivcost.specification.PartnerSpecification;
 import lombok.RequiredArgsConstructor;
@@ -39,11 +40,37 @@ public class PartnerService {
     private final PartnerMapper partnerMapper;
 
 
-    public Page<PartnerDTO> getAll(Pageable pageable) {
-        Page<Partner> partnersPage = partnerRepository.findAll(pageable);
+    public Page<PartnerDTO> getAll(
+            Pageable pageable,
+            Boolean sortByCompanyNameAsc,
+            Boolean sortByRatingAsc
+           ){
+
+        Specification<Partner> spec = Specification.where(null);
+
+        spec = spec.and(PartnerSpecification.hasCompanyOfficialFilled())
+                .and(PartnerSpecification.hasDescriptionFilled())
+                .and(PartnerSpecification.hasMarginFilled())
+                .and(PartnerSpecification.hasTransport());
+
+
+        if (Boolean.TRUE.equals(sortByCompanyNameAsc)) {
+            spec = spec.and(PartnerSpecification.orderByCompanyName(true));
+        } else if (Boolean.FALSE.equals(sortByCompanyNameAsc)) {
+            spec = spec.and(PartnerSpecification.orderByCompanyName(false));
+        }
+
+        if (Boolean.TRUE.equals(sortByRatingAsc)) {
+            spec = spec.and(PartnerSpecification.orderByRating(true));
+        } else if (Boolean.FALSE.equals(sortByRatingAsc)) {
+            spec = spec.and(PartnerSpecification.orderByRating(false));
+        }
+
+        Page<Partner> partnersPage = partnerRepository.findAll(spec, pageable);
 
         return partnersPage.map(partnerMapper::toPartnerDTO);
     }
+
 
 
     public PartnerDTO getOne(Long id) {
@@ -132,21 +159,5 @@ public class PartnerService {
         } else {
             return ResponseEntity.notFound().build();
         }
-    }
-
-    public List<Partner> filterAndSortPartners(String companyName, Long inn, String email, Role role, boolean sortByCompanyNameAsc) {
-        Specification<Partner> spec = Specification
-                .where(PartnerSpecification.hasCompanyName(companyName))
-                .and(PartnerSpecification.hasInn(inn))
-                .and(PartnerSpecification.hasEmail(email))
-                .and(PartnerSpecification.hasRole(role));
-
-        if (sortByCompanyNameAsc) {
-            spec = spec.and(PartnerSpecification.orderByCompanyName(true));
-        } else {
-            spec = spec.and(PartnerSpecification.orderByCompanyName(false));
-        }
-
-        return partnerRepository.findAll(spec);
     }
 }

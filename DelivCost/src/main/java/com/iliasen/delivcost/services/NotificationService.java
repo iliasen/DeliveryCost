@@ -96,16 +96,16 @@ public class NotificationService {
 
         if (userDetails.getAuthorities().contains(new SimpleGrantedAuthority("PARTNER"))) {
             Partner partner = partnerRepository.findByEmail(userDetails.getUsername())
-                    .orElseThrow(() -> new NoSuchElementException("Партнер не найден"));
+                    .orElseThrow(() -> new NoSuchElementException("Partner not found"));
 
             notifications = notificationRepository.findByPartnerId(partner.getId(), pageable);
         } else if (userDetails.getAuthorities().contains(new SimpleGrantedAuthority("CLIENT"))) {
             Client client = clientRepository.findByEmail(userDetails.getUsername())
-                    .orElseThrow(() -> new NoSuchElementException("Клиент не найден"));
+                    .orElseThrow(() -> new NoSuchElementException("Client not found"));
 
             notifications = notificationRepository.findByClientId(client.getId(), pageable);
         } else {
-            throw new IllegalArgumentException("Неверный уровень доступа");
+            throw new IllegalArgumentException("Invalid user");
         }
 
         return notifications.map(notificationMapper::toNotificationDTO);

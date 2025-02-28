@@ -20,6 +20,7 @@ import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
 import java.util.Map;
+import java.util.NoSuchElementException;
 import java.util.stream.Collectors;
 
 @Service
@@ -38,92 +39,58 @@ public class TransportService {
         return "Transport created";
     }
 
-    public List<TransportDTO> getTransportByType(String type, UserDetails userDetails) {
-        Partner partner = partnerRepository.findByEmail(userDetails.getUsername())
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Partner not found"));
+    public Page<TransportDTO> getTransport(
+            Pageable pageable,
+            UserDetails userDetails,
+            Long partnerId,
+            String transportTypeStr,
+            Boolean onlyWithDriver,
+            Boolean uniqueTypes) {
 
-        List<Transport> transportList;
+        try {
+            Specification<Transport> spec = Specification.where(null);
 
-        if (type != null) {
-            try {
-                ObjectMapper objectMapper = new ObjectMapper();
-                JsonNode jsonNode = objectMapper.readTree(type);
-
-                String transportTypeString = jsonNode.path("type").asText();
-
-                TransportType transportType = TransportType.valueOf(transportTypeString);
-                transportList = transportRepository.findByPartnerIdAndTransportType(partner.getId(), transportType);
-                transportList = transportList.stream()
-                        .filter(transport -> transport.getDriver() != null)
-                        .collect(Collectors.toList());
-
-            } catch (Exception e) {
-                throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Error parsing transport type", e);
+            if (partnerId == null && userDetails != null) {
+                Partner partner = partnerRepository.findByEmail(userDetails.getUsername())
+                        .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Partner not found"));
+                partnerId = partner.getId();
             }
-        } else {
-            transportList = transportRepository.findByPartnerId(partner.getId());
-        }
 
-        if (transportList.isEmpty()) {
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "No transport found");
-        }
+            spec = spec.and(TransportSpecification.belongsToPartner(partnerId));
 
-        return transportList.stream().map(transportMapper::toTransportDTO).collect(Collectors.toList());
+            if (transportTypeStr != null && !transportTypeStr.isEmpty()) {
+                try {
+                    TransportType transportType = TransportType.valueOf(transportTypeStr.toUpperCase());
+                    spec = spec.and(TransportSpecification.hasTransportType(transportType));
+                } catch (IllegalArgumentException e) {
+                    throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Invalid transport type");
+                }
+            }
+
+            if (onlyWithDriver != null && onlyWithDriver) {
+                spec = spec.and(TransportSpecification.hasDriver());
+            }
+
+            if (uniqueTypes != null && uniqueTypes) {
+                spec = spec.and(TransportSpecification.uniqueTransportTypes());
+            }
+
+            Page<Transport> transportPage = transportRepository.findAll(spec, pageable);
+
+            if (transportPage.isEmpty()) {
+                throw new ResponseStatusException(HttpStatus.NOT_FOUND, "No transport found");
+            }
+
+            return transportPage.map(transportMapper::toTransportDTO);
+
+        } catch (NoSuchElementException e) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, e.getMessage(), e);
+        } catch (Exception e) {
+            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "An unexpected error occurred", e);
+        }
     }
 
 
-    public Page<TransportDTO> getTransport(Pageable pageable, UserDetails userDetails) {
-        Partner partner = partnerRepository.findByEmail(userDetails.getUsername())
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Partner not found"));
-
-        Page<Transport> transportList = transportRepository.findByPartnerId(partner.getId(), pageable);
-        if (transportList.isEmpty()) {
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "No transport found");
-        }
-        return transportList.map(transportMapper::toTransportDTO);
-    }
-
-
-    public List<TransportDTO> getTransportForUser(Long id) {
-        partnerRepository.findById(id)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Partner not found"));
-
-        List<Transport> transportList = transportRepository.findByPartnerId(id);
-        transportList = transportList.stream()
-                .filter(transport -> transport.getDriver() != null)
-                .collect(Collectors.toList());
-        if (transportList.isEmpty()) {
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "No transport found");
-        }
-
-        // Фильтрация по уникальным типам транспорта
-        Map<TransportType, Transport> uniqueTransportMap = transportList.stream()
-                .collect(Collectors.toMap(
-                        Transport::getTransportType,
-                        transport -> transport,
-                        (existing, replacement) -> existing
-                ));
-
-        return uniqueTransportMap.values().stream()
-                .map(transportMapper::toTransportDTO)
-                .collect(Collectors.toList());
-    }
-
-    public List<Transport> filterAndSortTransports(TransportType transportType, double minTonnage, double minVolume, Partner partner, boolean sortByTonnageAsc) {
-        Specification<Transport> spec = Specification
-                .where(TransportSpecification.hasTransportType(transportType))
-                .and(TransportSpecification.hasTonnageGreaterThan(minTonnage))
-                .and(TransportSpecification.hasVolumeGreaterThan(minVolume))
-                .and(TransportSpecification.hasPartner(partner));
-
-        if (sortByTonnageAsc) {
-            spec = spec.and(TransportSpecification.orderByTonnage(true));
-        } else {
-            spec = spec.and(TransportSpecification.orderByTonnage(false));
-        }
-
-        return transportRepository.findAll(spec);
-    }
 
     public boolean calculateVolume(Transport transport, List<Order> orders) {
         List<Cargo> cargos = orders.stream()

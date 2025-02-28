@@ -17,7 +17,6 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
-import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
@@ -30,8 +29,16 @@ public class PartnerController {
     @Operation(summary = "Get all partners", description = "Returns a paginated list of all partners")
     @GetMapping(value = "/all")
     public ResponseEntity<Page<PartnerDTO>> getPartners(
-            @PageableDefault(page = 0, size = 20) Pageable pageable) {
-        return ResponseEntity.ok(partnerService.getAll(pageable));
+            @PageableDefault(page = 0, size = 20) Pageable pageable,
+            @RequestParam(required = false) Boolean sortByCompanyNameAsc,
+            @RequestParam(required = false) Boolean sortByRatingAsc) {
+
+        Page<PartnerDTO> partners = partnerService.getAll(
+                pageable,
+                sortByCompanyNameAsc,
+                sortByRatingAsc);
+
+        return ResponseEntity.ok(partners);
     }
 
     @Operation(summary = "Get partner by ID", description = "Returns a specific partner by its ID")
