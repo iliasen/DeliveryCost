@@ -48,10 +48,10 @@ public class PartnerService {
 
         Specification<Partner> spec = Specification.where(null);
 
-        spec = spec.and(PartnerSpecification.hasCompanyOfficialFilled())
-                .and(PartnerSpecification.hasDescriptionFilled())
-                .and(PartnerSpecification.hasMarginFilled())
-                .and(PartnerSpecification.hasTransport());
+//        spec = spec.and(PartnerSpecification.hasCompanyOfficialFilled())
+//                .and(PartnerSpecification.hasDescriptionFilled())
+//                .and(PartnerSpecification.hasMarginFilled())
+//                .and(PartnerSpecification.hasTransport());
 
 
         if (Boolean.TRUE.equals(sortByCompanyNameAsc)) {
@@ -67,7 +67,7 @@ public class PartnerService {
         }
 
         Page<Partner> partnersPage = partnerRepository.findAll(spec, pageable);
-
+        System.out.println(Arrays.stream(partnersPage.stream().toArray()).toList());
         return partnersPage.map(partnerMapper::toPartnerDTO);
     }
 

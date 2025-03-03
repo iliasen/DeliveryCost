@@ -42,7 +42,6 @@ public class OrderController {
 
     @Operation(summary = "Get all orders", description = "Returns a paginated list of all orders with optional status filter")
     @GetMapping
-
     public ResponseEntity<Page<OrderDTO>> getOrders(
             @PageableDefault(page = 0, size = 20) Pageable pageable,
             @RequestParam(required = false) String status,

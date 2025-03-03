@@ -62,18 +62,16 @@ public class DriverService {
         return orders;
     }
 
-    public Page<DriverDTO> getDrivers(Pageable pageable, UserDetails userDetails, boolean freeOnly, String firstName, String lastName, String phone, String email, Role role, boolean sortByFirstNameAsc) {
+    public Page<DriverDTO> getDrivers(Pageable pageable, UserDetails userDetails, boolean freeOnly, String lastName, String phone, String email, boolean sortByFirstNameAsc) {
         Partner partner = partnerRepository.findByEmail(userDetails.getUsername()).orElseThrow(
                 () -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Partner not found")
         );
 
         Specification<Driver> spec = Specification
                 .where(DriverSpecification.hasPartner(partner))
-                .and(DriverSpecification.hasFirstName(firstName))
                 .and(DriverSpecification.hasLastName(lastName))
                 .and(DriverSpecification.hasPhone(phone))
-                .and(DriverSpecification.hasEmail(email))
-                .and(DriverSpecification.hasRole(role));
+                .and(DriverSpecification.hasEmail(email));
 
         if (freeOnly) {
             spec = spec.and(DriverSpecification.hasNoTransport());

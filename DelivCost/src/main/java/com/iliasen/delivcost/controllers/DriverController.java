@@ -31,23 +31,21 @@ public class DriverController {
     public ResponseEntity<Page<DriverDTO>> getAllDrivers(
             @PageableDefault(page = 0, size = 20) Pageable pageable,
             @AuthenticationPrincipal UserDetails userDetails,
-            @RequestParam(required = false) String firstName,
             @RequestParam(required = false) String lastName,
             @RequestParam(required = false) String phone,
             @RequestParam(required = false) String email,
-            @RequestParam(required = false) Role role,
             @RequestParam(required = false, defaultValue = "false") boolean freeOnly,
             @RequestParam(required = false, defaultValue = "false") boolean sortByFirstNameAsc) {
-        return ResponseEntity.ok(driverService.getDrivers(pageable, userDetails, freeOnly, firstName, lastName, phone, email, role, sortByFirstNameAsc));
+        return ResponseEntity.ok(driverService.getDrivers(pageable, userDetails, freeOnly, lastName, phone, email, sortByFirstNameAsc));
     }
 
-    @Operation(summary = "Get free drivers", description = "Returns a list of free drivers with pagination")
-    @GetMapping(value = "/free")
-    public ResponseEntity<Page<DriverDTO>> getFreeDrivers(
-            @PageableDefault(page = 0, size = 20) Pageable pageable,
-            @AuthenticationPrincipal UserDetails userDetails) {
-        return ResponseEntity.ok(driverService.getFreeDrivers(pageable, userDetails));
-    }
+//    @Operation(summary = "Get free drivers", description = "Returns a list of free drivers with pagination")
+//    @GetMapping(value = "/free")
+//    public ResponseEntity<Page<DriverDTO>> getFreeDrivers(
+//            @PageableDefault(page = 0, size = 20) Pageable pageable,
+//            @AuthenticationPrincipal UserDetails userDetails) {
+//        return ResponseEntity.ok(driverService.getFreeDrivers(pageable, userDetails));
+//    }
 
     @Operation(summary = "Get all orders by driver", description = "Returns a list of all orders for a specific driver")
     @GetMapping(value = "/{id}/orders")

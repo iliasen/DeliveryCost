@@ -16,10 +16,15 @@ public class PartnerSpecification {
         return (root, query, builder) -> builder.isNotNull(root.get("margin"));
     }
 
-    public static Specification<Partner> hasTransport() {
-        return (root, query, builder) -> builder.isNotEmpty(root.get("transports"));
-    }
+//    public static Specification<Partner> hasTransport() {
+//        return (root, query, builder) -> builder.isNotEmpty(root.get("transports"));
+//    }
 
+    public static Specification<Partner> hasTransport() {
+        return (root, query, criteriaBuilder) -> {
+            return criteriaBuilder.isNotEmpty(root.get("transportList"));
+        };
+    }
 
     public static Specification<Partner> orderByCompanyName(boolean asc) {
         return (root, query, builder) -> {
