@@ -3,16 +3,13 @@ package com.iliasen.delivcost.services;
 import com.iliasen.delivcost.dto.PartnerDTO;
 import com.iliasen.delivcost.dto.mapper.PartnerMapper;
 import com.iliasen.delivcost.models.Partner;
-import com.iliasen.delivcost.models.Role;
 import com.iliasen.delivcost.models.Transport;
-import com.iliasen.delivcost.models.TransportType;
 import com.iliasen.delivcost.repositories.PartnerRepository;
 import com.iliasen.delivcost.specification.PartnerSpecification;
 import lombok.RequiredArgsConstructor;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.UrlResource;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.http.HttpStatus;
@@ -30,8 +27,6 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
 import java.util.*;
-import java.util.stream.Collectors;
-import java.util.stream.StreamSupport;
 
 @Service
 @RequiredArgsConstructor
@@ -48,10 +43,10 @@ public class PartnerService {
 
         Specification<Partner> spec = Specification.where(null);
 
-//        spec = spec.and(PartnerSpecification.hasCompanyOfficialFilled())
-//                .and(PartnerSpecification.hasDescriptionFilled())
-//                .and(PartnerSpecification.hasMarginFilled())
-//                .and(PartnerSpecification.hasTransport());
+        spec = spec.and(PartnerSpecification.hasCompanyOfficialFilled())
+                .and(PartnerSpecification.hasDescriptionFilled())
+                .and(PartnerSpecification.hasMarginFilled())
+                .and(PartnerSpecification.hasTransport());
 
 
         if (Boolean.TRUE.equals(sortByCompanyNameAsc)) {
