@@ -36,10 +36,8 @@ public class WarehouseService {
             totalVolume += volume;
         }
 
-        // Вычисление свободного места на складе
         int freeSpace = (int) (warehouse.getVolume() - totalVolume);
 
-        // Формирование ответа
         Map<String, Integer> response = new HashMap<>();
         response.put("totalVolume", (int) totalVolume);
         response.put("freeSpace", freeSpace);

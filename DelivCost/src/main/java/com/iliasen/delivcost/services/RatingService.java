@@ -54,7 +54,7 @@ public class RatingService {
     }
 
 
-    public List<RatingDTO> getById(Long partnerId) {
+    public List<RatingDTO>  getById(Long partnerId) {
         partnerRepository.findById(partnerId)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Partner not found"));
 

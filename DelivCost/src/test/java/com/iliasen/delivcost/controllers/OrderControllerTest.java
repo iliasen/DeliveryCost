@@ -5,11 +5,22 @@ import com.iliasen.delivcost.dto.CargoDTO;
 import com.iliasen.delivcost.dto.OrderAndCargoRequest;
 import com.iliasen.delivcost.dto.OrderDTO;
 import com.iliasen.delivcost.dto.OrderListDTO;
+<<<<<<< HEAD
 import com.iliasen.delivcost.models.OrderStatus;
 import com.iliasen.delivcost.models.Route;
 import com.iliasen.delivcost.services.OrderService;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
+=======
+import com.iliasen.delivcost.models.Order;
+import com.iliasen.delivcost.models.Partner;
+
+import com.iliasen.delivcost.repositories.OrderRepository;
+import com.iliasen.delivcost.repositories.PartnerRepository;
+import com.iliasen.delivcost.services.OrderService;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+>>>>>>> 51dfdeb (Add some tests)
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -19,6 +30,13 @@ import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.MediaType;
+<<<<<<< HEAD
+=======
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.User;
+>>>>>>> 51dfdeb (Add some tests)
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
@@ -27,8 +45,13 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
+<<<<<<< HEAD
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.*;
+=======
+import static org.mockito.ArgumentMatchers.*;
+import static org.mockito.Mockito.mock;
+>>>>>>> 51dfdeb (Add some tests)
 import static org.mockito.Mockito.when;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.user;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
@@ -45,8 +68,22 @@ public class OrderControllerTest {
     @MockBean
     private OrderService orderService;
 
+<<<<<<< HEAD
     @Autowired
     private ObjectMapper objectMapper;
+=======
+    @MockBean
+    private PartnerRepository partnerRepository;
+
+    @MockBean
+    private OrderRepository orderRepository;
+
+    @BeforeEach
+    public void setUp() {
+        UserDetails userDetails = new User("partner@example.com", "password", List.of(new SimpleGrantedAuthority("PARTNER")));
+        SecurityContextHolder.getContext().setAuthentication(new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities()));
+    }
+>>>>>>> 51dfdeb (Add some tests)
 
     @Test
     @WithMockUser
@@ -57,7 +94,11 @@ public class OrderControllerTest {
         orderDTO.setOrderStatus("Created");
 
         OrderAndCargoRequest request = new OrderAndCargoRequest(orderDTO, cargoDTO);
+<<<<<<< HEAD
         UserDetails userDetails = Mockito.mock(UserDetails.class);
+=======
+        UserDetails userDetails = mock(UserDetails.class);
+>>>>>>> 51dfdeb (Add some tests)
 
 
         when(orderService.addOrder(eq(request), anyLong(), eq(userDetails))).thenReturn(orderDTO);
@@ -115,13 +156,18 @@ public class OrderControllerTest {
         mockMvc.perform(post("/order/test")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(new ObjectMapper().writeValueAsString(orderListDTO)))
+<<<<<<< HEAD
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$[0].id").exists());
+=======
+                .andExpect(status().isOk());
+>>>>>>> 51dfdeb (Add some tests)
     }
 
     @Test
     @WithMockUser(authorities = "PARTNER")
     public void testGetNewOrders() throws Exception {
+<<<<<<< HEAD
         UserDetails userDetails = Mockito.mock(UserDetails.class);
         List<OrderDTO> newOrders = Arrays.asList(new OrderDTO(), new OrderDTO());
 
@@ -131,5 +177,17 @@ public class OrderControllerTest {
                         .with(user(userDetails)))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$[0].id").exists());
+=======
+        Partner partner = new Partner();
+        partner.setEmail("partner@example.com");
+
+        when(partnerRepository.findByEmail(any(String.class))).thenReturn(java.util.Optional.of(partner));
+        when(orderRepository.findByPartnerAndPartnerChecked(any(Partner.class), eq(false)))
+                .thenReturn(List.of(new Order()));
+
+        mockMvc.perform(get("/order/new")
+                        .principal(() -> "partner@example.com"))
+                .andExpect(status().isOk());
+>>>>>>> 51dfdeb (Add some tests)
     }
 }
