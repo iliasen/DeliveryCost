@@ -18,6 +18,9 @@ spring:
     user:
       password:
         encoder: bCrypt
+  cloud:
+    config:
+      uri: http://localhost:8888
 
 server:
   port: 5000
@@ -27,6 +30,11 @@ server:
     jwt:
       secret-key: 5zTHB1ZfZvMcNhB4zxy9nHr6CfO/1hB9w2WkM6mKfLw=
       expiration: 86400000 #1 day
+
+eureka:
+  client:
+    service-url:
+      defaultZone: http://localhost:8761/eureka/
 
 logging:
   level:

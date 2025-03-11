@@ -30,8 +30,8 @@ public class PartnerController {
     @GetMapping(value = "/all")
     public ResponseEntity<Page<PartnerDTO>> getPartners(
             @PageableDefault(page = 0, size = 20) Pageable pageable,
-            @RequestParam(required = false) Boolean sortByCompanyNameAsc,
-            @RequestParam(required = false) Boolean sortByRatingAsc) {
+            @RequestParam(required = false, defaultValue = "false") Boolean sortByCompanyNameAsc,
+            @RequestParam(required = false, defaultValue = "false") Boolean sortByRatingAsc) {
 
         Page<PartnerDTO> partners = partnerService.getAll(
                 pageable,

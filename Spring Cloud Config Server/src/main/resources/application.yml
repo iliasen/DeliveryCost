@@ -1,0 +1,24 @@
+spring:
+  cloud:
+    config:
+      server:
+        git:
+          uri: https://github.com/iliasen/DeliveryCostSpringCloudConfigServer.git
+    bus:
+      enabled: false
+      kafka:
+        bootstrap-servers: localhost:9092
+        consumer:
+          group-id: spring-cloud-bus
+        producer:
+          key-serializer: org.apache.kafka.common.serialization.StringSerializer
+          value-serializer: org.apache.kafka.common.serialization.StringSerializer
+
+server:
+  port: 8888
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: bus-refresh

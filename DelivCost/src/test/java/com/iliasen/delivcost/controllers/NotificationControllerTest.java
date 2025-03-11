@@ -7,7 +7,6 @@ import com.iliasen.delivcost.services.NotificationService;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
-import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.data.domain.Page;
@@ -82,9 +81,7 @@ public class NotificationControllerTest {
         System.out.println("getNotificationsTest response: " + result.getResponse().getContentAsString());
     }
 
-    /**
-     * Тест для PUT /notify/subscribe/{id}?subscribe=...
-     */
+
     @Test
     @WithMockUser(username = "user", roles = {"USER"})
     public void setSubscribeTest() throws Exception {
@@ -104,9 +101,6 @@ public class NotificationControllerTest {
         System.out.println("setSubscribeTest response: " + result.getResponse().getContentAsString());
     }
 
-    /**
-     * Тест для PUT /notify/view/{id}
-     */
     @Test
     @WithMockUser(username = "user", roles = {"USER"})
     public void viewingTheNotifyTest() throws Exception {
@@ -124,9 +118,6 @@ public class NotificationControllerTest {
         System.out.println("viewingTheNotifyTest response: " + result.getResponse().getContentAsString());
     }
 
-    /**
-     * Тест для DELETE /notify
-     */
     @Test
     @WithMockUser(username = "user", roles = {"USER"})
     public void delNotificationsTest() throws Exception {
